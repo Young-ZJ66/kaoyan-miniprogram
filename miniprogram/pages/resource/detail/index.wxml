@@ -1,0 +1,35 @@
+<!--resource/detail/index.wxml-->
+<view class="container">
+  <view class="resource-section">
+    <view class="resource-title-row">
+      <text class="resource-title">{{resourceDetail.title}}</text>
+      <view class="uploader-tag">{{resourceDetail.uploaderNickName}}</view>
+    </view>
+    
+    <view class="resource-info">
+      <view class="resource-type-tag">{{categoryMap[resourceDetail.category]}}</view>
+      <text class="resource-size">{{resourceDetail.size}}</text>
+      <text class="resource-downloads">下载次数：{{resourceDetail.downloads}}</text>
+    </view>
+    
+    <view class="resource-date">上传时间：{{resourceDetail.createTime}}</view>
+    <view class="resource-date" wx:if="{{resourceDetail.updateTime}}">更新时间：{{resourceDetail.updateTime}}</view>
+    
+    <view class="resource-description">
+      <text>{{resourceDetail.description || '暂无描述'}}</text>
+    </view>
+    
+    <view class="resource-file">
+      <text class="label">文件名：</text>
+      <text class="value">{{resourceDetail.fileName}}</text>
+    </view>
+    
+    <view class="download-btn" bindtap="downloadResource">下载资料</view>
+    
+    <!-- 编辑按钮，只有上传者才能看到 -->
+    <view class="edit-btn" bindtap="goToEdit" wx:if="{{isUploader}}">编辑资料</view>
+    
+    <!-- 删除按钮，只有上传者才能看到 -->
+    <view class="delete-btn" bindtap="deleteResource" wx:if="{{isUploader}}">删除资料</view>
+  </view>
+</view> 

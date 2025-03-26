@@ -1,0 +1,23 @@
+<!--news/list/index.wxml-->
+<view class="container">
+  <view class="news-list">
+    <block wx:if="{{newsList.length > 0}}">
+      <view class="news-item" wx:for="{{newsList}}" wx:key="_id" bindtap="goToNewsDetail" data-id="{{item._id}}">
+        <view class="news-title">{{item.title}}</view>
+        <view class="news-meta">
+          <text class="news-date">{{item.createTime}}</text>
+          <text class="news-type">{{item.type}}</text>
+        </view>
+      </view>
+    </block>
+    <view class="empty-tip" wx:else>
+      <text>暂无相关内容</text>
+    </view>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore}}">
+    <text wx:if="{{loading}}">加载中...</text>
+    <text wx:else bindtap="loadMore">加载更多</text>
+  </view>
+</view> 

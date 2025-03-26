@@ -1,0 +1,144 @@
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-container {
+  background-color: #fff;
+  border-radius: 24rpx;
+  padding: 10rpx;
+  margin-bottom: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #eee;
+  height: 80rpx;
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.right-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.avatar-wrapper {
+  width: 100rpx;
+  height: 100rpx;
+  background-color: transparent;
+  border-radius: 1rpx;
+  margin: 40rpx auto;
+  padding: 15rpx;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.avatar-wrapper::after {
+  border: none;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+
+.input {
+  width: 450rpx;
+  text-align: right;
+  font-size: 32rpx;
+  color: #333;
+  padding-right: 20rpx;
+}
+
+.value {
+  font-size: 32rpx;
+  width: 500rpx;
+  color: #808080;
+  padding-right: 20rpx;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.arrow {
+  color: #808080;
+  font-size: 32rpx;
+}
+
+.radio-group {
+  flex: 1;
+  display: flex;
+  gap: 40rpx;
+}
+
+.radio-group radio {
+  font-size: 28rpx;
+}
+
+.picker {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 20rpx;
+  text-align: right;
+  color: #808080;
+  font-size: 32rpx;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-top: 40rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.submit-btn {
+  width: 100% !important;
+  background-color: #1296db;
+  color: #fff;
+  border-radius: 24rpx;
+  font-size: 32rpx;
+  padding: 20rpx 0;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.submit-btn::after {
+  border: none;
+}
+
+.delete-btn {
+  width: 100% !important;
+  background-color: #fff;
+  color: #ff4d4f;
+  border: 1rpx solid #ff4d4f;
+  border-radius: 24rpx;
+  font-size: 32rpx;
+  padding: 20rpx 0;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.delete-btn::after {
+  border: none;
+} 

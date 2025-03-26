@@ -1,0 +1,67 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/index/news/detail/index",
+    "pages/index/news/list/index",
+    "pages/resource/upload/index",
+    "pages/resource/edit/index",
+    "pages/resource/detail/index",
+    "pages/my/index",
+    "pages/my/my-downloads/index",
+    "pages/my/my-uploads/index",
+    "pages/register/index",
+    "pages/plan/index",
+    "pages/community/index",
+    "pages/school/index",
+    "pages/my/edit/index"
+  ],
+  "window": {
+    "backgroundColor": "#F6F6F6",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "考研生",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#1296db",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "iconWidth": "81px",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tabbar/home.png",
+        "selectedIconPath": "images/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/plan/index",
+        "text": "计划",
+        "iconPath": "images/tabbar/plan.png",
+        "selectedIconPath": "images/tabbar/plan-active.png"
+      },
+      {
+        "pagePath": "pages/community/index",
+        "text": "社区",
+        "iconPath": "images/tabbar/community.png",
+        "selectedIconPath": "images/tabbar/community-active.png"
+      },
+      {
+        "pagePath": "pages/school/index",
+        "text": "院校",
+        "iconPath": "images/tabbar/school.png",
+        "selectedIconPath": "images/tabbar/school-active.png"
+      },
+      {
+        "pagePath": "pages/my/index",
+        "text": "我的",
+        "iconPath": "images/tabbar/user.png",
+        "selectedIconPath": "images/tabbar/user-active.png"
+      }
+    ]
+  }
+}

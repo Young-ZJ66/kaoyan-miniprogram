@@ -1,0 +1,56 @@
+<view class="container">
+  <view class="form-group">
+    <view class="form-item">
+      <text class="label">资料标题</text>
+      <input class="input" placeholder="请输入资料标题" model:value="{{title}}" />
+    </view>
+    
+    <view class="form-item">
+      <text class="label">资料分类</text>
+      <view class="category-list">
+        <view class="category-item {{currentCategory === 'math' ? 'active' : ''}}" 
+              bindtap="switchCategory" data-category="math">数学</view>
+        <view class="category-item {{currentCategory === 'english' ? 'active' : ''}}" 
+              bindtap="switchCategory" data-category="english">英语</view>
+        <view class="category-item {{currentCategory === 'major' ? 'active' : ''}}" 
+              bindtap="switchCategory" data-category="major">专业课</view>
+        <view class="category-item {{currentCategory === 'politics' ? 'active' : ''}}" 
+              bindtap="switchCategory" data-category="politics">政治</view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="label">资料描述</text>
+      <textarea class="textarea" placeholder="请输入资料描述" model:value="{{description}}" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">文件信息</text>
+      <block wx:if="{{!filePath && fileName}}">
+        <!-- 显示原有文件信息 -->
+        <view class="file-info">
+          <view class="file-name">{{fileName}}</view>
+          <view class="file-size">大小：{{fileSize}}</view>
+          <view class="replace-btn" bindtap="chooseFile">更换文件</view>
+        </view>
+      </block>
+      <block wx:elif="{{filePath}}">
+        <!-- 显示新选择的文件信息 -->
+        <view class="file-info">
+          <view class="file-name">{{fileName}}</view>
+          <view class="file-size">大小：{{formattedFileSize}}</view>
+          <view class="delete-btn" bindtap="deleteFile">删除</view>
+        </view>
+      </block>
+      <block wx:else>
+        <!-- 显示上传按钮 -->
+        <view class="upload-box" bindtap="chooseFile">
+          <text class="iconfont icon-upload"></text>
+          <text class="upload-text">点击更换文件</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="submit-btn" bindtap="submitUpdate">更新资料</view>
+</view> 

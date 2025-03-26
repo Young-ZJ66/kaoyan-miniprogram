@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="news-detail" wx:if="{{newsDetail}}">
+    <view class="news-title">{{newsDetail.title}}</view>
+    <view class="news-meta">
+      <text class="news-date">发布时间：{{newsDetail.createTime}}</text>
+    </view>
+    <view class="news-content">
+      <rich-text nodes="{{newsDetail.content}}"></rich-text>
+    </view>
+    <image wx:if="{{newsDetail.coverImage}}" 
+           class="news-image" 
+           src="{{newsDetail.coverImage}}" 
+           mode="widthFix"></image>
+  </view>
+  <view class="loading" wx:else>
+    <text>加载中...</text>
+  </view>
+</view> 

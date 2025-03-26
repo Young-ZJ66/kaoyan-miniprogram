@@ -1,0 +1,34 @@
+<view class="container">
+  <view class="downloads-section">
+    <!-- 分类列表 -->
+    <view class="category-list">
+      <view class="category-item {{currentCategory === 'all' ? 'active' : ''}}" 
+            bindtap="switchCategory" data-category="all">全部</view>
+      <view class="category-item {{currentCategory === 'math' ? 'active' : ''}}" 
+            bindtap="switchCategory" data-category="math">数学</view>
+      <view class="category-item {{currentCategory === 'english' ? 'active' : ''}}" 
+            bindtap="switchCategory" data-category="english">英语</view>
+      <view class="category-item {{currentCategory === 'major' ? 'active' : ''}}" 
+            bindtap="switchCategory" data-category="major">专业课</view>
+      <view class="category-item {{currentCategory === 'politics' ? 'active' : ''}}" 
+            bindtap="switchCategory" data-category="politics">政治</view>
+    </view>
+
+    <view class="downloads-list">
+      <block wx:if="{{downloadsList.length > 0}}">
+        <view class="download-item" wx:for="{{downloadsList}}" wx:key="_id" bindtap="onItemTap" data-id="{{item.resourceId}}">
+          <view class="resource-title-row">
+            <text class="resource-title">{{item.title}}</text>
+          </view>
+          <view class="resource-info">
+            <view class="resource-type-tag">{{categoryMap[item.category]}}</view>
+            <text class="resource-date">下载时间：{{item.downloadTime}}</text>
+          </view>
+        </view>
+      </block>
+      <view class="empty-tip" wx:else>
+        <text>暂无下载记录</text>
+      </view>
+    </view>
+  </view>
+</view> 
