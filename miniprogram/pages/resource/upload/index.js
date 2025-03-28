@@ -8,7 +8,7 @@ Page({
     filePath: '',
     fileSize: 0,
     formattedFileSize: '',
-    currentCategory: 'politics',  // 默认选择政治
+    currentCategory: 'math',  // 默认选择政治
     categoryMap: {
       'politics': '政治',
       'english': '英语',

@@ -20,13 +20,13 @@
       </view>
     </view>
     <view class="form-item">
-      <view class="label">生日</view>
-      <view class="right-content">
-        <picker mode="date" value="{{birthday}}" start="{{startDate}}" end="{{endDate}}" bindchange="onBirthdayChange">
-          <view class="value">{{birthday || '请选择生日'}}</view>
-        </picker>
-        <text class="arrow">></text>
-      </view>
+      <text class="label">生日</text>
+      <picker mode="date" value="{{birthday}}" bindchange="onBirthdayChange">
+        <view class="right-content">
+          <view class="value">{{birthday || '请选择'}}</view>
+          <text class="arrow">></text>
+        </view>
+      </picker>
     </view>
     <view class="form-item">
       <view class="label">地区</view>

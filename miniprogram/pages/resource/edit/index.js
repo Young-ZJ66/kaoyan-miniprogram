@@ -5,7 +5,7 @@ Page({
     id: '',
     title: '',
     description: '',
-    currentCategory: 'politics',  // 默认选择政治
+    currentCategory: 'math',  // 默认选择数学
     categoryMap: {
       'politics': '政治',
       'english': '英语',
@@ -17,7 +17,8 @@ Page({
     filePath: '',
     fileSize: '',
     formattedFileSize: '',
-    loading: false
+    loading: false,
+    resourceDetail: null  // 添加 resourceDetail 字段
   },
 
   onLoad: function(options) {
@@ -49,12 +50,14 @@ Page({
       if (res.result.success) {
         const resourceDetail = res.result.data
         this.setData({
+          resourceDetail,  // 保存完整的资源详情
           title: resourceDetail.title,
           description: resourceDetail.description || '',
-          currentCategory: resourceDetail.type,
+          currentCategory: resourceDetail.category,
           fileID: resourceDetail.fileID,
           fileName: resourceDetail.fileName,
-          fileSize: resourceDetail.size
+          fileSize: resourceDetail.rawSize || 0,  // 使用原始大小
+          formattedFileSize: resourceDetail.size || '0B'  // 使用格式化后的大小
         })
       } else {
         wx.showToast({
@@ -103,12 +106,18 @@ Page({
   },
 
   // 格式化文件大小
-  formatFileSize: function(bytes) {
-    if (bytes === 0) return '0 B'
-    const k = 1024
-    const sizes = ['B', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i]
+  formatFileSize(size) {
+    const fileSize = parseInt(size) || 0;
+    
+    if (fileSize < 1024) {
+      return fileSize + 'B';
+    } else if (fileSize < 1024 * 1024) {
+      return (fileSize / 1024).toFixed(2) + 'KB';
+    } else if (fileSize < 1024 * 1024 * 1024) {
+      return (fileSize / (1024 * 1024)).toFixed(2) + 'MB';
+    } else {
+      return (fileSize / (1024 * 1024 * 1024)).toFixed(2) + 'GB';
+    }
   },
 
   // 删除文件
@@ -144,78 +153,118 @@ Page({
     })
   },
 
-  // 提交更新
-  submitUpdate: function() {
-    if (!this.data.title) {
-      wx.showToast({
-        title: '请输入资料标题',
-        icon: 'none'
-      })
-      return
-    }
+  // 提交表单
+  async onSubmit() {
+    try {
+      const { title, currentCategory, description, filePath, fileName } = this.data;
+      
+      // 表单验证
+      if (!title) {
+        wx.showToast({
+          title: '请输入标题',
+          icon: 'none'
+        });
+        return;
+      }
 
-    if (this.data.loading) return
-    this.setData({ loading: true })
+      if (!currentCategory) {
+        wx.showToast({
+          title: '请选择分类',
+          icon: 'none'
+        });
+        return;
+      }
 
-    wx.showLoading({
-      title: '更新中...',
-    })
+      wx.showLoading({
+        title: '保存中...'
+      });
 
-    // 如果有新文件，先上传文件
-    let updatePromise = Promise.resolve(this.data.fileID)
-    if (this.data.filePath) {
-      updatePromise = this.uploadFile(this.data.filePath)
-    }
+      let fileID = this.data.fileID;
+      let size = this.data.fileSize;
+      let formattedSize = this.data.formattedFileSize;
 
-    updatePromise.then(fileID => {
-      // 调用云函数更新资料信息
-      return wx.cloud.callFunction({
+      // 如果上传了新文件
+      if (filePath) {
+        // 1. 获取文件信息
+        const fileInfo = await wx.getFileInfo({
+          filePath: filePath
+        });
+
+        // 格式化文件大小
+        formattedSize = this.formatFileSize(fileInfo.size);
+        size = fileInfo.size;
+
+        // 2. 上传文件到云存储
+        const uploadRes = await wx.cloud.uploadFile({
+          cloudPath: `resources/${Date.now()}_${Math.random().toString(36).substring(2)}_${fileName}`,
+          filePath: filePath
+        });
+
+        if (!uploadRes.fileID) {
+          throw new Error('文件上传失败');
+        }
+
+        fileID = uploadRes.fileID;
+      }
+
+      // 3. 调用云函数更新资源
+      const res = await wx.cloud.callFunction({
         name: 'resources',
         data: {
           type: 'update',
           data: {
-            id: this.data.id,
-            title: this.data.title,
-            category: this.data.currentCategory,
-            description: this.data.description,
-            fileID: fileID,
-            fileName: this.data.fileName,
-            size: this.data.formattedFileSize,
-            rawSize: this.data.fileSize
+            id: this.data.resourceDetail._id,
+            title,
+            category: currentCategory,
+            description,
+            fileID,
+            fileName,
+            size: formattedSize,
+            rawSize: size
           }
         }
-      })
-    }).then(res => {
-      if (res.result.success) {
-        wx.showToast({
-          title: '更新成功',
-          icon: 'success'
-        })
-        // 延迟返回，让用户看到成功提示
-        setTimeout(() => {
-          // 返回详情页并刷新
-          const pages = getCurrentPages()
-          const prevPage = pages[pages.length - 2]
-          if (prevPage) {
-            prevPage.loadResourceDetail(this.data.id)
-          }
-          wx.navigateBack()
-        }, 1500)
-      } else {
-        wx.showToast({
-          title: res.result.message || '更新失败',
-          icon: 'none'
-        })
+      });
+
+      if (!res.result || !res.result.success) {
+        throw new Error(res.result?.message || '更新失败');
       }
-    }).catch(err => {
-      console.error('更新失败：', err)
+
+      wx.hideLoading();
       wx.showToast({
-        title: '更新失败',
-        icon: 'none'
-      })
-    }).finally(() => {
-      wx.hideLoading()
-      this.setData({ loading: false })
-    })
+        title: '更新成功',
+        icon: 'success',
+        duration: 2000,
+        success: () => {
+          // 获取页面栈
+          const pages = getCurrentPages();
+          
+          // 遍历页面栈，找到需要刷新的页面
+          pages.forEach(page => {
+            // 刷新详情页
+            if (page.route === 'pages/resource/detail/index') {
+              page.loadResourceDetail(this.data.resourceDetail._id);
+            }
+            // 刷新首页资料列表
+            if (page.route === 'pages/index/index') {
+              page.loadResources();
+            }
+          });
+          
+          // 延迟返回，让用户看到成功提示
+          setTimeout(() => {
+            wx.navigateBack();
+          }, 1500);
+        }
+      });
+
+    } catch (err) {
+      console.error('更新失败：', err);
+      wx.hideLoading();
+      wx.showToast({
+        title: err.message || '更新失败，请稍后重试',
+        icon: 'none',
+        duration: 2000
+      });
+    }
   }
 }) 

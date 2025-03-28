@@ -1,7 +1,7 @@
 {
-  "name": "user",
+  "name": "logOperation",
   "version": "1.0.0",
-  "description": "用户相关的云函数",
+  "description": "记录用户操作日志的云函数",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

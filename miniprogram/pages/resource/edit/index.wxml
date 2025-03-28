@@ -30,7 +30,7 @@
         <!-- 显示原有文件信息 -->
         <view class="file-info">
           <view class="file-name">{{fileName}}</view>
-          <view class="file-size">大小：{{fileSize}}</view>
+          <view class="file-size">大小：{{formattedFileSize}}</view>
           <view class="replace-btn" bindtap="chooseFile">更换文件</view>
         </view>
       </block>
@@ -52,5 +52,5 @@
     </view>
   </view>
 
-  <view class="submit-btn" bindtap="submitUpdate">更新资料</view>
+  <view class="submit-btn" bindtap="onSubmit">保存修改</view>
 </view> 

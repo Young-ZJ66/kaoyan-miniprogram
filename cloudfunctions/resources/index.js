@@ -36,7 +36,7 @@ exports.main = async (event, context) => {
       case 'add':
         return await addResource(data, wxContext.OPENID)
       case 'update':
-        return await updateResource(data, wxContext.OPENID)
+        return await updateResource(data)
       case 'download':
         return await updateDownloadCount(data)
       case 'recordDownload':
@@ -123,7 +123,6 @@ async function getDetail(data) {
     // 处理数据
     const resourceData = {
       ...res.data,
-      createTime: res.data.createTime ? new Date(res.data.createTime).getTime() : null,
       size: res.data.size || '未知大小',
       downloads: res.data.downloads || 0,
       description: res.data.description || '暂无描述',
@@ -401,82 +400,68 @@ async function addResource(data, openid) {
 }
 
 // 更新资源
-async function updateResource(data, openid) {
+async function updateResource(data) {
   try {
-    const { id, title, category, description, fileID, fileName, size } = data
-    console.log('更新资源，数据：', data)
-    console.log('当前用户OPENID：', openid)
+    const { id, title, category, description, fileID, fileName, size, rawSize } = data;
+    console.log('更新资源，数据：', data);
 
-    if (!openid) {
-      console.error('获取用户OPENID失败')
-      return {
-        success: false,
-        message: '获取用户信息失败'
-      }
-    }
-
-    // 检查资源是否存在且是否为当前用户上传
-    const resource = await db.collection('resources').doc(id).get()
-    if (!resource.data) {
+    // 获取当前资源信息
+    const currentResource = await db.collection('resources')
+      .doc(id)
+      .get();
+    
+    if (!currentResource.data) {
       return {
         success: false,
         message: '资源不存在'
-      }
+      };
     }
 
-    if (resource.data._openid !== openid) {
-      return {
-        success: false,
-        message: '无权修改该资源'
-      }
-    }
+    // 构建更新数据
+    const updateData = {
+      title,
+      description,
+      category,
+      updateTime: db.serverDate()
+    };
 
-    // 如果更新了文件，需要删除旧文件
-    if (fileID && fileID !== resource.data.fileID) {
-      try {
-        await cloud.deleteFile({
-          fileList: [resource.data.fileID]
-        })
-        console.log('删除旧文件成功')
-      } catch (err) {
-        console.error('删除旧文件失败：', err)
+    // 只有在上传了新文件时，才处理文件相关的更新
+    if (fileID && fileID !== currentResource.data.fileID) {
+      // 删除旧文件
+      if (currentResource.data.fileID) {
+        try {
+          await cloud.deleteFile({
+            fileList: [currentResource.data.fileID]
+          });
+          console.log('删除旧文件成功');
+        } catch (err) {
+          console.error('删除旧文件失败：', err);
+        }
       }
+      
+      // 添加新文件相关字段
+      updateData.fileID = fileID;
+      updateData.fileName = fileName;
+      updateData.size = size;  // 使用格式化后的大小
+      updateData.rawSize = rawSize;  // 保存原始大小
     }
 
     // 更新资源信息
-    const updateData = {
-      title,
-      category,
-      description,
-      updateTime: db.serverDate()
-    }
-
-    // 如果有新文件，更新文件相关信息
-    if (fileID) {
-      Object.assign(updateData, {
-        fileID,
-        fileName,
-        size
-      })
-    }
-
-    // 更新数据库
-    const result = await db.collection('resources').doc(id).update({
-      data: updateData
-    })
-
-    console.log('更新资源结果：', result)
+    const result = await db.collection('resources')
+      .doc(id)
+      .update({
+        data: updateData
+      });
 
     return {
       success: true,
       data: result
-    }
+    };
   } catch (err) {
-    console.error('更新资源失败：', err)
+    console.error('更新资源失败：', err);
     return {
       success: false,
-      message: '更新失败',
-      error: err
-    }
+      message: '更新资源失败：' + err.message
+    };
   }
 } 

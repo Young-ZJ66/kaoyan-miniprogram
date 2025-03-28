@@ -42,9 +42,9 @@
   margin-bottom: 10rpx;
 }
 
-.edit-info {
+.action-text {
   font-size: 28rpx;
-  color: #666;
+  color: #8a8a8a;
 }
 
 .function-list {

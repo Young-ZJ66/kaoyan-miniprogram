@@ -11,7 +11,9 @@ Page({
       'major': '专业课'
     },
     isUploader: false,
-    userOpenid: ''
+    userOpenid: '',
+    isOwner: false,
+    hasPermission: false
   },
 
   onLoad: function(options) {
@@ -88,13 +90,15 @@ Page({
     }).then(res => {
       console.log('获取资源详情结果：', res)
       if (res.result.success) {
+        const data = res.result.data;
+        
         // 处理时间格式
         const resourceDetail = {
-          ...res.result.data,
-          createTime: this.formatTime(res.result.data.createTime),
-          updateTime: this.formatTime(res.result.data.updateTime)
+          ...data,
+          createTime: this.formatTime(data.createTime),
+          updateTime: this.formatTime(data.updateTime)
         };
-        console.log('处理后的资源详情：', resourceDetail)
+        
         // 检查必要的字段是否存在
         if (!resourceDetail.fileID) {
           console.error('资源详情缺少 fileID')
@@ -107,11 +111,12 @@ Page({
         
         // 检查用户是否登录
         const userInfo = wx.getStorageSync('userInfo');
+        
         // 检查是否为上传者（确保用户已登录、两个openid都存在且相等）
         const isUploader = userInfo && this.data.userOpenid && resourceDetail._openid && 
                           this.data.userOpenid === resourceDetail._openid;
         
-        console.log('用户身份检查：', {
+        console.log('用户身份检查结果：', {
           isLoggedIn: !!userInfo,
           userOpenid: this.data.userOpenid,
           resourceOpenid: resourceDetail._openid,
@@ -122,7 +127,10 @@ Page({
           resourceDetail: resourceDetail,
           loading: false,
           isUploader: isUploader
-        })
+        }, () => {
+          // 在设置完数据后，立即检查权限
+          this.checkUserPermission();
+        });
       } else {
         console.error('获取资源详情失败：', res.result)
         wx.showToast({
@@ -377,5 +385,169 @@ Page({
         }
       }
     })
+  },
+
+  // 检查用户权限
+  async checkUserPermission() {
+    try {
+      const auth = wx.getStorageSync('auth');
+      const userInfo = wx.getStorageSync('userInfo');
+
+      if (!auth || !auth.token) {
+        console.log('权限检查 - 未找到认证信息');
+        return false;
+      }
+
+      // 调用云函数检查权限
+      const res = await wx.cloud.callFunction({
+        name: 'checkPermission',
+        data: {
+          resourceId: this.data.resourceDetail._id,
+          token: auth.token
+        }
+      });
+
+      if (!res.result || !res.result.success) {
+        console.error('权限检查失败：', res.result);
+        return false;
+      }
+
+      const { isOwner, hasPermission } = res.result.data;
+      
+      // 更新页面状态
+      this.setData({
+        isOwner,
+        hasPermission,
+        isUploader: isOwner  // 将 isOwner 同步到 isUploader
+      });
+
+      return hasPermission;
+    } catch (err) {
+      console.error('权限检查失败：', err);
+      return false;
+    }
+  },
+
+  // 获取下载链接
+  async getDownloadUrl() {
+    try {
+      const { resourceDetail } = this.data;
+      if (!resourceDetail || !resourceDetail.fileID) {
+        throw new Error('资源信息不完整');
+      }
+
+      // 获取文件下载链接
+      const res = await wx.cloud.getTempFileURL({
+        fileList: [resourceDetail.fileID]
+      });
+
+      if (!res.fileList || res.fileList.length === 0) {
+        throw new Error('获取下载链接失败');
+      }
+
+      // 更新资源详情中的下载链接
+      this.setData({
+        'resourceDetail.downloadUrl': res.fileList[0].tempFileURL
+      });
+    } catch (err) {
+      console.error('获取下载链接失败：', err);
+      throw new Error('获取下载链接失败：' + err.message);
+    }
+  },
+
+  // 页面加载
+  async onLoad(options) {
+    if (!wx.cloud) {
+      console.error('请使用 2.2.3 或以上的基础库以使用云能力');
+      return;
+    }
+
+    try {
+      wx.showLoading({
+        title: '加载中...'
+      });
+
+      // 检查参数
+      if (!options.id) {
+        throw new Error('资源ID不存在');
+      }
+
+      // 1. 获取资源详情
+      const res = await wx.cloud.callFunction({
+        name: 'resources',
+        data: {
+          type: 'getDetail',
+          data: { id: options.id }
+        }
+      });
+
+      console.log('获取资源详情结果：', res);
+      
+      // 检查资源是否存在
+      if (!res.result || !res.result.success || !res.result.data) {
+        wx.hideLoading();
+        wx.showModal({
+          title: '提示',
+          content: '该资料不存在或已被删除',
+          showCancel: false,
+          success: () => {
+            wx.navigateBack();
+          }
+        });
+        return;
+      }
+
+      const data = res.result.data;
+
+      // 2. 处理时间格式
+      const resourceDetail = {
+        ...data,
+        createTime: this.formatTime(data.createTime),
+        updateTime: this.formatTime(data.updateTime)
+      };
+
+      // 3. 检查必要的字段
+      if (!resourceDetail.fileID) {
+        throw new Error('资源文件不存在');
+      }
+
+      // 4. 检查用户身份
+      const userInfo = wx.getStorageSync('userInfo');
+      
+      // 如果用户已登录，获取 openid
+      if (userInfo) {
+        await this.getOpenId();
+      }
+
+      // 检查是否为上传者
+      const isUploader = userInfo && this.data.userOpenid && resourceDetail._openid && 
+                        this.data.userOpenid === resourceDetail._openid;
+
+      // 5. 更新页面数据
+      this.setData({
+        resourceDetail,
+        loading: false,
+        isUploader
+      });
+
+      // 6. 检查权限
+      await this.checkUserPermission();
+
+      // 7. 获取下载链接
+      await this.getDownloadUrl();
+
+      wx.hideLoading();
+    } catch (err) {
+      console.error('加载失败：', err);
+      wx.hideLoading();
+      wx.showModal({
+        title: '提示',
+        content: err.message || '加载失败',
+        showCancel: false,
+        success: () => {
+          wx.navigateBack();
+        }
+      });
+    }
   }
 }) 

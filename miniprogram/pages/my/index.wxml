@@ -5,7 +5,7 @@
     </view>
     <view class="user-text">
       <view class="nickname">{{userInfo.nickName || '未登录'}}</view>
-      <view class="edit-info" wx:if="{{isLoggedIn}}">修改信息></view>
+      <view class="action-text" bindtap="onEditProfile">{{userInfo.nickName ? '修改信息>' : '点击登录>'}}</view>
     </view>
   </view>
 

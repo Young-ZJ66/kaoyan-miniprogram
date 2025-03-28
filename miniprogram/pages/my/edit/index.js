@@ -12,22 +12,17 @@ Page({
     email: '',
     genderArray: ['男', '女'],
     genderIndex: 0,
-    date: '',
-    startDate: '',
-    endDate: '',
     openid: ''
   },
 
   onLoad() {
     // 获取当前用户信息
     const userInfo = wx.getStorageSync('userInfo');
-    const openid = wx.getStorageSync('openid');
+    const auth = wx.getStorageSync('auth');
     
-    if (userInfo && openid) {
-      // 设置日期范围
-      const today = new Date();
-      const startDate = new Date(today.getFullYear() - 50, today.getMonth(), today.getDate());
-      const endDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    if (userInfo && auth && auth.token) {
+      // 从 token 中获取 openid
+      const openid = auth.token.split('_')[0];
       
       // 设置表单数据
       this.setData({
@@ -40,10 +35,7 @@ Page({
         birthday: userInfo.birthday || '',
         region: userInfo.region ? userInfo.region.split(' ') : ['请选择', '', ''],
         phone: userInfo.phone || '',
-        email: userInfo.email || '',
-        date: userInfo.birthday || '',
-        startDate: startDate.toISOString().split('T')[0],
-        endDate: endDate.toISOString().split('T')[0]
+        email: userInfo.email || ''
       });
     } else {
       wx.showToast({
@@ -53,7 +45,7 @@ Page({
         success: () => {
           setTimeout(() => {
             wx.navigateBack();
-          }, 2000);
+          }, 1500);
         }
       });
     }
