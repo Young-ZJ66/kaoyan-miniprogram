@@ -16,7 +16,14 @@
 
     <view class="downloads-list">
       <block wx:if="{{downloadsList.length > 0}}">
-        <view class="download-item" wx:for="{{downloadsList}}" wx:key="_id" bindtap="onItemTap" data-id="{{item.resourceId}}">
+        <view class="download-item" 
+              wx:for="{{downloadsList}}" 
+              wx:key="_id" 
+              bindtap="onItemTap" 
+              bindlongpress="onItemLongPress"
+              data-id="{{item._id}}"
+              data-resource-id="{{item.resourceId}}"
+              data-index="{{index}}">
           <view class="resource-title-row">
             <text class="resource-title">{{item.title}}</text>
           </view>

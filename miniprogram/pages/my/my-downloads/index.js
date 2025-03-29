@@ -95,10 +95,10 @@ Page({
 
   // 点击列表项
   onItemTap: function(e) {
-    const id = e.currentTarget.dataset.id;
-    console.log('点击下载记录，资源ID：', id);
+    const resourceId = e.currentTarget.dataset.resourceId;
+    console.log('点击下载记录，资源ID：', resourceId);
     
-    if (!id) {
+    if (!resourceId) {
       console.error('资源ID为空');
       wx.showToast({
         title: '资源信息不完整',
@@ -109,7 +109,7 @@ Page({
 
     // 跳转到资源详情页面
     wx.navigateTo({
-      url: `/pages/resource/detail/index?id=${id}`,
+      url: `/pages/resource/detail/index?id=${resourceId}`,
       fail: (err) => {
         console.error('跳转失败：', err);
         wx.showToast({
@@ -117,6 +117,59 @@ Page({
           icon: 'none'
         });
       }
+    });
+  },
+
+  // 长按删除记录
+  onItemLongPress: function(e) {
+    const id = e.currentTarget.dataset.id;
+    const index = e.currentTarget.dataset.index;
+    const title = this.data.downloadsList[index].title;
+
+    wx.showModal({
+      title: '删除下载记录',
+      content: `确定要删除"${title}"的下载记录吗？`,
+      confirmText: '删除',
+      confirmColor: '#ff4d4f',
+      success: (res) => {
+        if (res.confirm) {
+          this.deleteDownloadRecord(id);
+        }
+      }
+    });
+  },
+
+  // 删除下载记录
+  deleteDownloadRecord: function(id) {
+    wx.showLoading({
+      title: '删除中...',
+    });
+
+    wx.cloud.callFunction({
+      name: 'deleteDownloadRecord',
+      data: { id }
+    }).then(res => {
+      if (res.result.success) {
+        wx.showToast({
+          title: '删除成功',
+          icon: 'success'
+        });
+        // 重新加载下载记录
+        this.loadDownloads();
+      } else {
+        wx.showToast({
+          title: res.result.message || '删除失败',
+          icon: 'none'
+        });
+      }
+    }).catch(err => {
+      console.error('删除下载记录失败：', err);
+      wx.showToast({
+        title: '删除失败',
+        icon: 'none'
+      });
+    }).finally(() => {
+      wx.hideLoading();
     });
   }
 }) 
