@@ -1,0 +1,58 @@
+<view class="container">
+  <view class="form-section">
+    <!-- 计划时间 -->
+    <view class="form-item">
+      <view class="form-label">计划时间</view>
+      <view class="date-section">
+        <view class="date-item">
+          <text class="label">开始时间</text>
+          <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+            <view class="picker">{{startDate}}</view>
+          </picker>
+        </view>
+        <view class="date-item">
+          <text class="label">结束时间</text>
+          <picker mode="date" value="{{endDate}}" start="{{startDate}}" bindchange="onEndDateChange">
+            <view class="picker">{{endDate}}</view>
+          </picker>
+        </view>
+      </view>
+    </view>
+
+    <!-- 计划名称输入区域 -->
+    <view class="form-item">
+      <view class="form-label">计划名称</view>
+      <input class="plan-name-input" 
+             placeholder="请输入计划名称" 
+             placeholder-class="placeholder"
+             value="{{planName}}"
+             bindinput="onPlanNameInput"
+             maxlength="20"/>
+    </view>
+
+    <!-- 每日任务 -->
+    <view class="form-item">
+      <view class="form-label">每日任务</view>
+      <view class="tasks-list">
+        <view wx:for="{{tasks}}" wx:key="index" class="task-item">
+          <input class="task-input" 
+                 placeholder="请输入任务内容" 
+                 value="{{item.content}}"
+                 data-index="{{index}}"
+                 bindinput="onTaskInput"/>
+          <view class="deleteTask-btn" bindtap="deleteTask" data-index="{{index}}">删除</view>
+        </view>
+        <view class="add-task-btn" bindtap="addTask">
+          <text class="add-icon">+</text>
+          <text>添加任务</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 按钮组 -->
+    <view class="button-group">
+      <button class="submit-btn" bindtap="onSubmit">保存修改</button>
+      <button class="delete-btn" bindtap="deletePlan">删除计划</button>
+    </view>
+  </view>
+</view> 

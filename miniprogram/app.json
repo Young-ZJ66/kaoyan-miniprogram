@@ -11,9 +11,12 @@
     "pages/my/my-uploads/index",
     "pages/register/index",
     "pages/plan/index",
+    "pages/plan/add/index",
     "pages/community/index",
     "pages/school/index",
-    "pages/my/edit/index"
+    "pages/my/edit/index",
+    "pages/plan/manage/index",
+    "pages/plan/edit/index"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
@@ -30,7 +33,6 @@
     "selectedColor": "#1296db",
     "backgroundColor": "#ffffff",
     "borderStyle": "black",
-    "iconWidth": "81px",
     "list": [
       {
         "pagePath": "pages/index/index",

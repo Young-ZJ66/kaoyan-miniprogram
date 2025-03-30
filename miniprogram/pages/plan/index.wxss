@@ -1,3 +1,339 @@
 .container {
   padding: 20rpx;
-} 
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 进度条样式 */
+.progress-section {
+  width: 100%;
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 24rpx;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.progress-text {
+  font-size: 32rpx;
+  color: #333;
+}
+
+.progress-percentage {
+  font-size: 32rpx;
+  color: #07c160;
+  font-weight: bold;
+}
+
+.progress-bar {
+  height: 20rpx;
+  background-color: #f0f0f0;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.progress-inner {
+  height: 100%;
+  background-color: #07c160;
+  transition: width 0.3s ease;
+}
+
+/* 日历样式 */
+.calendar-section {
+  width: 100%;
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 24rpx;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  position: relative;
+}
+
+.calendar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.calendar-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.calendar-btn {
+  padding: 10rpx 20rpx;
+  font-size: 28rpx;
+  color: #07c160;
+  background-color: rgba(7, 193, 96, 0.1);
+  border-radius: 8rpx;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.weekday {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10rpx;
+}
+
+.day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #333;
+  border-radius: 8rpx;
+  position: relative;
+}
+
+.other-month {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.today {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.in-plan {
+  background-color: #f5f5f5;
+}
+
+.completed {
+  background-color: #f6ffed;
+  color: #07c160;
+}
+
+.unfinished {
+  background-color: #fff1f0;
+  color: #ff4d4f;
+}
+
+.selected {
+  position: relative;
+}
+
+.selected::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2rpx solid #07c160;
+  border-radius: 8rpx;
+  pointer-events: none;
+}
+
+/* 任务列表样式 */
+.tasks-section {
+  width: 100%;
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 24rpx;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+
+.tasks-header {
+  margin-bottom: 20rpx;
+}
+
+.tasks-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+}
+
+.task-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.task-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.empty-tasks {
+  padding: 40rpx 0;
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+}
+
+/* 可移动按钮样式 */
+.movable-area {
+  position: fixed;
+  width: calc(100% - 70rpx);  /* 左右各留20rpx边距 */
+  height: calc(100% - 40rpx);  /* 上下各留20rpx边距 */
+  top: 20rpx;  /* 顶部留出小段距离 */
+  left: 35rpx;  /* 左侧留出小段距离 */
+  pointer-events: none;
+  z-index: 100;
+}
+
+.movable-view {
+  width: 100rpx;
+  height: 100rpx;  /* 改为与主按钮一样的高度 */
+  pointer-events: auto;
+}
+
+.menu-container {
+  position: relative;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  width: 100%;
+}
+
+.menu-list {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin: 0;
+  /* 默认向下展开 */
+  top: 120rpx;
+  transform: translateX(-50%);
+  left: 50%;
+  background-color: transparent;
+  padding: 20rpx;
+  z-index: 1000;
+}
+
+/* 向上展开时的样式 */
+.menu-open.menu-up .menu-list {
+  bottom: 120rpx;
+  top: auto;
+  transform: translateX(-50%);
+}
+
+.menu-item {
+  width: 160rpx;
+  height: 80rpx;
+  background-color: #07c160;
+  color: #fff;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.3);
+  transition: all 0.3s ease;
+}
+
+.menu-item:active {
+  opacity: 0.8;
+  transform: scale(0.95);
+}
+
+.menu-button {
+  width: 100rpx;
+  height: 100rpx;
+  background-color: #07c160;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.3);
+  transition: all 0.3s ease;
+}
+
+.menu-icon {
+  font-size: 48rpx;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.menu-open .menu-icon {
+  transform: rotate(45deg);
+}
+
+.menu-button:active {
+  opacity: 0.8;
+  transform: scale(0.95);
+}
+
+/* 未登录提示样式 */
+.login-required {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+}
+
+.login-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30rpx;
+  padding: 40rpx;
+}
+
+.login-message text {
+  font-size: 32rpx;
+  color: #666;
+}
+
+.login-btn {
+  width: 240rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background-color: #07c160;
+  color: #fff;
+  font-size: 28rpx;
+  border-radius: 40rpx;
+  border: none;
+}

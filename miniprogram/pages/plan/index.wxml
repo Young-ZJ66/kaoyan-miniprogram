@@ -1,4 +1,88 @@
 <view class="container">
-  <text>计划功能正在开发中</text>
-  <text>请关注后续版本</text>
+  <!-- 总进度条 -->
+  <view class="progress-section">
+    <view class="progress-info">
+      <text class="progress-text">总进度</text>
+      <text class="progress-percentage">{{totalProgress}}%</text>
+    </view>
+    <view class="progress-bar">
+      <view class="progress-inner" style="width: {{totalProgress}}%"></view>
+    </view>
+  </view>
+
+  <!-- 日历部分 -->
+  <view class="calendar-section">
+    <view class="calendar-header">
+      <view class="calendar-title">{{currentYear}}年{{currentMonth}}月</view>
+      <view class="calendar-actions">
+        <view class="calendar-btn" bindtap="prevMonth">上个月</view>
+        <view class="calendar-btn" bindtap="nextMonth">下个月</view>
+      </view>
+    </view>
+    <view class="calendar-body">
+      <view class="weekdays">
+        <view wx:for="{{weekdays}}" wx:key="*this" class="weekday">{{item}}</view>
+      </view>
+      <view class="days">
+        <view wx:for="{{days}}" wx:key="date" 
+              class="day {{item.isCurrentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.hasUnfinished && item.isPast ? 'unfinished' : ''}} {{item.isCompleted ? 'completed' : ''}} {{item.isSelected ? 'selected' : ''}}"
+              bindtap="selectDate"
+              data-date="{{item.date}}">
+          <text>{{item.day}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 任务列表 -->
+  <view class="tasks-section" wx:if="{{selectedDate}}">
+    <view class="tasks-header">
+      <text class="tasks-title">{{selectedDate}} 任务</text>
+    </view>
+    <view class="tasks-list">
+      <block wx:if="{{selectedDateTasks.length > 0}}">
+        <view wx:for="{{selectedDateTasks}}" wx:key="id" class="task-item">
+          <view class="task-content">
+            <text class="task-text">{{item.content}}</text>
+            <checkbox wx:if="{{item.canCheck}}" 
+                      checked="{{item.completed}}"
+                      bindtap="toggleTask"
+                      data-task-id="{{item._id}}"
+                      color="#07c160"/>
+          </view>
+        </view>
+      </block>
+      <view wx:else class="empty-tasks">
+        <text>暂无计划任务</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 按钮列表 -->
+  <movable-area class="movable-area">
+    <movable-view class="movable-view" 
+                  direction="all" 
+                  x="{{buttonX}}" 
+                  y="{{buttonY}}" 
+                  bindchange="onButtonMove"
+                  out-of-bounds="{{false}}"
+                  damping="20"
+                  friction="2">
+      <view class="menu-container {{isMenuOpen ? 'menu-open' : ''}} {{isMenuUp ? 'menu-up' : ''}}">
+        <!-- 按钮列表 -->
+        <view class="menu-list" wx:if="{{isMenuOpen}}">
+          <view class="menu-item" bindtap="goToAddPlan">
+            <text>制定计划</text>
+          </view>
+          <view class="menu-item" bindtap="goToManagePlan">
+            <text>管理计划</text>
+          </view>
+        </view>
+        <!-- 主按钮 -->
+        <view class="menu-button" bindtap="toggleMenu">
+          <text class="menu-icon">+</text>
+        </view>
+      </view>
+    </movable-view>
+  </movable-area>
 </view> 

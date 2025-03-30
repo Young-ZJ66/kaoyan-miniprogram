@@ -1,0 +1,32 @@
+<!-- 管理计划页面 -->
+<view class="container">
+  <view class="plan-list">
+    <block wx:if="{{plans.length > 0}}">
+      <view wx:for="{{plans}}" 
+            wx:key="_id" 
+            class="plan-item"
+            bindtap="goToEditPlan"
+            data-plan="{{item}}">
+        <view class="plan-info">
+          <view class="plan-name">{{item.planName || '未命名的计划'}}</view>
+          <view class="plan-meta">
+            <view class="plan-date">{{item.startDate}} 至 {{item.endDate}}</view>
+            <view class="create-time">创建时间：{{item.createTime}}</view>
+          </view>
+        </view>
+        <view class="plan-progress">
+          <view class="progress-info">
+            <text class="progress-text">完成进度</text>
+            <text class="progress-percentage">{{item.progress}}%</text>
+          </view>
+          <view class="progress-bar">
+            <view class="progress-inner" style="width: {{item.progress}}%"></view>
+          </view>
+        </view>
+      </view>
+    </block>
+    <view wx:else class="empty-tip">
+      <text>暂无计划</text>
+    </view>
+  </view>
+</view> 

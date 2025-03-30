@@ -1,0 +1,152 @@
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.form-section {
+  width: 100%;
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 24rpx;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.date-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.date-item .label {
+  width: 140rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.date-item .picker {
+  flex: 1;
+  background-color: #f8f8f8;
+  padding: 20rpx 30rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.plan-name-input {
+  width: 100%;
+  height: 88rpx;
+  background-color: #f8f8f8;
+  padding: 0 30rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.task-input {
+  flex: 1;
+  background-color: #f8f8f8;
+  padding: 24rpx 30rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  min-height: 88rpx;
+  line-height: 40rpx;
+  box-sizing: border-box;
+}
+
+.deleteTask-btn {
+  padding: 16rpx 30rpx;
+  font-size: 28rpx;
+  color: #ff4d4f;
+  background-color: #fff1f0;
+  border-radius: 8rpx;
+  height: 88rpx;
+  line-height: 56rpx;
+  box-sizing: border-box;
+}
+
+.add-task-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
+  padding: 24rpx;
+  background-color: #f8f8f8;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  color: #07c160;
+  height: 88rpx;
+  box-sizing: border-box;
+}
+
+.add-icon {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.button-group {
+  display: flex;
+  gap: 20rpx;
+  justify-content: center;
+  margin-top: 40rpx;
+}
+
+.submit-btn, .delete-btn {
+  width: 180rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 32rpx;
+  border-radius: 24rpx;
+  border: none;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-btn {
+  background-color: #07c160;
+  color: #fff;
+}
+
+.delete-btn {
+  background-color: #ff4d4f;
+  color: #fff;
+}
+
+.submit-btn:active, .delete-btn:active {
+  opacity: 0.8;
+} 

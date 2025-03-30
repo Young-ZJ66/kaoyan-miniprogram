@@ -24,6 +24,13 @@
       </view>
       <text class="iconfont icon-arrow"></text>
     </view>
+    <view class="function-item" bindtap="onManagePlan">
+      <view class="function-left">
+        <text class="iconfont icon-plan"></text>
+        <text>计划管理</text>
+      </view>
+      <text class="iconfont icon-arrow"></text>
+    </view>
     <view class="function-item">
       <view class="function-left">
         <text class="iconfont icon-about"></text>
