@@ -79,7 +79,7 @@ Page({
   goToNewsDetail: function(e) {
     const { id } = e.currentTarget.dataset
     wx.navigateTo({
-      url: `/pages/news/detail/index?id=${id}`
+      url: `/pages/index/news/detail/index?id=${id}`
     })
   },
 
