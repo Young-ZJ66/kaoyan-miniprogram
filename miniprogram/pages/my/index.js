@@ -68,7 +68,7 @@ Page({
     if (!this.data.userInfo) {
       // 未登录状态，跳转到注册页面
       wx.navigateTo({
-        url: '/pages/register/index'
+        url: '/pages/my/register/index'
       });
     }
   },
@@ -78,7 +78,7 @@ Page({
     if (!this.data.userInfo) {
       // 未登录状态，跳转到注册页面
       wx.navigateTo({
-        url: '/pages/register/index'
+        url: '/pages/my/register/index'
       });
       return;
     }
@@ -318,7 +318,7 @@ Page({
           success: (modalRes) => {
             if (modalRes.confirm) {
               wx.navigateTo({
-                url: '/pages/register/index'
+                url: '/pages/my/register/index'
               });
             }
           }

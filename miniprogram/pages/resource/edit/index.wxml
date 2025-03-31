@@ -50,7 +50,6 @@
         </view>
       </block>
     </view>
+    <view class="submit-btn" bindtap="onSubmit">保存修改</view>
   </view>
-
-  <view class="submit-btn" bindtap="onSubmit">保存修改</view>
 </view> 

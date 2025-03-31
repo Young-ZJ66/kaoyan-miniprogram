@@ -9,7 +9,7 @@
     "pages/my/index",
     "pages/my/my-downloads/index",
     "pages/my/my-uploads/index",
-    "pages/register/index",
+    "pages/my/register/index",
     "pages/plan/index",
     "pages/plan/add/index",
     "pages/community/index",

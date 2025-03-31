@@ -9,6 +9,18 @@ Page({
     loading: false
   },
 
+  // 格式化时间
+  formatDate: function(date) {
+    if (!date) return '';
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    const hour = d.getHours().toString().padStart(2, '0');
+    const minute = d.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+  },
+
   onLoad: function() {
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
@@ -42,7 +54,12 @@ Page({
       }
     }).then(res => {
       if (res.result.success) {
-        const newList = this.data.page === 1 ? res.result.data : [...this.data.newsList, ...res.result.data]
+        // 处理时间格式
+        const processedData = res.result.data.map(item => ({
+          ...item,
+          createTime: this.formatDate(item.createTime)
+        }));
+        const newList = this.data.page === 1 ? processedData : [...this.data.newsList, ...processedData]
         this.setData({
           newsList: newList,
           hasMore: res.result.data.length === this.data.pageSize

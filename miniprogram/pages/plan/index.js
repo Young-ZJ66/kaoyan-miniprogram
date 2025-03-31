@@ -483,7 +483,7 @@ Page({
       return
     }
     
-    const windowHeight = wx.getSystemInfoSync().windowHeight
+    const windowHeight = wx.getWindowInfo().windowHeight
     const buttonY = this.data.buttonY
     const isMenuUp = buttonY > windowHeight / 2
 

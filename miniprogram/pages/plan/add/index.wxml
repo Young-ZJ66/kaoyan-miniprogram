@@ -48,10 +48,10 @@
         </view>
       </view>
     </view>
-  </view>
 
-  <!-- 提交按钮 -->
-  <view class="submit-section">
-    <button class="submit-btn" bindtap="onSubmit">创建计划</button>
+    <!-- 创建按钮 -->
+    <view class="button-wrapper">
+      <button class="submit-btn" bindtap="onSubmit">创建计划</button>
+    </view>
   </view>
 </view> 

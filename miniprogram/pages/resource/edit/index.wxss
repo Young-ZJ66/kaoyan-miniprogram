@@ -135,6 +135,6 @@
   background: #07c160;
   color: #fff;
   font-size: 32rpx;
-  border-radius: 8rpx;
+  border-radius: 24rpx;
   margin-top: 32rpx;
 } 

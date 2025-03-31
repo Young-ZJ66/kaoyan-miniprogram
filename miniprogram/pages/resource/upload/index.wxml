@@ -36,7 +36,8 @@
         <text class="delete-btn" bindtap="deleteFile">删除</text>
       </view>
     </view>
-  </view>
+    <view class="submit-btn" bindtap="submitUpload">上传资料</view>
+  </view> 
+</view>
 
-  <view class="submit-btn" bindtap="submitUpload">上传资料</view>
-</view> 
+  

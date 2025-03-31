@@ -5,6 +5,18 @@ Page({
     newsDetail: null
   },
 
+  // 格式化时间
+  formatDate: function(date) {
+    if (!date) return '';
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    const hour = d.getHours().toString().padStart(2, '0');
+    const minute = d.getMinutes().toString().padStart(2, '0');
+    return `${year}-${month}-${day} ${hour}:${minute}`;
+  },
+
   onLoad: function(options) {
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
@@ -37,7 +49,7 @@ Page({
     }).then(res => {
       console.log('获取资讯详情响应:', res)
       if (res.result.success) {
-        // 处理换行符
+        // 处理换行符和时间格式
         const newsDetail = res.result.data;
         if (newsDetail.content) {
           // 直接处理字符串中的\n
@@ -52,6 +64,8 @@ Page({
           newsDetail.content = nodes;
           console.log('处理后的内容:', newsDetail.content);
         }
+        // 处理时间格式
+        newsDetail.createTime = this.formatDate(newsDetail.createTime);
         this.setData({
           newsDetail: newsDetail
         })

@@ -43,6 +43,7 @@
   height: 100%;
   background-color: #07c160;
   transition: width 0.3s ease;
+  border-radius: 10rpx;
 }
 
 /* 日历样式 */
