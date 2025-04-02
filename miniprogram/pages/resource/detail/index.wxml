@@ -27,7 +27,7 @@
     <view class="download-btn" bindtap="downloadResource">下载资料</view>
     
     <!-- 编辑按钮，只有上传者才能看到 -->
-    <view class="edit-btn" bindtap="goToEdit" wx:if="{{isUploader}}">编辑资料</view>
+    <view class="edit-btn" bindtap="editResource" wx:if="{{isUploader}}">编辑资料</view>
     
     <!-- 删除按钮，只有上传者才能看到 -->
     <view class="delete-btn" bindtap="deleteResource" wx:if="{{isUploader}}">删除资料</view>
