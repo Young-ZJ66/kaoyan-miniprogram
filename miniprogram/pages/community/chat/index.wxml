@@ -4,20 +4,37 @@
     class="message-list" 
     scroll-y 
     scroll-into-view="{{scrollToMessage}}"
-    scroll-with-animation
+    scroll-with-animation="{{false}}"
     bindscrolltoupper="loadMoreMessages"
     enhanced="{{true}}"
+    enable-flex="{{true}}"
+    lower-threshold="{{150}}"
+    scroll-anchoring="{{true}}"
+    refresher-enabled="{{false}}"
+    bounces="{{false}}"
+    show-scrollbar="{{false}}"
   >
-    <view class="loading" wx:if="{{loading}}">
+    <!-- 上拉加载提示区域 -->
+    <view class="loading-area">
+      <view wx:if="{{loading && page > 1}}" class="loading-indicator">
+        <view class="loading-icon"></view>
+        <text>正在加载历史消息...</text>
+      </view>
+      <view wx:if="{{!loading && hasMore && messages.length > 0}}" class="load-more" bindtap="loadMoreMessages">
+        <text>点击加载更多</text>
+      </view>
+      <view wx:if="{{!hasMore && page > 1 && messages.length > 0}}" class="no-more">
+        <text>没有更多消息了</text>
+      </view>
+    </view>
+    
+    <!-- 初始加载中提示 -->
+    <view wx:if="{{loading && page === 1 && messages.length === 0}}" class="center-loading">
       <view class="loading-icon"></view>
       <text>加载中...</text>
     </view>
-    <view class="load-more" wx:if="{{hasMore && !loading}}" bindtap="loadMoreMessages">
-      <text>加载更多消息</text>
-    </view>
-    <view class="no-more" wx:if="{{!hasMore && page > 1 && !loading}}">
-      <text>没有更多消息了</text>
-    </view>
+    
+    <!-- 消息列表 -->
     <block wx:for="{{messages}}" wx:key="_id">
       <view class="message-item {{item.isMyMessage ? 'message-mine' : ''}}" id="msg-{{item._id}}">
         <image class="avatar" src="{{item.avatarUrl ? item.avatarUrl : '/images/avatar-default.png'}}" mode="aspectFill" binderror="handleAvatarError" data-id="{{item._id}}"></image>
@@ -30,6 +47,11 @@
         </view>
       </view>
     </block>
+    
+    <!-- 无消息提示 -->
+    <view wx:if="{{!loading && messages.length === 0}}" class="empty-state">
+      <text>暂无消息，开始聊天吧</text>
+    </view>
   </scroll-view>
 
   <!-- 输入区域 -->

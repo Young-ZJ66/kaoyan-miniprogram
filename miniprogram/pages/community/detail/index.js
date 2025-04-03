@@ -188,146 +188,145 @@ Page({
     });
   },
 
-  // 点赞/取消点赞
-  likePost: function () {
-    if (!this.data.userInfo) {
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
+  // 成功操作后设置刷新标记
+  setRefreshFlag: function() {
+    if (getApp().globalData) {
+      getApp().globalData.forumNeedsRefresh = true;
+    }
+  },
+
+  // 点赞/取消点赞帖子
+  toggleLike: function() {
+    // 检查用户是否登录
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录后再点赞',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/my/index'
+            });
+          }
+        }
       });
       return;
     }
 
-    // 尝试获取用户的openid
-    const openid = this.data.userInfo.openid || this.data.userInfo._openid || '';
-    if (!openid) {
-      wx.showToast({
-        title: '用户信息不完整',
-        icon: 'none'
-      });
-      return;
-    }
+    const id = this.data.postId;
+    if (!id) return;
 
-    if (this.likeInProgress) return;
-    this.likeInProgress = true;
-    
-    const post = this.data.post;
-    // 先更新UI状态
-    post.isLiked = !post.isLiked;
-    post.likes = post.isLiked ? (post.likes || 0) + 1 : (post.likes || 1) - 1;
-    
-    this.setData({
-      post: post
-    });
-
-    // 调用云函数
+    // 处理点赞/取消点赞
     wx.cloud.callFunction({
       name: 'forum',
       data: {
         type: 'likePost',
-        data: {
-          id: this.data.postId
-        }
+        data: { id }
       }
     }).then(res => {
-      // 已在UI上处理了状态，无需再次更新
-      
-      setTimeout(() => {
-        this.likeInProgress = false;
-      }, 500); // 点赞操作完成后，延迟500ms重置状态，防止重复点击
+      if (res.result.success) {
+        // 更新帖子点赞状态
+        const isLiked = !this.data.post.isLiked;
+        const likeCount = isLiked 
+          ? (this.data.post.likes || 0) + 1 
+          : Math.max(0, (this.data.post.likes || 0) - 1);
+        
+        this.setData({
+          post: {
+            ...this.data.post,
+            isLiked,
+            likes: likeCount
+          }
+        });
+        
+        // 设置刷新标记，让社区页面知道需要刷新数据
+        this.setRefreshFlag();
+      } else {
+        wx.showToast({
+          title: res.result.message || '操作失败',
+          icon: 'none'
+        });
+      }
     }).catch(err => {
-      // 发生错误，恢复原状态
-      post.isLiked = !post.isLiked;
-      post.likes = post.isLiked ? (post.likes || 0) + 1 : (post.likes || 1) - 1;
-      
-      this.setData({
-        post: post
-      });
-      
       wx.showToast({
         title: '操作失败',
         icon: 'none'
       });
-      
-      this.likeInProgress = false;
     });
   },
 
   // 提交评论
-  submitComment: function () {
-    if (!this.data.userInfo) {
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
-      return;
-    }
-
-    if (!this.data.newComment.trim()) {
+  submitComment: function() {
+    const { newComment, postId } = this.data;
+    
+    if (!newComment || !newComment.trim()) {
       wx.showToast({
         title: '评论内容不能为空',
         icon: 'none'
       });
       return;
     }
-
-    if (this.data.isCommenting) return;
     
-    this.setData({
-      isCommenting: true
+    // 检查用户是否登录
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录后再评论',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/my/index'
+            });
+          }
+        }
+      });
+      return;
+    }
+    
+    // 显示加载中
+    wx.showLoading({
+      title: '提交中...',
     });
-
+    
+    // 提交评论
     wx.cloud.callFunction({
       name: 'forum',
       data: {
-        type: 'commentPost',
+        type: 'addComment',
         data: {
-          id: this.data.postId,
-          content: this.data.newComment
+          postId,
+          content: newComment.trim()
         }
       }
     }).then(res => {
-      if (res.result && res.result.success) {
-        // 添加新评论到列表
-        const newCommentObj = {
-          _id: res.result.commentId || Date.now().toString(),
-          postId: this.data.postId,
-          content: this.data.newComment,
-          userInfo: this.data.userInfo,
-          createTime: this.formatTime(new Date())
-        };
-        
-        const comments = [newCommentObj, ...this.data.comments];
-        
-        // 更新帖子评论数
-        const post = this.data.post;
-        post.comments = (post.comments || 0) + 1;
-        
+      wx.hideLoading();
+      
+      if (res.result.success) {
+        // 清空评论框
         this.setData({
-          comments: comments,
-          newComment: '',
-          isCommenting: false,
-          post: post
+          newComment: ''
         });
+        
+        // 更新评论列表
+        this.loadComments();
+        
+        // 设置刷新标记，让社区页面知道需要刷新数据
+        this.setRefreshFlag();
         
         wx.showToast({
           title: '评论成功',
           icon: 'success'
         });
       } else {
-        this.setData({
-          isCommenting: false
-        });
-        
         wx.showToast({
-          title: '评论失败',
+          title: res.result.message || '评论失败',
           icon: 'none'
         });
       }
     }).catch(err => {
-      this.setData({
-        isCommenting: false
-      });
+      wx.hideLoading();
       
       wx.showToast({
         title: '评论失败',

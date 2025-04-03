@@ -17,7 +17,8 @@ App({
     }
 
     this.globalData = {
-      userInfo: null
+      userInfo: null,
+      forumNeedsRefresh: false // 社区页面是否需要刷新的标记
     };
   },
 });

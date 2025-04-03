@@ -24,6 +24,10 @@ exports.main = async (event, context) => {
       return await checkLikeStatus(data, context)
     case 'deletePost':
       return await deletePost(data, context)
+    case 'createPost':
+      return await createPost(data, context)
+    case 'addComment':
+      return await addComment(data, context)
     default:
       console.error('未知的操作类型:', type)
       return {
@@ -513,6 +517,178 @@ async function deletePost(data, context) {
     return {
       success: false,
       message: '操作失败'
+    }
+  }
+}
+
+// 创建帖子
+async function createPost(data, context) {
+  const wxContext = cloud.getWXContext()
+  const { content, images } = data
+
+  // 验证参数
+  if (!wxContext.OPENID) {
+    return {
+      success: false,
+      message: '未获取到用户身份信息'
+    }
+  }
+
+  if ((!content || content.trim() === '') && (!images || images.length === 0)) {
+    return {
+      success: false,
+      message: '帖子内容不能为空'
+    }
+  }
+
+  try {
+    // 获取用户信息
+    const userInfo = await db.collection('users').where({
+      _openid: wxContext.OPENID
+    }).get()
+
+    if (userInfo.data.length === 0) {
+      return {
+        success: false,
+        message: '用户不存在，请先完成注册'
+      }
+    }
+
+    const user = userInfo.data[0]
+
+    // 创建帖子
+    const postData = {
+      content: content || '',
+      images: images || [],
+      userInfo: {
+        nickName: user.nickName || '匿名用户',
+        avatarUrl: user.avatarUrl || '',
+        openid: wxContext.OPENID
+      },
+      createTime: db.serverDate(),
+      likes: 0,
+      comments: 0
+    }
+    
+    const result = await db.collection('posts').add({
+      data: postData
+    })
+
+    return {
+      success: true,
+      postId: result._id
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: '创建帖子失败：' + (error.message || '未知错误')
+    }
+  }
+}
+
+// 添加评论
+async function addComment(data, context) {
+  const wxContext = cloud.getWXContext()
+  const openid = wxContext.OPENID
+  
+  if (!openid) {
+    return {
+      success: false,
+      message: '未获取到用户身份信息'
+    }
+  }
+
+  try {
+    const { postId, content } = data
+    
+    if (!postId) {
+      return {
+        success: false,
+        message: '帖子ID不能为空'
+      }
+    }
+    
+    if (!content || content.trim() === '') {
+      return {
+        success: false,
+        message: '评论内容不能为空'
+      }
+    }
+    
+    // 检查帖子是否存在
+    try {
+      const postDoc = await db.collection('posts').doc(postId).get()
+      if (!postDoc.data) {
+        return {
+          success: false,
+          message: '帖子不存在'
+        }
+      }
+    } catch (postError) {
+      return {
+        success: false,
+        message: '帖子不存在或已被删除'
+      }
+    }
+    
+    // 获取用户信息
+    let userInfo = null
+    try {
+      const userResult = await db.collection('users').where({
+        _openid: openid
+      }).get()
+      
+      if (userResult.data.length === 0) {
+        return {
+          success: false,
+          message: '用户信息不存在'
+        }
+      }
+      
+      userInfo = userResult.data[0]
+    } catch (userError) {
+      return {
+        success: false,
+        message: '获取用户信息失败'
+      }
+    }
+    
+    // 添加评论
+    try {
+      const result = await db.collection('comments').add({
+        data: {
+          postId,
+          content: content.trim(),
+          userInfo: {
+            _openid: openid,
+            nickName: userInfo.nickName || '匿名用户',
+            avatarUrl: userInfo.avatarUrl || ''
+          },
+          createTime: db.serverDate()
+        }
+      })
+      
+      // 更新帖子评论数
+      await db.collection('posts').doc(postId).update({
+        data: {
+          comments: _.inc(1)
+        }
+      })
+      
+      return {
+        success: true,
+        commentId: result._id
+      }
+    } catch (addError) {
+      return {
+        success: false,
+        message: '添加评论失败'
+      }
+    }
+  } catch (error) {
+    return {
+      success: false,
+      message: '评论失败: ' + error.message
     }
   }
 } 

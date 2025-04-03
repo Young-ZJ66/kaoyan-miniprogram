@@ -1,7 +1,7 @@
 <view class="post-container">
   <!-- 顶部导航栏 -->
   <view class="top-nav">
-    <view class="publish-btn-top {{canPublish ? 'active' : ''}}" bindtap="publishPost">发表</view>
+    <view class="publish-btn-top {{canPublish ? 'active' : ''}}" bindtap="submitPost">发表</view>
   </view>
 
   <!-- 内容区域 -->

@@ -66,21 +66,26 @@
             </view>
           </view>
           <view class="post-footer">
-            <!-- 删除按钮，仅对自己的帖子显示 -->
-            <view wx:if="{{item.isOwner}}" class="delete-btn" catchtap="deletePost" data-id="{{item._id}}">
-              <image src="/images/delete.png" class="action-icon delete-icon"></image>
+            <!-- 左侧区域: 删除按钮 -->
+            <view class="post-footer-left">
+              <view wx:if="{{item.isOwner}}" class="delete-btn" catchtap="deletePost" data-id="{{item._id}}">
+                <image src="/images/delete.png" class="action-icon delete-icon"></image>
+              </view>
             </view>
             
-            <!-- 点赞按钮 -->
-            <view class="action-item" catchtap="likePost" data-id="{{item._id}}">
-              <image src="{{item.isLiked ? '/images/like-active.png' : '/images/like.png'}}" class="action-icon"></image>
-              <text class="{{item.isLiked ? 'liked-text' : ''}}">{{item.likeCount}}</text>
-            </view>
-            
-            <!-- 评论按钮 -->
-            <view class="action-item" catchtap="goToPostDetail" data-id="{{item._id}}">
-              <image src="/images/comment.png" class="action-icon"></image>
-              <text>{{item.commentCount}}</text>
+            <!-- 右侧区域: 点赞和评论按钮 -->
+            <view class="post-footer-right">
+              <!-- 点赞按钮 -->
+              <view class="action-item" catchtap="likePost" data-id="{{item._id}}">
+                <image src="{{item.isLiked ? '/images/like-active.png' : '/images/like.png'}}" class="action-icon"></image>
+                <text class="{{item.isLiked ? 'liked-text' : ''}}">{{item.likeCount}}</text>
+              </view>
+              
+              <!-- 评论按钮 -->
+              <view class="action-item" catchtap="goToPostDetail" data-id="{{item._id}}">
+                <image src="/images/comment.png" class="action-icon"></image>
+                <text>{{item.commentCount}}</text>
+              </view>
             </view>
           </view>
         </view>

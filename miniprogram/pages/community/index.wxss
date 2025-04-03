@@ -217,14 +217,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10rpx 0;
 }
 
-/* 删除按钮容器，保持在左侧 */
+/* 左侧区域 */
+.post-footer-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* 右侧区域 */
+.post-footer-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* 删除按钮 */
 .delete-btn {
   display: flex;
   align-items: center;
-  padding: 8rpx;
-  margin-right: auto; /* 确保删除按钮在左侧 */
+  padding: 8rpx 0;
 }
 
 .delete-icon {
@@ -232,18 +246,29 @@
   height: 32rpx;
 }
 
+/* 操作按钮 */
+.action-item {
+  display: flex;
+  align-items: center;
+  margin-left: 30rpx; /* 操作按钮之间的间距 */
+  padding: 8rpx 0;
+}
+
+.action-icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 6rpx;
+}
+
+.liked-text {
+  color: #ff6b6b;
+}
+
 /* 点赞按钮样式 */
 .like-action {
   position: relative;
   display: flex;
   align-items: center;
-}
-
-/* 操作按钮区域，保持在右侧 */
-.action-item {
-  display: flex;
-  align-items: center;
-  margin-left: 30rpx; /* 操作按钮之间的间距 */
 }
 
 .action-item .iconfont {
@@ -318,13 +343,6 @@
   font-size: 26rpx;
 }
 
-/* 操作图标样式 */
-.action-icon {
-  width: 36rpx;
-  height: 36rpx;
-  margin-right: 8rpx;
-}
-
 .action-item {
   display: flex;
   align-items: center;
@@ -332,19 +350,14 @@
 }
 
 .action-item text {
-  font-size: 24rpx;
+  font-size: 26rpx;
   color: #999;
-}
-
-/* 点赞状态样式 */
-.liked-text {
-  color: #3399ff !important;
 }
 
 .buttons-row {
   display: flex;
   align-items: center;
-  margin-top: 8rpx;
+  margin-top: 12rpx;
 }
 
 .view-detail {
