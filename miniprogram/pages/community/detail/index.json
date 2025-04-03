@@ -1,6 +1,5 @@
 {
-  "usingComponents": {},
-  "navigationBarTitleText": "社区",
+  "navigationBarTitleText": "帖子详情",
   "enablePullDownRefresh": true,
   "backgroundTextStyle": "dark"
-}
+} 

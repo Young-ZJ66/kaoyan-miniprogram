@@ -1,0 +1,55 @@
+<view class="container" style="height: calc(100vh - {{keyboardHeight}}px);">
+  <!-- 消息列表 -->
+  <scroll-view 
+    class="message-list" 
+    scroll-y 
+    scroll-into-view="{{scrollToMessage}}"
+    scroll-with-animation
+    bindscrolltoupper="loadMoreMessages"
+    enhanced="{{true}}"
+  >
+    <view class="loading" wx:if="{{loading}}">
+      <view class="loading-icon"></view>
+      <text>加载中...</text>
+    </view>
+    <view class="load-more" wx:if="{{hasMore && !loading}}" bindtap="loadMoreMessages">
+      <text>加载更多消息</text>
+    </view>
+    <view class="no-more" wx:if="{{!hasMore && page > 1 && !loading}}">
+      <text>没有更多消息了</text>
+    </view>
+    <block wx:for="{{messages}}" wx:key="_id">
+      <view class="message-item {{item.isMyMessage ? 'message-mine' : ''}}" id="msg-{{item._id}}">
+        <image class="avatar" src="{{item.avatarUrl ? item.avatarUrl : '/images/avatar-default.png'}}" mode="aspectFill" binderror="handleAvatarError" data-id="{{item._id}}"></image>
+        <view class="message-content">
+          <view class="nickname">{{item.nickName}}</view>
+          <view class="bubble-wrapper">
+            <view class="message-bubble">{{item.content}}</view>
+            <view class="message-time">{{item.createTime}}</view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <!-- 输入区域 -->
+  <view class="input-section">
+    <textarea
+      class="message-input"
+      value="{{inputMessage}}"
+      bindinput="onInput"
+      auto-height
+      show-confirm-bar="{{false}}"
+      cursor-spacing="20"
+      maxlength="500"
+      placeholder="请输入消息"
+      placeholder-class="input-placeholder"
+      adjust-position="{{false}}"
+      bindkeyboardheightchange="onKeyboardHeightChange"
+      bindfocus="onInputFocus"
+    />
+    <view class="send-btn {{inputMessage ? 'active' : ''}}" bindtap="sendMessage">
+      发送
+    </view>
+  </view>
+</view> 

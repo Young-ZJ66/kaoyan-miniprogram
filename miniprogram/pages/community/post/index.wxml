@@ -1,0 +1,33 @@
+<view class="post-container">
+  <!-- 顶部导航栏 -->
+  <view class="top-nav">
+    <view class="publish-btn-top {{canPublish ? 'active' : ''}}" bindtap="publishPost">发表</view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content-area">
+    <!-- 文本输入区域 -->
+    <textarea 
+      class="content-input" 
+      placeholder="分享新鲜事..." 
+      placeholder-class="placeholder"
+      value="{{content}}"
+      bindinput="onContentInput"
+      maxlength="500"
+      show-confirm-bar="{{false}}"
+      auto-height
+    ></textarea>
+
+    <!-- 图片上传区域 -->
+    <view class="image-upload">
+      <view class="image-item" wx:for="{{images}}" wx:key="*this">
+        <image src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}"></image>
+        <view class="delete-btn" catchtap="deleteImage" data-index="{{index}}">×</view>
+      </view>
+      <view class="upload-btn" bindtap="chooseImage" wx:if="{{images.length < 9}}">
+        <image src="/images/add-image.png" mode="aspectFit" class="add-icon"></image>
+        <text>照片</text>
+      </view>
+    </view>
+  </view>
+</view> 

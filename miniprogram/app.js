@@ -11,6 +11,8 @@ App({
         //   如不填则使用默认环境（第一个创建的环境）
         env: 'cloud1-9gbyqyqyb5f2cb69',
         traceUser: true,
+        // 添加以下参数以增强稳定性
+        timeout: 15000, // 设置较长的超时时间
       });
     }
 

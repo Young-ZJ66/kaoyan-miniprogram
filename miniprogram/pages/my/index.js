@@ -421,6 +421,27 @@ Page({
             title: '已退出登录',
             icon: 'success'
           });
+          
+          // 通知论坛页面刷新
+          const pages = getCurrentPages();
+          const communityPage = pages.find(page => page.route === 'pages/community/index');
+          if (communityPage) {
+            // 如果社区页面在页面栈中，则通知它重置
+            communityPage.setData({
+              page: 1,
+              posts: [],
+              hasMore: true
+            });
+            communityPage.loadPosts();
+          }
+          
+          // 如果当前在帖子详情页，返回到首页
+          const currentPage = pages[pages.length - 1];
+          if (currentPage.route === 'pages/community/detail/index') {
+            wx.switchTab({
+              url: '/pages/index/index'
+            });
+          }
         }
       }
     });

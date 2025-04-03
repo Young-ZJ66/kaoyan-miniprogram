@@ -1,3 +1,329 @@
+/* community/index.wxss */
 .container {
-  padding: 20rpx;
+  padding: 30rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 通用section样式 */
+.section-header {
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+
+.section-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+  display: block;
+}
+
+/* 聊天室模块样式 */
+.chat-room-section {
+  background-color: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  width: 690rpx;
+  box-sizing: border-box;
+}
+
+.chat-room-content {
+  display: flex;
+  align-items: center;
+  margin-top: 20rpx;
+}
+
+.chat-room-icon {
+  width: 70rpx;
+  height: 70rpx;
+  background-color: transparent;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  overflow: hidden;
+}
+
+.chat-room-icon image {
+  width: 50rpx;
+  height: 50rpx;
+  object-fit: cover;
+}
+
+.chat-room-icon .iconfont {
+  font-size: 40rpx;
+  color: #07c160;
+}
+
+.chat-room-info {
+  flex: 1;
+}
+
+.chat-room-name {
+  font-size: 32rpx;
+  color: #333;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.chat-room-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.chat-room-arrow .iconfont {
+  font-size: 32rpx;
+  color: #999;
+}
+
+/* 论坛模块样式 */
+.forum-section {
+  background-color: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  width: 690rpx;
+  box-sizing: border-box;
+}
+
+.forum-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30rpx;
+}
+
+/* 发帖按钮样式 */
+.post-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #07c160;
+  color: #fff;
+  padding: 12rpx 24rpx;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+}
+
+.post-btn .iconfont {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+/* 帖子列表样式 */
+.post-list {
+  margin-top: 20rpx;
+}
+
+.post-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.post-item:last-child {
+  border-bottom: none;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.avatar {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 30rpx;
+  margin-right: 16rpx;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.nickname {
+  font-size: 28rpx;
+  color: #333;
+  display: block;
+  margin-bottom: 4rpx;
+}
+
+.time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.post-content {
+  margin-bottom: 16rpx;
+}
+
+.post-content .title {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.content-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.post-content .content {
+  font-size: 28rpx;
+  color: #666;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  white-space: normal;
+  max-height: 120rpx;
+}
+
+.post-content .content-full {
+  -webkit-line-clamp: unset;
+  display: block;
+  max-height: none;
+}
+
+.view-more {
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: #3399ff;
+  display: inline-block;
+  padding: 4rpx 0;
+  margin-right: 20rpx;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  margin-left: 30rpx;
+}
+
+.action-item .iconfont {
+  font-size: 32rpx;
+  color: #999;
+  margin-right: 8rpx;
+}
+
+.action-item .iconfont.liked {
+  color: #ff4d4f;
+}
+
+.action-item text:last-child {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 空状态提示 */
+.empty-tip {
+  text-align: center;
+  padding: 40rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 帖子图片样式 */
+.post-images {
+  margin-top: 20rpx;
+  width: 100%;
+}
+
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.image-grid image {
+  width: calc((100% - 20rpx) / 3); /* 三等分宽度减去间距 */
+  height: 200rpx;
+  border-radius: 8rpx;
+  object-fit: cover;
+  margin-right: 10rpx;
+  margin-bottom: 10rpx;
+  box-sizing: border-box;
+}
+
+/* 调整每行最后一个元素的右边距 */
+.image-grid image:nth-child(3n) {
+  margin-right: 0;
+}
+
+/* 单张图片样式 */
+.image-grid image:only-child {
+  width: 66%;
+  height: 300rpx;
+}
+
+/* 两张图片样式 */
+.image-grid image:first-child:nth-last-child(2),
+.image-grid image:last-child:nth-child(2) {
+  width: calc((100% - 10rpx) / 2);
+  height: 240rpx;
+}
+
+/* 下拉刷新和加载更多 */
+.load-more {
+  text-align: center;
+  padding: 20rpx 0;
+  color: #999;
+  font-size: 26rpx;
+}
+
+/* 操作图标样式 */
+.action-icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 8rpx;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  margin-left: 30rpx;
+}
+
+.action-item text {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 点赞状态样式 */
+.liked-text {
+  color: #3399ff !important;
+}
+
+.buttons-row {
+  display: flex;
+  align-items: center;
+  margin-top: 8rpx;
+}
+
+.view-detail {
+  font-size: 26rpx;
+  color: #ff6b81;
+  display: inline-block;
+  padding: 4rpx 0;
 } 

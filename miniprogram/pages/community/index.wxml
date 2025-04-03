@@ -1,4 +1,88 @@
 <view class="container">
-  <text>社区功能正在开发中</text>
-  <text>请关注后续版本</text>
+  <!-- 聊天室模块 -->
+  <view class="chat-room-section" bindtap="goToChatRoom">
+    <view class="section-header">
+      <text class="section-title">实时交流</text>
+    </view>
+    <view class="chat-room-content">
+      <view class="chat-room-icon">
+        <image src="/images/chatroom.png" mode="aspectFill"></image>
+      </view>
+      <view class="chat-room-info">
+        <text class="chat-room-name">考研交流群</text>
+      </view>
+      <view class="chat-room-arrow">
+        <text class="iconfont icon-arrow-right"></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 论坛模块 -->
+  <view class="forum-section">
+    <view class="forum-header">
+      <view class="section-header">
+        <text class="section-title">论坛</text>
+        <text class="section-desc">分享你的学习心得</text>
+      </view>
+      <view class="post-btn" bindtap="navigateToPost">
+        <text class="iconfont icon-edit"></text>
+        <text>发帖</text>
+      </view>
+    </view>
+    <view class="post-list">
+      <block wx:if="{{posts.length > 0}}">
+        <view class="post-item" wx:for="{{posts}}" wx:key="_id" bindtap="goToPostDetail" data-id="{{item._id}}">
+          <view class="post-header">
+            <image class="avatar" src="{{item.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
+            <view class="user-info">
+              <text class="nickname">{{item.userInfo.nickName || '匿名用户'}}</text>
+              <text class="time">{{item.createTime}}</text>
+            </view>
+          </view>
+          <view class="post-content">
+            <text class="title" wx:if="{{item.title}}">{{item.title}}</text>
+            <view class="content-wrapper">
+              <text class="content {{item.showFull ? 'content-full' : ''}}" user-select="true">{{item.content}}</text>
+              <view class="buttons-row">
+                <text wx:if="{{item.content.length > 70 && !item.showFull}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">展开全文</text>
+                <text wx:if="{{item.showFull}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">收起</text>
+              </view>
+            </view>
+            
+            <!-- 图片显示区域 -->
+            <view class="post-images" wx:if="{{item.images && item.images.length > 0}}">
+              <view class="image-grid">
+                <image 
+                  wx:for="{{item.images}}" 
+                  wx:for-item="image" 
+                  wx:key="*this" 
+                  src="{{image}}" 
+                  mode="aspectFill" 
+                  catchtap="previewImage" 
+                  data-urls="{{item.images}}" 
+                  data-current="{{image}}"
+                ></image>
+              </view>
+            </view>
+          </view>
+          <view class="post-footer">
+            <view class="action-item" catchtap="likePost" data-id="{{item._id}}">
+              <image src="{{item.isLiked ? '/images/like-active.png' : '/images/like.png'}}" class="action-icon"></image>
+              <text class="{{item.isLiked ? 'liked-text' : ''}}">{{item.likeCount}}</text>
+            </view>
+            <view class="action-item" catchtap="goToPostDetail" data-id="{{item._id}}">
+              <image src="/images/comment.png" class="action-icon"></image>
+              <text>{{item.commentCount}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+      <view class="empty-tip" wx:else>
+        暂无帖子，快来发帖吧~
+      </view>
+    </view>
+    <view class="load-more" wx:if="{{hasMore}}" bindtap="loadMore">
+      {{loading ? '加载中...' : '加载更多'}}
+    </view>
+  </view>
 </view> 

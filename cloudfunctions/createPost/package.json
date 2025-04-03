@@ -1,7 +1,7 @@
 {
-  "name": "getOpenId",
+  "name": "createPost",
   "version": "1.0.0",
-  "description": "获取用户openid云函数",
+  "description": "创建社区帖子的云函数",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
