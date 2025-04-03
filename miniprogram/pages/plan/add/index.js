@@ -153,13 +153,63 @@ Page({
         })
       }
     }).catch(err => {
-      console.error('保存计划失败：', err)
+      wx.hideLoading()
+      
       wx.showToast({
         title: '保存失败',
         icon: 'none'
       })
-    }).finally(() => {
-      wx.hideLoading()
     })
-  }
+  },
+
+  // 保存计划
+  saveChanges: function() {
+    // 验证表单数据
+    if (!this.validateForm()) {
+      return;
+    }
+
+    const plan = this.getFormData();
+    
+    wx.showLoading({
+      title: '保存中...'
+    });
+
+    wx.cloud.callFunction({
+      name: 'createPlan',
+      data: plan
+    }).then(res => {
+      wx.hideLoading();
+      
+      if (res.result && res.result.success) {
+        wx.showToast({
+          title: '保存成功',
+          icon: 'success'
+        });
+        
+        // 延迟返回上一页，让用户看到成功提示
+        setTimeout(() => {
+          wx.navigateBack();
+        }, 1500);
+      } else {
+        wx.showToast({
+          title: '保存失败',
+          icon: 'none'
+        });
+      }
+    }).catch(err => {
+      wx.hideLoading();
+      
+      wx.showToast({
+        title: '保存失败',
+        icon: 'none'
+      });
+    });
+  },
+
+  // 保存计划表单（去除旧函数，使用新函数）
+  savePlan: function() {
+    // 使用saveChanges函数
+    this.saveChanges();
+  },
 }) 

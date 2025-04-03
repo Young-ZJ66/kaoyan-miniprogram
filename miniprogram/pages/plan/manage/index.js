@@ -16,56 +16,55 @@ Page({
 
   // 加载计划列表
   loadPlans: function() {
-    wx.showLoading({
-      title: '加载中...',
-    })
-
+    this.setData({ loading: true });
+    
     wx.cloud.callFunction({
       name: 'getPlans'
     }).then(res => {
       if (res.result.success) {
-        const plans = res.result.data || []
-        // 计算每个计划的进度并格式化时间
-        const plansWithProgress = plans.map(plan => {
-          let totalTasks = 0
-          let completedTasks = 0
-
-          if (plan && Array.isArray(plan.tasks)) {
-            plan.tasks.forEach(task => {
-              if (task.tasks && Array.isArray(task.tasks)) {
-                totalTasks += task.tasks.length
-                completedTasks += task.tasks.filter(t => t.completed).length
+        const plans = res.result.data || [];
+        
+        // 处理计划数据，计算进度
+        const processedPlans = plans.map(plan => {
+          // 计算计划进度
+          let totalTasks = 0;
+          let completedTasks = 0;
+          
+          if (plan.tasks && plan.tasks.length > 0) {
+            plan.tasks.forEach(dateTask => {
+              if (dateTask.tasks && dateTask.tasks.length > 0) {
+                totalTasks += dateTask.tasks.length;
+                completedTasks += dateTask.tasks.filter(task => task.completed).length;
               }
-            })
+            });
           }
-
-          const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
-
+          
+          const progress = totalTasks > 0 ? Math.floor((completedTasks / totalTasks) * 100) : 0;
+          
           return {
             ...plan,
-            progress,
-            createTime: this.formatTime(plan.createTime)
-          }
-        })
-
+            progress
+          };
+        });
+        
         this.setData({
-          plans: plansWithProgress
-        })
+          plans: processedPlans,
+          loading: false
+        });
       } else {
+        this.setData({ loading: false });
         wx.showToast({
           title: '获取计划失败',
           icon: 'none'
-        })
+        });
       }
     }).catch(err => {
-      console.error('获取计划失败：', err)
+      this.setData({ loading: false });
       wx.showToast({
         title: '获取计划失败',
         icon: 'none'
-      })
-    }).finally(() => {
-      wx.hideLoading()
-    })
+      });
+    });
   },
 
   // 格式化时间

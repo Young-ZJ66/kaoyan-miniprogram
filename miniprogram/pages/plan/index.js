@@ -20,14 +20,13 @@ Page({
 
   onLoad: function() {
     if (!wx.cloud) {
-      console.error('请使用 2.2.3 或以上的基础库以使用云能力')
-      return
+      // 请使用 2.2.3 或以上的基础库以使用云能力
+    } else {
+      wx.cloud.init({
+        env: 'cloud1-9gbyqyqyb5f2cb69',
+        traceUser: true,
+      })
     }
-    
-    wx.cloud.init({
-      env: 'cloud1-9gbyqyqyb5f2cb69',
-      traceUser: true,
-    })
 
     // 从本地存储读取按钮位置
     const buttonPosition = wx.getStorageSync('planButtonPosition')
@@ -105,7 +104,6 @@ Page({
     }).then(res => {
       if (res.result.success) {
         const plans = res.result.data || []
-        console.log('获取到的计划数据：', plans)  // 添加调试日志
         
         // 先设置计划数据
         this.setData({
@@ -129,7 +127,6 @@ Page({
         })
       }
     }).catch(err => {
-      console.error('获取计划失败：', err)
       wx.showToast({
         title: '获取计划失败',
         icon: 'none'
@@ -161,7 +158,6 @@ Page({
     })
 
     const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
-    console.log('进度计算：', { totalTasks, completedTasks, progress })  // 添加调试日志
     this.setData({ totalProgress: progress })
   },
 
@@ -345,18 +341,14 @@ Page({
       return
     }
 
-    console.log('加载日期任务：', date)  // 添加调试日志
-
     // 获取所有计划中该日期的任务
     let allTasks = []
     this.data.plans.forEach(plan => {
       // 确保 plan 和 plan.tasks 存在，且日期在计划范围内
       if (plan && Array.isArray(plan.tasks) && 
           date >= plan.startDate && date <= plan.endDate) {
-        console.log('检查计划的任务：', plan.startDate, plan.endDate, plan.tasks)
         const tasks = plan.tasks.filter(task => task.date === date)
         if (tasks.length > 0) {
-          console.log('找到任务：', tasks)
           // 将任务数组展开到 allTasks 中
           const tasksWithMeta = tasks[0].tasks.map((task, index) => ({
             ...task,
@@ -369,17 +361,10 @@ Page({
       }
     })
 
-    console.log('该日期的所有任务：', allTasks)
-
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const selectedDate = new Date(date)
-    selectedDate.setHours(0, 0, 0, 0)
-    
     // 处理任务列表
     const processedTasks = allTasks.map(task => ({
       ...task,
-      canCheck: selectedDate <= today
+      canCheck: this.isToday(new Date(date))
     }))
 
     this.setData({
@@ -456,7 +441,6 @@ Page({
         })
       }
     }).catch(err => {
-      console.error('更新任务状态失败：', err)
       wx.showToast({
         title: '操作失败',
         icon: 'none'
