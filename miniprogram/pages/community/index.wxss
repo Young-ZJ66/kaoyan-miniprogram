@@ -326,4 +326,28 @@
   color: #ff6b81;
   display: inline-block;
   padding: 4rpx 0;
+}
+
+/* 悬浮发帖按钮样式 */
+.floating-btn {
+  position: fixed;
+  right: 40rpx;
+  bottom: 40rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background-color: #07c160;
+  color: #fff;
+  font-size: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  transition: all 0.3s;
+}
+
+.floating-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 3rpx 8rpx rgba(0, 0, 0, 0.2);
 } 

@@ -85,4 +85,7 @@
       {{loading ? '加载中...' : '加载更多'}}
     </view>
   </view>
+
+  <!-- 悬浮发帖按钮 -->
+  <view class="floating-btn" bindtap="navigateToPost">+</view>
 </view> 
