@@ -1,7 +1,7 @@
 <view class="container">
   <view class="user-info" bindtap="{{isLoggedIn ? 'goToEdit' : 'handleLogin'}}">
     <view class="avatar-wrapper">
-      <image class="avatar" src="{{userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
+      <image class="avatar" src="{{userInfo.localAvatarPath || userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill" binderror="handleAvatarError"></image>
     </view>
     <view class="user-text">
       <view class="nickname">{{userInfo.nickName || '未登录'}}</view>

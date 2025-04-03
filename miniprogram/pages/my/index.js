@@ -18,6 +18,9 @@ Page({
         userInfo,
         isLoggedIn: true
       });
+      
+      // 检查本地头像
+      this.checkLocalAvatar(userInfo);
     } else {
       // 未登录状态，清除可能存在的旧数据
       this.clearLoginData();
@@ -42,6 +45,9 @@ Page({
         userInfo,
         isLoggedIn: true
       });
+      
+      // 检查本地头像
+      this.checkLocalAvatar(userInfo);
     } else {
       // 未登录状态，清除可能存在的旧数据
       this.clearLoginData();
@@ -288,7 +294,6 @@ Page({
 
       // 1. 获取微信登录凭证
       const loginRes = await wx.login();
-      console.log('微信登录结果：', loginRes);
 
       if (!loginRes.code) {
         throw new Error('获取登录凭证失败');
@@ -338,12 +343,45 @@ Page({
         expireTime
       });
       
-      // 5. 保存用户信息
+      // 5. 下载头像并保存到本地
+      if (userInfo.avatarUrl && userInfo.avatarUrl.startsWith('cloud://')) {
+        try {
+          // 下载云存储中的头像
+          const avatarRes = await wx.cloud.downloadFile({
+            fileID: userInfo.avatarUrl
+          });
+          
+          if (avatarRes.tempFilePath) {
+            // 保存头像到本地存储
+            const fs = wx.getFileSystemManager();
+            const localAvatarPath = `${wx.env.USER_DATA_PATH}/avatar_${userInfo._openid}.jpg`;
+            
+            try {
+              fs.writeFileSync(
+                localAvatarPath,
+                fs.readFileSync(avatarRes.tempFilePath),
+                'binary'
+              );
+              
+              // 更新用户信息中的头像路径为本地路径
+              userInfo.localAvatarPath = localAvatarPath;
+            } catch (fsErr) {
+              console.error('保存头像到本地失败:', fsErr);
+              // 失败时仍使用云存储路径
+            }
+          }
+        } catch (dlErr) {
+          console.error('下载头像失败:', dlErr);
+          // 下载失败时继续使用云存储路径
+        }
+      }
+      
+      // 6. 保存用户信息
       wx.setStorageSync('userInfo', userInfo);
       wx.setStorageSync('isLoggedIn', true);
       wx.setStorageSync('loginTime', Date.now());
 
-      // 6. 更新页面状态
+      // 7. 更新页面状态
       this.setData({ 
         userInfo,
         isLoggedIn: true
@@ -355,7 +393,7 @@ Page({
         icon: 'success'
       });
 
-      // 7. 记录登录日志
+      // 8. 记录登录日志
       await this.logLogin(userInfo._id);
 
     } catch (err) {
@@ -377,7 +415,9 @@ Page({
   // 记录登录日志
   async logLogin(userId) {
     try {
-      const deviceInfo = wx.getSystemInfoSync();
+      const systemInfo = wx.getDeviceInfo();
+      const appBaseInfo = wx.getAppBaseInfo();
+      
       await wx.cloud.callFunction({
         name: 'logOperation',
         data: {
@@ -385,11 +425,11 @@ Page({
           userId,
           timestamp: Date.now(),
           deviceInfo: {
-            model: deviceInfo.model,
-            system: deviceInfo.system,
-            platform: deviceInfo.platform,
-            version: deviceInfo.version,
-            SDKVersion: deviceInfo.SDKVersion
+            model: systemInfo.model,
+            system: systemInfo.system,
+            platform: systemInfo.platform,
+            version: appBaseInfo.version,
+            SDKVersion: appBaseInfo.SDKVersion
           }
         }
       });
@@ -469,11 +509,88 @@ Page({
       });
       return;
     }
-
-    // 已登录，跳转到修改信息页面
+    
+    // 跳转到修改信息页面
     wx.navigateTo({
       url: '/pages/my/edit/index'
     });
+  },
+
+  // 处理头像加载错误
+  handleAvatarError(e) {
+    // 如果本地头像加载失败，尝试使用云存储头像或默认头像
+    const userInfo = this.data.userInfo;
+    if (userInfo && userInfo.localAvatarPath) {
+      // 移除本地路径，使用云存储路径
+      const updatedUserInfo = {...userInfo};
+      delete updatedUserInfo.localAvatarPath;
+      
+      this.setData({
+        userInfo: updatedUserInfo
+      });
+      
+      // 从本地存储中更新信息
+      wx.setStorageSync('userInfo', updatedUserInfo);
+      
+      // 尝试重新下载头像（在后台进行，不阻塞UI）
+      this.downloadAvatarToLocal(userInfo.avatarUrl, userInfo._openid).catch(err => {
+        console.error('重新下载头像失败:', err);
+      });
+    }
+  },
+  
+  // 下载头像到本地存储的工具函数
+  async downloadAvatarToLocal(cloudPath, openid) {
+    if (!cloudPath || !cloudPath.startsWith('cloud://')) {
+      return Promise.reject(new Error('无效的云存储路径'));
+    }
+    
+    try {
+      // 下载云存储中的头像
+      const avatarRes = await wx.cloud.downloadFile({
+        fileID: cloudPath
+      });
+      
+      if (avatarRes.tempFilePath) {
+        // 保存头像到本地存储
+        const fs = wx.getFileSystemManager();
+        const localAvatarPath = `${wx.env.USER_DATA_PATH}/avatar_${openid}.jpg`;
+        
+        fs.writeFileSync(
+          localAvatarPath,
+          fs.readFileSync(avatarRes.tempFilePath),
+          'binary'
+        );
+        
+        // 更新用户信息
+        const userInfo = wx.getStorageSync('userInfo');
+        if (userInfo) {
+          userInfo.localAvatarPath = localAvatarPath;
+          wx.setStorageSync('userInfo', userInfo);
+          
+          // 更新页面显示
+          if (this.data.userInfo && this.data.userInfo._openid === openid) {
+            this.setData({
+              userInfo: userInfo
+            });
+          }
+        }
+        
+        return localAvatarPath;
+      }
+    } catch (err) {
+      console.error('下载或保存头像失败:', err);
+      return Promise.reject(err);
+    }
+  },
+  
+  // 修改个人资料
+  onEditProfile() {
+    if (this.data.isLoggedIn) {
+      this.goToEdit();
+    } else {
+      this.handleLogin();
+    }
   },
 
   // 格式化时间
@@ -509,5 +626,32 @@ Page({
     wx.navigateTo({
       url: '/pages/plan/manage/index'
     })
+  },
+
+  // 检查本地头像
+  checkLocalAvatar(userInfo) {
+    if (!userInfo || !userInfo.avatarUrl || !userInfo._openid) return;
+    
+    // 如果没有本地头像路径或本地头像文件不存在，尝试下载
+    if (!userInfo.localAvatarPath) {
+      // 在后台下载头像，不阻塞UI渲染
+      this.downloadAvatarToLocal(userInfo.avatarUrl, userInfo._openid).catch(err => {
+        // 下载失败不影响用户体验，只记录错误
+        console.error('下载头像到本地失败:', err);
+      });
+    } else {
+      // 检查本地文件是否存在
+      const fs = wx.getFileSystemManager();
+      try {
+        fs.accessSync(userInfo.localAvatarPath);
+        // 文件存在，无需操作
+      } catch (e) {
+        // 文件不存在，重新下载
+        console.log('本地头像文件不存在，重新下载');
+        this.downloadAvatarToLocal(userInfo.avatarUrl, userInfo._openid).catch(err => {
+          console.error('重新下载头像失败:', err);
+        });
+      }
+    }
   },
 }) 
