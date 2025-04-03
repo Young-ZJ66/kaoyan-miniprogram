@@ -12,6 +12,8 @@
   margin-bottom: 20rpx;
   width: 100%;
   box-sizing: border-box;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .form-item {
@@ -121,6 +123,8 @@
   padding: 20rpx 0;
   margin: 0;
   line-height: 1.5;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .submit-btn::after {
@@ -131,12 +135,13 @@
   width: 100% !important;
   background-color: #fff;
   color: #ff4d4f;
-  border: 1rpx solid #ff4d4f;
   border-radius: 24rpx;
   font-size: 32rpx;
   padding: 20rpx 0;
   margin: 0;
   line-height: 1.5;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .delete-btn::after {

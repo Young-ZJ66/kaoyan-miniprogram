@@ -13,6 +13,8 @@
   border-radius: 24rpx;
   margin-bottom: 20rpx;
   box-sizing: border-box;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .progress-info {
@@ -54,6 +56,8 @@
   border-radius: 24rpx;
   margin-bottom: 20rpx;
   box-sizing: border-box;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .calendar-header {
@@ -164,6 +168,8 @@
   border-radius: 24rpx;
   margin-bottom: 20rpx;
   box-sizing: border-box;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .tasks-header {
@@ -226,6 +232,9 @@
   width: 100rpx;
   height: 100rpx;  /* 改为与主按钮一样的高度 */
   pointer-events: auto;
+  border-radius: 100%;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .menu-container {

@@ -84,14 +84,21 @@ Page({
         
         // 格式化帖子数据
         const formattedPosts = res.result.data.map(post => {
-          // 检查是否已点赞（简单实现，实际应从后端获取）
+          // 判断帖子是否为当前用户发布
+          // 需要同时检查 _openid 字段和 userInfo.openid 字段
+          const postOpenid = post._openid || (post.userInfo && post.userInfo.openid)
+          const isOwner = myOpenid && postOpenid === myOpenid
+          
+          console.log('帖子ID:', post._id, '发布者:', postOpenid, '当前用户:', myOpenid, '是否为作者:', isOwner)
+          
           return {
             ...post,
             createTime: this.formatTime(post.createTime),
             likeCount: post.likes || 0,
             commentCount: post.comments || 0,
             isLiked: false, // 默认未点赞，实际状态将通过checkLikeStatus更新
-            showFull: false // 新增showFull属性
+            showFull: false, // 控制内容展开收起
+            isOwner: isOwner // 添加判断是否为发布者
           }
         })
         
@@ -116,6 +123,7 @@ Page({
         title: '获取帖子失败',
         icon: 'none'
       })
+      console.error('获取帖子失败:', err)
     }).finally(() => {
       this.setData({ loading: false })
       wx.hideLoading()
@@ -468,5 +476,55 @@ Page({
     this.setData({
       posts: updatedPosts
     });
+  },
+
+  // 删除帖子
+  deletePost: function(e) {
+    const id = e.currentTarget.dataset.id
+    if (!id) return
+    
+    wx.showModal({
+      title: '确认删除',
+      content: '删除后无法恢复，确定要删除该帖子吗？',
+      success: (res) => {
+        if (res.confirm) {
+          wx.showLoading({
+            title: '删除中...',
+          })
+          
+          wx.cloud.callFunction({
+            name: 'forum',
+            data: {
+              type: 'deletePost',
+              data: { id }
+            }
+          }).then(res => {
+            if (res.result.success) {
+              // 删除成功，从本地列表中移除该帖子
+              const posts = this.data.posts.filter(post => post._id !== id)
+              this.setData({ posts })
+              
+              wx.showToast({
+                title: '删除成功',
+                icon: 'success'
+              })
+            } else {
+              wx.showToast({
+                title: res.result.message || '删除失败',
+                icon: 'none'
+              })
+            }
+          }).catch(err => {
+            console.error('删除帖子失败:', err)
+            wx.showToast({
+              title: '删除失败',
+              icon: 'none'
+            })
+          }).finally(() => {
+            wx.hideLoading()
+          })
+        }
+      }
+    })
   }
 }) 

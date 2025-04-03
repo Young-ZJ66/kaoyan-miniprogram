@@ -12,6 +12,8 @@
   margin-bottom: 20rpx;
   width: 100%;
   box-sizing: border-box;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .form-item {
@@ -122,6 +124,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .submit-btn::after {

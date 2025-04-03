@@ -114,6 +114,8 @@
   position: relative;
   width: fit-content;
   max-width: 100%;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .message-mine .message-bubble {

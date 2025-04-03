@@ -17,6 +17,8 @@
   background-color: #fff;
   border-radius: 24rpx;
   margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .category-item {
@@ -44,7 +46,8 @@
   border-radius: 24rpx;
   padding: 24rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
 }
 
 .resource-title-row {

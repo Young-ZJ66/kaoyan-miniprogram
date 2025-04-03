@@ -22,6 +22,8 @@ exports.main = async (event, context) => {
       return await commentPost(data, context)
     case 'checkLikeStatus':
       return await checkLikeStatus(data, context)
+    case 'deletePost':
+      return await deletePost(data, context)
     default:
       console.error('未知的操作类型:', type)
       return {
@@ -349,6 +351,168 @@ async function checkLikeStatus(data, context) {
     return {
       success: false,
       message: '检查点赞状态失败: ' + error.message
+    }
+  }
+}
+
+// 删除帖子
+async function deletePost(data, context) {
+  const wxContext = cloud.getWXContext()
+  const openid = wxContext.OPENID
+  
+  console.log('删除帖子函数调用 - 上下文:', { openid: wxContext.OPENID })
+  
+  if (!openid) {
+    console.error('未获取到用户openid')
+    return {
+      success: false,
+      message: '未获取到用户身份信息'
+    }
+  }
+
+  try {
+    const { id } = data
+    if (!id) {
+      console.error('帖子ID为空')
+      return {
+        success: false,
+        message: '帖子ID不能为空'
+      }
+    }
+
+    console.log('准备删除帖子, ID:', id, 'OPENID:', openid)
+    
+    // 检查帖子是否存在且是否为该用户发布的
+    let post = null
+    try {
+      const postDoc = await db.collection('posts').doc(id).get()
+      post = postDoc.data
+      
+      if (!post) {
+        console.error('帖子不存在, ID:', id)
+        return {
+          success: false,
+          message: '帖子不存在'
+        }
+      }
+      
+      // 验证帖子是否为当前用户发布的
+      // 判断依据：检查 _openid 字段或 userInfo.openid 字段
+      const postOpenid = post._openid || (post.userInfo && post.userInfo.openid)
+      
+      console.log('帖子发布者openid:', postOpenid, '当前用户openid:', openid)
+      
+      if (!postOpenid || postOpenid !== openid) {
+        console.error('无权删除他人帖子, 帖子发布者:', postOpenid, '当前用户:', openid)
+        return {
+          success: false,
+          message: '您没有权限删除此帖子'
+        }
+      }
+      
+      console.log('找到帖子并验证权限通过:', post._id)
+    } catch (postError) {
+      console.error('查询帖子失败:', postError)
+      return {
+        success: false,
+        message: '帖子不存在或已被删除'
+      }
+    }
+    
+    // 开始删除操作
+    const transaction = await db.startTransaction()
+    
+    try {
+      // 1. 删除帖子相关的点赞记录
+      await transaction.collection('likes_users').where({
+        postId: id
+      }).remove()
+      console.log('已删除帖子相关的点赞记录')
+      
+      // 2. 删除帖子相关的评论
+      await transaction.collection('comments').where({
+        postId: id
+      }).remove()
+      console.log('已删除帖子相关的评论')
+      
+      // 3. 删除帖子本身
+      await transaction.collection('posts').doc(id).remove()
+      console.log('已删除帖子本身')
+      
+      // 4. 如果帖子有图片，删除云存储中的图片
+      if (post.images && post.images.length > 0) {
+        try {
+          console.log('准备删除帖子图片，图片列表:', post.images)
+          
+          // 云函数中删除文件需要处理文件路径
+          const fileIDs = []
+          for (const imageUrl of post.images) {
+            // 检查图片URL的格式
+            if (typeof imageUrl !== 'string') {
+              console.error('无效的图片URL格式:', imageUrl)
+              continue
+            }
+            
+            let fileID = imageUrl
+            // 如果图片URL已经是cloud://开头的文件ID格式，直接使用
+            if (!imageUrl.startsWith('cloud://')) {
+              console.error('图片URL不是cloud://格式，无法删除:', imageUrl)
+              continue
+            }
+            
+            fileIDs.push(fileID)
+          }
+          
+          if (fileIDs.length > 0) {
+            console.log('将删除以下文件:', fileIDs)
+            const deleteResult = await cloud.deleteFile({
+              fileList: fileIDs
+            })
+            
+            console.log('删除图片结果:', deleteResult)
+            
+            // 检查删除结果
+            if (deleteResult.fileList) {
+              deleteResult.fileList.forEach(file => {
+                if (file.status !== 0) {
+                  console.error('删除图片失败:', file.fileID, file.errMsg)
+                } else {
+                  console.log('成功删除图片:', file.fileID)
+                }
+              })
+            }
+          } else {
+            console.log('没有找到有效的文件ID，跳过删除图片步骤')
+          }
+        } catch (fileError) {
+          console.error('删除图片过程中出错:', fileError)
+          // 图片删除失败不影响整体事务
+        }
+      } else {
+        console.log('帖子没有图片，跳过删除图片步骤')
+      }
+      
+      // 提交事务
+      await transaction.commit()
+      
+      return {
+        success: true,
+        message: '帖子删除成功'
+      }
+    } catch (error) {
+      // 如果出错，回滚事务
+      await transaction.rollback()
+      console.error('删除帖子失败:', error)
+      return {
+        success: false,
+        message: '删除帖子失败'
+      }
+    }
+  } catch (error) {
+    console.error('删除帖子操作失败:', error)
+    return {
+      success: false,
+      message: '操作失败'
     }
   }
 } 
