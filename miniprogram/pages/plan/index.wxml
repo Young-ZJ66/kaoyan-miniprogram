@@ -66,8 +66,11 @@
                   y="{{buttonY}}" 
                   bindchange="onButtonMove"
                   out-of-bounds="{{false}}"
-                  damping="20"
-                  friction="2">
+                  inertia="{{false}}"
+                  damping="40"
+                  friction="5"
+                  scale="{{false}}"
+                  animation="{{false}}">
       <view class="menu-container {{isMenuOpen ? 'menu-open' : ''}} {{isMenuUp ? 'menu-up' : ''}}">
         <!-- 按钮列表 -->
         <view class="menu-list" wx:if="{{isMenuOpen}}">

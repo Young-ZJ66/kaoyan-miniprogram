@@ -11,8 +11,8 @@ Page({
     selectedDateTasks: [],
     currentPlan: null,
     plans: [],  // 存储所有计划
-    buttonX: wx.getWindowInfo().windowWidth - 65,  // 默认靠右
-    buttonY: wx.getWindowInfo().windowHeight - 100,  // 默认靠底部
+    buttonX: 0,  // 初始值为0，将在onLoad中设置
+    buttonY: 0,  // 初始值为0，将在onLoad中设置
     isLoggedIn: false,  // 添加登录状态标记
     isMenuOpen: false,  // 控制按钮列表的显示状态
     isMenuUp: false  // 添加控制菜单展开方向的状态
@@ -28,14 +28,8 @@ Page({
       })
     }
 
-    // 从本地存储读取按钮位置
-    const buttonPosition = wx.getStorageSync('planButtonPosition')
-    if (buttonPosition) {
-      this.setData({
-        buttonX: buttonPosition.x,
-        buttonY: buttonPosition.y
-      })
-    }
+    // 设置按钮位置
+    this.initButtonPosition()
 
     // 初始化时只检查登录状态，不显示提示
     this.checkLoginStatus(false)
@@ -47,8 +41,12 @@ Page({
         selected: 1
       })
     }
+    
     // 页面显示时检查登录状态并显示提示
     this.checkLoginStatus(true)
+    
+    // 避免重复设置按钮位置，防止闪烁
+    // 不在onShow中重新设置按钮位置，让initButtonPosition函数只在onLoad时初始化一次
   },
 
   // 检查登录状态
@@ -501,13 +499,25 @@ Page({
 
   // 按钮移动时保存位置
   onButtonMove: function(e) {
-    const { x, y } = e.detail
-    this.setData({
-      buttonX: x,
-      buttonY: y
-    })
-    // 保存按钮位置到本地存储
-    wx.setStorageSync('planButtonPosition', { x, y })
+    const { x, y, source } = e.detail
+    
+    // 只有当用户主动触摸移动按钮时才更新位置
+    if (source === 'touch') {
+      // 记录最后的位置，用于防止闪烁
+      this._lastMovePosition = { x, y }
+      
+      // 更新UI
+      this.setData({
+        buttonX: x,
+        buttonY: y
+      })
+      
+      // 异步保存位置到存储，避免频繁I/O操作
+      clearTimeout(this._savePositionTimer)
+      this._savePositionTimer = setTimeout(() => {
+        wx.setStorageSync('planButtonPosition', { x, y })
+      }, 200)
+    }
   },
 
   // 跳转到添加计划页面
@@ -550,5 +560,54 @@ Page({
     wx.navigateTo({
       url: '/pages/plan/manage/index'
     })
+  },
+
+  // 初始化按钮位置，确保在不同场景下都能正确显示
+  initButtonPosition: function() {
+    try {
+      // 从本地存储读取按钮位置
+      const buttonPosition = wx.getStorageSync('planButtonPosition')
+      const windowInfo = wx.getWindowInfo()
+      
+      // 保存窗口信息到实例变量，以便其他函数使用
+      this._windowInfo = windowInfo
+      
+      let x, y
+      
+      if (buttonPosition && typeof buttonPosition.x === 'number' && typeof buttonPosition.y === 'number') {
+        // 确保位置在屏幕范围内，并留出边距
+        const maxX = windowInfo.windowWidth - 50
+        const maxY = windowInfo.windowHeight - 50
+        
+        x = Math.max(0, Math.min(buttonPosition.x, maxX))
+        y = Math.max(0, Math.min(buttonPosition.y, maxY))
+      } else {
+        // 使用默认位置
+        x = windowInfo.windowWidth - 65
+        y = windowInfo.windowHeight - 100
+        
+        // 保存默认位置到本地存储
+        wx.setStorageSync('planButtonPosition', { x, y })
+      }
+      
+      // 记录位置，以便在移动按钮后恢复
+      this._lastMovePosition = { x, y }
+      
+      // 一次性设置初始位置
+      this.setData({
+        buttonX: x,
+        buttonY: y
+      })
+      
+    } catch (error) {
+      console.error('初始化按钮位置失败', error)
+      const windowInfo = wx.getWindowInfo()
+      
+      // 出错时设置一个保底位置
+      this.setData({
+        buttonX: windowInfo.windowWidth - 65,
+        buttonY: windowInfo.windowHeight - 100
+      })
+    }
   }
 }) 
