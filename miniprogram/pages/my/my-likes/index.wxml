@@ -1,0 +1,70 @@
+<view class="container">
+  <view class="post-list">
+    <block wx:if="{{posts.length > 0}}">
+      <view class="post-item" wx:for="{{posts}}" wx:key="_id" bindtap="goToPostDetail" data-id="{{item._id}}">
+        <view class="post-header">
+          <image class="avatar" src="{{item.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
+          <view class="user-info">
+            <text class="nickname">{{item.userInfo.nickName || '匿名用户'}}</text>
+            <text class="time">{{item.createTime}}</text>
+          </view>
+        </view>
+        <view class="post-content">
+          <text class="title" wx:if="{{item.title}}">{{item.title}}</text>
+          <view class="content-wrapper">
+            <text class="content {{item.showFull ? 'content-full' : ''}}" user-select="true">{{item.content}}</text>
+            <view class="buttons-row">
+              <text wx:if="{{item.content.length > 70 && !item.showFull}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">展开全文</text>
+              <text wx:if="{{item.showFull}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">收起</text>
+            </view>
+          </view>
+          
+          <!-- 图片显示区域 -->
+          <view class="post-images" wx:if="{{item.images && item.images.length > 0}}">
+            <view class="image-grid">
+              <image 
+                wx:for="{{item.images}}" 
+                wx:for-item="image" 
+                wx:key="*this" 
+                src="{{image}}" 
+                mode="aspectFill" 
+                catchtap="previewImage" 
+                data-urls="{{item.images}}" 
+                data-current="{{image}}"
+              ></image>
+            </view>
+          </view>
+        </view>
+        <view class="post-footer">
+          <!-- 左侧区域: 删除按钮 -->
+          <view class="post-footer-left">
+            <view wx:if="{{item.isOwner}}" class="delete-btn" catchtap="deletePost" data-id="{{item._id}}">
+              <image src="/images/delete.png" class="action-icon delete-icon"></image>
+            </view>
+          </view>
+          
+          <!-- 右侧区域: 点赞和评论按钮 -->
+          <view class="post-footer-right">
+            <!-- 点赞按钮 -->
+            <view class="action-item" catchtap="likePost" data-id="{{item._id}}">
+              <image src="{{item.isLiked ? '/images/like-active.png' : '/images/like.png'}}" class="action-icon"></image>
+              <text class="{{item.isLiked ? 'liked-text' : ''}}">{{item.likeCount}}</text>
+            </view>
+            
+            <!-- 评论按钮 -->
+            <view class="action-item" catchtap="goToPostDetail" data-id="{{item._id}}">
+              <image src="/images/comment.png" class="action-icon"></image>
+              <text>{{item.commentCount}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+    <view class="empty-tip" wx:else>
+      您还没有点赞过帖子~
+    </view>
+  </view>
+  <view class="load-more" wx:if="{{hasMore}}" bindtap="loadMore">
+    {{loading ? '加载中...' : '加载更多'}}
+  </view>
+</view> 

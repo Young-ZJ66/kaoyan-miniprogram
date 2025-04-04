@@ -8,32 +8,55 @@ const _ = db.command
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  const { type, data } = event
-  console.log('调用forum云函数，类型:', type, '数据:', data)
+  try {
+    const { type, data } = event
+    const wxContext = cloud.getWXContext()
+    console.log('云函数入口，获取到的上下文：', wxContext)
 
-  switch (type) {
-    case 'getPosts':
-      return await getPosts(data)
-    case 'getPostDetail':
-      return await getPostDetail(data)
-    case 'likePost':
-      return await likePost(data, context)
-    case 'commentPost':
-      return await commentPost(data, context)
-    case 'checkLikeStatus':
-      return await checkLikeStatus(data, context)
-    case 'deletePost':
-      return await deletePost(data, context)
-    case 'createPost':
-      return await createPost(data, context)
-    case 'addComment':
-      return await addComment(data, context)
-    default:
-      console.error('未知的操作类型:', type)
-      return {
-        success: false,
-        message: '未知的操作类型'
+    // 在需要用户身份的操作中检查 OPENID
+    if (['addPost', 'deletePost', 'toggleLike', 'addComment', 'getMyPosts', 'getLikedPosts'].includes(type)) {
+      if (!wxContext.OPENID) {
+        console.error('获取用户OPENID失败')
+        return {
+          success: false,
+          message: '请先登录'
+        }
       }
+    }
+
+    // 根据操作类型执行不同的函数
+    switch (type) {
+      case 'getPosts':
+        return await getPosts(data)
+      case 'getPostDetail':
+        return await getPostDetail(data, wxContext.OPENID)
+      case 'addPost':
+        return await addPost(data, wxContext.OPENID)
+      case 'deletePost':
+        return await deletePost(data, wxContext.OPENID)
+      case 'toggleLike':
+        return await toggleLike(data, wxContext.OPENID)
+      case 'addComment':
+        return await addComment(data, wxContext.OPENID)
+      case 'getMyPosts':
+        return await getMyPosts(data, wxContext.OPENID)
+      case 'getLikedPosts':
+        return await getLikedPosts(data, wxContext.OPENID)
+      case 'checkLikeStatus':
+        return await checkLikeStatus(data, wxContext.OPENID)
+      default:
+        return {
+          success: false,
+          message: '未知的操作类型'
+        }
+    }
+  } catch (err) {
+    console.error('云函数执行失败：', err)
+    return {
+      success: false,
+      message: '云函数执行失败',
+      error: err
+    }
   }
 }
 
@@ -65,7 +88,7 @@ async function getPosts(data) {
 }
 
 // 获取帖子详情
-async function getPostDetail(data) {
+async function getPostDetail(data, openid) {
   try {
     const { id } = data
     if (!id) {
@@ -99,11 +122,8 @@ async function getPostDetail(data) {
 }
 
 // 点赞帖子
-async function likePost(data, context) {
-  const wxContext = cloud.getWXContext()
-  const openid = wxContext.OPENID
-  
-  console.log('点赞函数调用 - 上下文:', { openid: wxContext.OPENID })
+async function toggleLike(data, openid) {
+  console.log('点赞函数调用 - 上下文:', { openid })
   
   if (!openid) {
     console.error('未获取到用户openid')
@@ -238,10 +258,7 @@ async function likePost(data, context) {
 }
 
 // 评论帖子
-async function commentPost(data, context) {
-  const wxContext = cloud.getWXContext()
-  const openid = wxContext.OPENID
-  
+async function addComment(data, openid) {
   if (!openid) {
     return {
       success: false,
@@ -250,8 +267,8 @@ async function commentPost(data, context) {
   }
 
   try {
-    const { id, content } = data
-    if (!id) {
+    const { postId, content } = data
+    if (!postId) {
       return {
         success: false,
         message: '帖子ID不能为空'
@@ -265,7 +282,7 @@ async function commentPost(data, context) {
       }
     }
 
-    console.log('评论帖子, ID:', id, 'OPENID:', openid, '内容:', content)
+    console.log('评论帖子, ID:', postId, 'OPENID:', openid, '内容:', content)
     
     // 获取用户信息
     const userInfo = await db.collection('users').where({
@@ -283,7 +300,7 @@ async function commentPost(data, context) {
     
     // 添加评论
     const comment = {
-      postId: id,
+      postId: postId,
       content,
       userInfo: {
         nickName: user.nickName || '匿名用户',
@@ -298,7 +315,7 @@ async function commentPost(data, context) {
     })
 
     // 更新帖子的评论数
-    await db.collection('posts').doc(id).update({
+    await db.collection('posts').doc(postId).update({
       data: {
         comments: _.inc(1)
       }
@@ -317,8 +334,8 @@ async function commentPost(data, context) {
 }
 
 // 检查点赞状态
-async function checkLikeStatus(data, context) {
-  const { postIds, openid } = data
+async function checkLikeStatus(data, openid) {
+  const { postIds } = data
   
   console.log('检查点赞状态 - 参数:', { postIdsCount: postIds?.length, openid })
   
@@ -360,11 +377,8 @@ async function checkLikeStatus(data, context) {
 }
 
 // 删除帖子
-async function deletePost(data, context) {
-  const wxContext = cloud.getWXContext()
-  const openid = wxContext.OPENID
-  
-  console.log('删除帖子函数调用 - 上下文:', { openid: wxContext.OPENID })
+async function deletePost(data, openid) {
+  console.log('删除帖子函数调用 - 上下文:', { openid })
   
   if (!openid) {
     console.error('未获取到用户openid')
@@ -522,19 +536,22 @@ async function deletePost(data, context) {
 }
 
 // 创建帖子
-async function createPost(data, context) {
-  const wxContext = cloud.getWXContext()
-  const { content, images } = data
-
+async function addPost(data, openid) {
+  console.log('创建帖子函数调用，用户ID:', openid, '数据:', data)
+  
   // 验证参数
-  if (!wxContext.OPENID) {
+  if (!openid) {
+    console.error('未获取到用户openid')
     return {
       success: false,
       message: '未获取到用户身份信息'
     }
   }
 
+  const { content, images } = data
+
   if ((!content || content.trim() === '') && (!images || images.length === 0)) {
+    console.error('帖子内容和图片均为空')
     return {
       success: false,
       message: '帖子内容不能为空'
@@ -543,11 +560,13 @@ async function createPost(data, context) {
 
   try {
     // 获取用户信息
+    console.log('查询用户信息, openid:', openid)
     const userInfo = await db.collection('users').where({
-      _openid: wxContext.OPENID
+      _openid: openid
     }).get()
 
     if (userInfo.data.length === 0) {
+      console.error('用户不存在')
       return {
         success: false,
         message: '用户不存在，请先完成注册'
@@ -555,30 +574,35 @@ async function createPost(data, context) {
     }
 
     const user = userInfo.data[0]
+    console.log('获取到用户信息:', user.nickName)
 
-    // 创建帖子
+    // 创建帖子，添加_openid字段以便正确查询
     const postData = {
       content: content || '',
       images: images || [],
+      _openid: openid,  // 添加_openid字段
       userInfo: {
         nickName: user.nickName || '匿名用户',
         avatarUrl: user.avatarUrl || '',
-        openid: wxContext.OPENID
+        openid: openid
       },
       createTime: db.serverDate(),
       likes: 0,
       comments: 0
     }
     
+    console.log('准备创建帖子，数据:', postData)
     const result = await db.collection('posts').add({
       data: postData
     })
+    console.log('帖子创建成功, ID:', result._id)
 
     return {
       success: true,
       postId: result._id
     }
   } catch (error) {
+    console.error('创建帖子失败:', error)
     return {
       success: false,
       message: '创建帖子失败：' + (error.message || '未知错误')
@@ -586,109 +610,239 @@ async function createPost(data, context) {
   }
 }
 
-// 添加评论
-async function addComment(data, context) {
-  const wxContext = cloud.getWXContext()
-  const openid = wxContext.OPENID
-  
-  if (!openid) {
-    return {
-      success: false,
-      message: '未获取到用户身份信息'
-    }
-  }
-
+// 获取我发布的帖子
+async function getMyPosts(data, openid) {
   try {
-    const { postId, content } = data
+    const { page = 1, pageSize = 10 } = data
     
-    if (!postId) {
-      return {
-        success: false,
-        message: '帖子ID不能为空'
-      }
-    }
+    console.log(`获取我的帖子，用户:${openid}, 页码:${page}, 每页数量:${pageSize}`)
     
-    if (!content || content.trim() === '') {
-      return {
-        success: false,
-        message: '评论内容不能为空'
-      }
-    }
-    
-    // 检查帖子是否存在
-    try {
-      const postDoc = await db.collection('posts').doc(postId).get()
-      if (!postDoc.data) {
-        return {
-          success: false,
-          message: '帖子不存在'
+    // 构建查询条件 - 支持两种数据结构
+    // 1. 新版帖子直接用_openid字段
+    // 2. 旧版帖子用userInfo.openid字段
+    const query = db.collection('posts')
+      .where(_.or([
+        {
+          '_openid': openid  // 查询当前用户发布的帖子（新版数据结构）
+        },
+        {
+          'userInfo.openid': openid  // 查询当前用户发布的帖子（旧版数据结构）
         }
-      }
-    } catch (postError) {
-      return {
-        success: false,
-        message: '帖子不存在或已被删除'
-      }
-    }
+      ]))
+      .orderBy('createTime', 'desc')  // 按创建时间倒序
+    
+    // 获取总数
+    const countResult = await query.count()
+    const total = countResult.total
+    console.log(`用户${openid}的帖子总数: ${total}`)
+    
+    // 查询帖子
+    const skip = (page - 1) * pageSize
+    const postsResult = await query.skip(skip).limit(pageSize).get()
+    const posts = postsResult.data
+    
+    console.log(`查询到的帖子:`, posts)
     
     // 获取用户信息
-    let userInfo = null
-    try {
-      const userResult = await db.collection('users').where({
-        _openid: openid
-      }).get()
+    let userIds = [];
+    posts.forEach(post => {
+      // 处理两种数据结构
+      if (post._openid) {
+        userIds.push(post._openid);
+      } else if (post.userInfo && post.userInfo.openid) {
+        userIds.push(post.userInfo.openid);
+      }
+    });
+    
+    userIds = [...new Set(userIds)]; // 去重
+    
+    let usersMap = {};
+    if (userIds.length > 0) {
+      const usersResult = await db.collection('users')
+        .where({
+          _openid: db.command.in(userIds)
+        })
+        .get()
       
-      if (userResult.data.length === 0) {
+      usersResult.data.forEach(user => {
+        usersMap[user._openid] = user
+      })
+    }
+    
+    // 处理结果，关联用户信息
+    const formattedPosts = posts.map(post => {
+      // 针对两种数据结构采用不同处理方式
+      if (post.userInfo && post.userInfo.openid) {
+        // 已有用户信息的情况
+        return post;
+      } else {
+        // 只有_openid的情况
+        const user = usersMap[post._openid] || {}
         return {
-          success: false,
-          message: '用户信息不存在'
+          ...post,
+          userInfo: {
+            _id: user._id || '',
+            nickName: user.nickName || '未知用户',
+            avatarUrl: user.avatarUrl || '',
+            openid: post._openid
+          }
         }
       }
-      
-      userInfo = userResult.data[0]
-    } catch (userError) {
+    })
+    
+    return {
+      success: true,
+      data: formattedPosts,
+      total,
+      hasMore: total > (page * pageSize)
+    }
+  } catch (err) {
+    console.error('获取我的帖子失败：', err)
+    return {
+      success: false,
+      message: '获取我的帖子失败',
+      error: err
+    }
+  }
+}
+
+// 获取我点赞的帖子
+async function getLikedPosts(data, openid) {
+  try {
+    const { page = 1, pageSize = 10 } = data
+    
+    console.log(`获取我点赞的帖子，用户:${openid}, 页码:${page}, 每页数量:${pageSize}`)
+    
+    // 先获取用户点赞记录
+    const likesResult = await db.collection('likes_users')
+      .where({
+        openid: openid  // 查询当前用户的点赞记录
+      })
+      .orderBy('createTime', 'desc')  // 按点赞时间倒序
+      .get()
+    
+    const likes = likesResult.data
+    console.log(`获取到点赞记录数量:`, likes.length)
+    
+    // 获取点赞的帖子ID列表
+    const postIds = likes.map(like => like.postId)
+    
+    if (postIds.length === 0) {
       return {
-        success: false,
-        message: '获取用户信息失败'
+        success: true,
+        data: [],
+        total: 0,
+        hasMore: false
       }
     }
     
-    // 添加评论
-    try {
-      const result = await db.collection('comments').add({
-        data: {
-          postId,
-          content: content.trim(),
-          userInfo: {
-            _openid: openid,
-            nickName: userInfo.nickName || '匿名用户',
-            avatarUrl: userInfo.avatarUrl || ''
-          },
-          createTime: db.serverDate()
-        }
-      })
-      
-      // 更新帖子评论数
-      await db.collection('posts').doc(postId).update({
-        data: {
-          comments: _.inc(1)
-        }
-      })
-      
+    // 分页计算
+    const startIndex = (page - 1) * pageSize
+    const endIndex = Math.min(startIndex + pageSize, postIds.length)
+    const currentPagePostIds = postIds.slice(startIndex, endIndex)
+    
+    if (currentPagePostIds.length === 0) {
       return {
         success: true,
-        commentId: result._id
-      }
-    } catch (addError) {
-      return {
-        success: false,
-        message: '添加评论失败'
+        data: [],
+        total: postIds.length,
+        hasMore: false
       }
     }
-  } catch (error) {
+    
+    // 查询帖子
+    const postsResult = await db.collection('posts')
+      .where({
+        _id: db.command.in(currentPagePostIds)
+      })
+      .get()
+    
+    const posts = postsResult.data
+    console.log(`查询到的帖子数量:`, posts.length)
+    
+    // 根据点赞时间排序
+    const postsMap = {}
+    posts.forEach(post => {
+      postsMap[post._id] = post
+    })
+    
+    const sortedPosts = currentPagePostIds
+      .map(id => postsMap[id])
+      .filter(post => post); // 过滤掉已删除的帖子
+    
+    // 获取用户信息
+    let userIds = [];
+    sortedPosts.forEach(post => {
+      // 处理两种数据结构
+      if (post._openid) {
+        userIds.push(post._openid);
+      } else if (post.userInfo && post.userInfo.openid) {
+        userIds.push(post.userInfo.openid);
+      }
+    });
+    
+    userIds = [...new Set(userIds)]; // 去重
+    console.log(`需要查询的用户IDs:`, userIds)
+    
+    let usersMap = {};
+    if (userIds.length > 0) {
+      const usersResult = await db.collection('users')
+        .where({
+          _openid: db.command.in(userIds)
+        })
+        .get()
+      
+      console.log(`查询到的用户数量:`, usersResult.data.length)
+      usersResult.data.forEach(user => {
+        usersMap[user._openid] = user
+      })
+    }
+    
+    // 处理结果，关联用户信息
+    const formattedPosts = sortedPosts.map(post => {
+      // 针对两种数据结构采用不同处理方式
+      if (post.userInfo && post.userInfo.openid && post.userInfo.nickName && post.userInfo.avatarUrl) {
+        // 已有完整用户信息的情况
+        return post;
+      } else if (post.userInfo && post.userInfo.openid) {
+        // 有部分用户信息的情况，补充完整
+        const user = usersMap[post.userInfo.openid] || {}
+        return {
+          ...post,
+          userInfo: {
+            ...post.userInfo,
+            _id: user._id || post.userInfo._id || '',
+            nickName: user.nickName || post.userInfo.nickName || '未知用户',
+            avatarUrl: user.avatarUrl || post.userInfo.avatarUrl || ''
+          }
+        }
+      } else {
+        // 只有_openid的情况
+        const user = usersMap[post._openid] || {}
+        return {
+          ...post,
+          userInfo: {
+            _id: user._id || '',
+            nickName: user.nickName || '未知用户',
+            avatarUrl: user.avatarUrl || '',
+            openid: post._openid
+          }
+        }
+      }
+    })
+    
+    return {
+      success: true,
+      data: formattedPosts,
+      total: postIds.length,
+      hasMore: endIndex < postIds.length
+    }
+  } catch (err) {
+    console.error('获取我点赞的帖子失败：', err)
     return {
       success: false,
-      message: '评论失败: ' + error.message
+      message: '获取我点赞的帖子失败',
+      error: err
     }
   }
 } 

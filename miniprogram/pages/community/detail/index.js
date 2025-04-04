@@ -78,9 +78,17 @@ Page({
       if (res.data) {
         // 格式化时间
         const createTime = this.formatTime(res.data.createTime);
+        
+        // 获取当前用户信息，判断是否为帖子发布者
+        const userInfo = this.data.userInfo || {};
+        const userOpenid = userInfo.openid || userInfo._openid || '';
+        const postOpenid = res.data._openid || (res.data.userInfo && res.data.userInfo.openid);
+        const isOwner = userOpenid && postOpenid && userOpenid === postOpenid;
+        
         const post = {
           ...res.data,
-          createTime: createTime
+          createTime: createTime,
+          isOwner: isOwner  // 添加标识，表示当前用户是否为发帖人
         };
         
         this.setData({
@@ -221,7 +229,7 @@ Page({
     wx.cloud.callFunction({
       name: 'forum',
       data: {
-        type: 'likePost',
+        type: 'toggleLike',
         data: { id }
       }
     }).then(res => {
@@ -268,6 +276,14 @@ Page({
       return;
     }
     
+    if (!postId) {
+      wx.showToast({
+        title: '帖子ID不存在',
+        icon: 'none'
+      });
+      return;
+    }
+    
     // 检查用户是否登录
     const userInfo = wx.getStorageSync('userInfo');
     if (!userInfo) {
@@ -290,13 +306,15 @@ Page({
       title: '提交中...',
     });
     
+    console.log('提交评论：', { postId, content: newComment.trim() });
+    
     // 提交评论
     wx.cloud.callFunction({
       name: 'forum',
       data: {
         type: 'addComment',
         data: {
-          postId,
+          postId: postId,
           content: newComment.trim()
         }
       }
@@ -410,6 +428,58 @@ Page({
     this.setData({
       newComment: '',
       isCommenting: false
+    });
+  },
+
+  // 删除帖子
+  deletePost: function() {
+    wx.showModal({
+      title: '确认删除',
+      content: '确定要删除这篇帖子吗？删除后无法恢复',
+      success: (res) => {
+        if (res.confirm) {
+          wx.showLoading({
+            title: '删除中...',
+          });
+          
+          wx.cloud.callFunction({
+            name: 'forum',
+            data: {
+              type: 'deletePost',
+              data: { id: this.data.postId }
+            }
+          }).then(res => {
+            wx.hideLoading();
+            
+            if (res.result.success) {
+              wx.showToast({
+                title: '删除成功',
+                icon: 'success'
+              });
+              
+              // 设置刷新标记，让社区页面知道需要刷新数据
+              this.setRefreshFlag();
+              
+              // 延迟返回
+              setTimeout(() => {
+                wx.navigateBack();
+              }, 1500);
+            } else {
+              wx.showToast({
+                title: res.result.message || '删除失败',
+                icon: 'none'
+              });
+            }
+          }).catch(err => {
+            wx.hideLoading();
+            console.error('删除帖子失败:', err);
+            wx.showToast({
+              title: '删除失败',
+              icon: 'none'
+            });
+          });
+        }
+      }
     });
   }
 }); 

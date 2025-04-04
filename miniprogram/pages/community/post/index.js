@@ -154,7 +154,7 @@ Page({
       const result = await wx.cloud.callFunction({
         name: 'forum',
         data: {
-          type: 'createPost',
+          type: 'addPost',
           data: {
             content,
             images: uploadedImages
@@ -188,6 +188,7 @@ Page({
         })
       }
     } catch (err) {
+      console.error('发布帖子失败:', err)
       wx.hideLoading()
       wx.showToast({
         title: '发布失败',

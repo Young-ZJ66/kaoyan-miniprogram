@@ -406,29 +406,23 @@ page {
 /* 悬浮上传按钮样式 */
 .float-upload-btn {
   position: fixed;
+  bottom: 100rpx;
   right: 40rpx;
-  bottom: 120rpx;
   width: 100rpx;
   height: 100rpx;
-  background: #07c160;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
-  z-index: 100;
-  transition: all 0.3s ease;
-}
-
-.float-upload-btn:active {
-  transform: scale(0.95);
-  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
-}
-
-.float-upload-btn text {
+  background-color: #07c160;
   color: #fff;
-  font-size: 28rpx;
-  line-height: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.2);
+  z-index: 100;
+}
+
+.upload-icon {
+  width: 60rpx;
+  height: 60rpx;
 }
 
 /* 微信内置图标 */

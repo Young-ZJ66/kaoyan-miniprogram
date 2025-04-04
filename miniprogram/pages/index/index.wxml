@@ -71,5 +71,5 @@
 
 <!-- 悬浮上传按钮 -->
 <view class="float-upload-btn" bindtap="goToUpload">
-  <text>上传</text>
+  <image src="/images/upload.png" mode="aspectFit" class="upload-icon"></image>
 </view>

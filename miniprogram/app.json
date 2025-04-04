@@ -9,6 +9,8 @@
     "pages/my/index",
     "pages/my/my-downloads/index",
     "pages/my/my-uploads/index",
+    "pages/my/my-likes/index",
+    "pages/my/my-posts/index",
     "pages/my/register/index",
     "pages/plan/index",
     "pages/plan/add/index",

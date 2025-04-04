@@ -10,6 +10,10 @@
           <text class="nickname">{{post.userInfo.nickName || '匿名用户'}}</text>
           <text class="time">{{post.createTime}}</text>
         </view>
+        <!-- 删除按钮，仅当用户是发帖人时显示 -->
+        <view class="delete-btn" wx:if="{{post.isOwner}}" catchtap="deletePost">
+          <image src="/images/delete.png" class="delete-icon"></image>
+        </view>
       </view>
       
       <view class="post-content">
@@ -34,7 +38,7 @@
       </view>
       
       <view class="post-footer">
-        <view class="action-item" bindtap="likePost">
+        <view class="action-item" bindtap="toggleLike">
           <image src="{{post.isLiked ? '/images/like-active.png' : '/images/like.png'}}" class="action-icon"></image>
           <text class="{{post.isLiked ? 'liked-text' : ''}}">{{post.likes || 0}}</text>
         </view>

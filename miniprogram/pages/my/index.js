@@ -628,6 +628,64 @@ Page({
     })
   },
 
+  // 跳转到我的帖子页面
+  onMyPosts: function() {
+    // 检查登录状态
+    const auth = wx.getStorageSync('auth')
+    const userInfo = wx.getStorageSync('userInfo')
+    const isLoggedIn = wx.getStorageSync('isLoggedIn')
+    
+    if (!auth || !auth.token || Date.now() > auth.expireTime || !userInfo || !isLoggedIn) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录后再查看我的帖子',
+        confirmText: '登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            // 用户点击确认，执行登录
+            this.handleLogin()
+          }
+        }
+      })
+      return
+    }
+
+    // 用户已登录，跳转到我的帖子页面
+    wx.navigateTo({
+      url: '/pages/my/my-posts/index'
+    })
+  },
+
+  // 跳转到我的点赞页面
+  onMyLikes: function() {
+    // 检查登录状态
+    const auth = wx.getStorageSync('auth')
+    const userInfo = wx.getStorageSync('userInfo')
+    const isLoggedIn = wx.getStorageSync('isLoggedIn')
+    
+    if (!auth || !auth.token || Date.now() > auth.expireTime || !userInfo || !isLoggedIn) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录后再查看我的点赞',
+        confirmText: '登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            // 用户点击确认，执行登录
+            this.handleLogin()
+          }
+        }
+      })
+      return
+    }
+
+    // 用户已登录，跳转到我的点赞页面
+    wx.navigateTo({
+      url: '/pages/my/my-likes/index'
+    })
+  },
+
   // 检查本地头像
   checkLocalAvatar(userInfo) {
     if (!userInfo || !userInfo.avatarUrl || !userInfo._openid) return;

@@ -31,6 +31,20 @@
       </view>
       <text class="iconfont icon-arrow"></text>
     </view>
+    <view class="function-item" bindtap="onMyPosts">
+      <view class="function-left">
+        <text class="iconfont icon-post"></text>
+        <text>我的帖子</text>
+      </view>
+      <text class="iconfont icon-arrow"></text>
+    </view>
+    <view class="function-item" bindtap="onMyLikes">
+      <view class="function-left">
+        <text class="iconfont icon-like"></text>
+        <text>我的点赞</text>
+      </view>
+      <text class="iconfont icon-arrow"></text>
+    </view>
     <view class="function-item">
       <view class="function-left">
         <text class="iconfont icon-about"></text>

@@ -576,7 +576,7 @@ Page({
     wx.cloud.callFunction({
       name: 'forum',
       data: {
-        type: 'likePost',
+        type: 'toggleLike',
         data: { id }
       }
     }).then(res => {
