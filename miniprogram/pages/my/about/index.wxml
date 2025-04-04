@@ -55,7 +55,7 @@
   </view>
   
   <view class="footer">
-    <text>Copyright © 2023-2024 考研学习助手</text>
+    <text>Copyright © 2024-2025 考研生</text>
     <text>版本 {{version}} ({{buildDate}})</text>
   </view>
 </view> 

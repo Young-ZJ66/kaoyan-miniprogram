@@ -1,7 +1,7 @@
 Page({
   data: {
-    version: '1.0.0',
-    buildDate: '2024-06-25'
+    version: '1.0.3',
+    buildDate: '2025-03-25'
   },
 
   onLoad: function() {
