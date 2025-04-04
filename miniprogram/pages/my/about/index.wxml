@@ -1,0 +1,61 @@
+<view class="container">
+  <view class="header">
+    <view class="title">考研生</view>
+  </view>
+  
+  <view class="section">
+    <view class="section-title">关于小程序</view>
+    <view class="section-content">
+      <text>"考研生"是一款专为考研学子打造的学习辅助工具，提供资料分享、学习交流、计划管理等功能，旨在帮助大家更高效地备战考研。</text>
+      
+      <view class="feature-list">
+        <view class="feature-item">
+          <view class="feature-icon">📚</view>
+          <view class="feature-text">资料共享</view>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">📝</view>
+          <view class="feature-text">计划管理</view>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">💬</view>
+          <view class="feature-text">学习交流</view>
+        </view>
+        <view class="feature-item">
+          <view class="feature-icon">🏫</view>
+          <view class="feature-text">院校信息</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="section">
+    <view class="section-title">联系我们</view>
+    <view class="section-content">
+      <text>如有问题或建议，欢迎联系我们：</text>
+      <view class="contact-info">
+        <view class="contact-item">
+          <text class="contact-label">👨‍💻 开发者：</text>
+          <text class="contact-value">Young_ZJ_p</text>
+        </view>
+        <view class="contact-item">
+          <text class="contact-label">📧 邮　箱：</text>
+          <text class="contact-value">YoungZJ_work@163.com</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="section">
+    <view class="section-title">特别致谢</view>
+    <view class="section-content">
+      <text>感谢所有为本小程序提供宝贵意见和建议的用户，您的支持是我们不断前进的动力。</text>
+      <view class="thanks-animation">❤️</view>
+    </view>
+  </view>
+  
+  <view class="footer">
+    <text>Copyright © 2023-2024 考研学习助手</text>
+    <text>版本 {{version}} ({{buildDate}})</text>
+  </view>
+</view> 

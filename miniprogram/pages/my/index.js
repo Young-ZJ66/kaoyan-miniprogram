@@ -712,4 +712,11 @@ Page({
       }
     }
   },
+
+  // 跳转到关于我们页面
+  onAbout: function() {
+    wx.navigateTo({
+      url: '/pages/my/about/index'
+    })
+  },
 }) 

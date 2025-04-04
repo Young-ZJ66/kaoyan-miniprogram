@@ -12,6 +12,7 @@
     "pages/my/my-likes/index",
     "pages/my/my-posts/index",
     "pages/my/register/index",
+    "pages/my/about/index",
     "pages/plan/index",
     "pages/plan/add/index",
     "pages/community/index",

@@ -45,7 +45,7 @@
       </view>
       <text class="iconfont icon-arrow"></text>
     </view>
-    <view class="function-item">
+    <view class="function-item" bindtap="onAbout">
       <view class="function-left">
         <text class="iconfont icon-about"></text>
         <text>关于我们</text>
