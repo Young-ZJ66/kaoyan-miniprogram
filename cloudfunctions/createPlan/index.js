@@ -67,23 +67,27 @@ exports.main = async (event, context) => {
           completed: false
         })),
         createTime: db.serverDate(),
-        updateTime: db.serverDate()
+        updateTime: db.serverDate(),
+        _openid: wxContext.OPENID  // 添加用户ID
       });
     }
 
-    // 批量添加任务
+    // 批量添加任务 - 修改这里的逻辑
     if (taskList.length > 0) {
-      await db.collection('tasks').add({
-        data: taskList
-      });
+      // 一次只能添加一条数据，所以需要循环添加
+      for (const task of taskList) {
+        await db.collection('tasks').add({
+          data: task
+        });
+      }
     }
 
     return {
       success: true,
-      message: '创建成功'
+      message: '创建成功',
+      planId: planResult._id
     };
   } catch (err) {
-    console.error('创建计划失败：', err);
     return {
       success: false,
       message: '创建失败：' + err.message

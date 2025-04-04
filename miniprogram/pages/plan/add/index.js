@@ -123,6 +123,17 @@ Page({
       return
     }
 
+    // 检查任务内容是否为空
+    for (let i = 0; i < this.data.tasks.length; i++) {
+      if (!this.data.tasks[i].content.trim()) {
+        wx.showToast({
+          title: `第${i+1}个任务内容不能为空`,
+          icon: 'none'
+        })
+        return
+      }
+    }
+
     wx.showLoading({
       title: '保存中...',
     })
@@ -137,6 +148,8 @@ Page({
         planName: this.data.planName.trim()
       }
     }).then(res => {
+      wx.hideLoading()
+      
       if (res.result.success) {
         wx.showToast({
           title: '保存成功',
@@ -156,7 +169,7 @@ Page({
       wx.hideLoading()
       
       wx.showToast({
-        title: '保存失败',
+        title: '保存失败，请重试',
         icon: 'none'
       })
     })
@@ -164,52 +177,13 @@ Page({
 
   // 保存计划
   saveChanges: function() {
-    // 验证表单数据
-    if (!this.validateForm()) {
-      return;
-    }
-
-    const plan = this.getFormData();
-    
-    wx.showLoading({
-      title: '保存中...'
-    });
-
-    wx.cloud.callFunction({
-      name: 'createPlan',
-      data: plan
-    }).then(res => {
-      wx.hideLoading();
-      
-      if (res.result && res.result.success) {
-        wx.showToast({
-          title: '保存成功',
-          icon: 'success'
-        });
-        
-        // 延迟返回上一页，让用户看到成功提示
-        setTimeout(() => {
-          wx.navigateBack();
-        }, 1500);
-      } else {
-        wx.showToast({
-          title: '保存失败',
-          icon: 'none'
-        });
-      }
-    }).catch(err => {
-      wx.hideLoading();
-      
-      wx.showToast({
-        title: '保存失败',
-        icon: 'none'
-      });
-    });
+    // 使用onSubmit函数
+    this.onSubmit();
   },
 
-  // 保存计划表单（去除旧函数，使用新函数）
+  // 保存计划表单
   savePlan: function() {
-    // 使用saveChanges函数
-    this.saveChanges();
+    // 使用onSubmit函数
+    this.onSubmit();
   },
 }) 

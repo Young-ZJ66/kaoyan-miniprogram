@@ -359,10 +359,20 @@ Page({
       }
     })
 
-    // 处理任务列表
+    // 判断所选日期是否是今天或过去的日期
+    const selectedDate = new Date(date + 'T00:00:00');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // 使用getTime()比较日期，确保精确比较
+    const isToday = selectedDate.getTime() === today.getTime();
+    const isPast = selectedDate.getTime() < today.getTime();
+    const isPastOrToday = isPast || isToday;
+
+    // 处理任务列表，为今天和之前的日期添加勾选框
     const processedTasks = allTasks.map(task => ({
       ...task,
-      canCheck: this.isToday(new Date(date))
+      canCheck: isPastOrToday
     }))
 
     this.setData({
@@ -600,7 +610,6 @@ Page({
       })
       
     } catch (error) {
-      console.error('初始化按钮位置失败', error)
       const windowInfo = wx.getWindowInfo()
       
       // 出错时设置一个保底位置

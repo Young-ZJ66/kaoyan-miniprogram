@@ -43,7 +43,7 @@
       <block wx:if="{{selectedDateTasks.length > 0}}">
         <view wx:for="{{selectedDateTasks}}" wx:key="id" class="task-item">
           <view class="task-content">
-            <text class="task-text">{{item.content}}</text>
+            <text class="task-text {{item.completed ? 'completed-text' : ''}}">{{item.content}}</text>
             <checkbox wx:if="{{item.canCheck}}" 
                       checked="{{item.completed}}"
                       bindtap="toggleTask"

@@ -204,8 +204,14 @@
 }
 
 .task-text {
+  flex: 1;
   font-size: 28rpx;
   color: #333;
+}
+
+.completed-text {
+  text-decoration: line-through;
+  color: #999;
 }
 
 .empty-tasks {
