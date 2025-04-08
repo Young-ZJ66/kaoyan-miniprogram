@@ -1,0 +1,104 @@
+<!-- 院校基本信息 -->
+<view class="school-header">
+  <image class="school-logo" src="{{schoolInfo.logo}}" mode="aspectFit"></image>
+  <view class="school-basic-info">
+    <view class="school-name-row">
+      <text class="school-name">{{schoolInfo.name}}</text>
+      <text class="region">{{schoolInfo.region}}</text>
+    </view>
+    <view class="level-tags">
+      <text class="level-tag" wx:for="{{schoolInfo.level}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+</view>
+
+<!-- 功能导航栏 -->
+<view class="nav-bar">
+  <view class="nav-item {{activeTab === 'info' ? 'active' : ''}}" bindtap="switchTab" data-tab="info">
+    院校信息
+  </view>
+  <view class="nav-item {{activeTab === 'majors' ? 'active' : ''}}" bindtap="switchTab" data-tab="majors">
+    招生专业
+  </view>
+</view>
+
+<!-- 院校信息内容 -->
+<view class="content-section" wx:if="{{activeTab === 'info'}}">
+  <view class="section-title">院校简介</view>
+  <view class="intro-content">{{schoolInfo.introduction}}</view>
+  
+  <view class="section-title">官网链接</view>
+  <view class="website-link" bindtap="openWebsite">
+    <text>{{schoolInfo.website}}</text>
+    <text class="arrow">></text>
+  </view>
+</view>
+
+<!-- 专业列表内容 -->
+<view class="content-section" wx:if="{{activeTab === 'majors'}}">
+  <!-- 搜索栏 -->
+  <view class="search-box">
+    <input type="text" 
+           placeholder="搜索专业代码或名称" 
+           value="{{searchKeyword}}"
+           bindinput="onSearchInput"
+           bindconfirm="onSearchConfirm" />
+  </view>
+  
+  <!-- 筛选器 -->
+  <view class="filter-box">
+    <view class="filter-item">
+      <picker 
+        mode="selector" 
+        range="{{durationOptions}}" 
+        value="{{durationIndex}}" 
+        bindchange="onDurationChange"
+      >
+        <view class="picker {{durationIndex !== 0 ? 'active' : ''}}">
+          {{durationOptions[durationIndex]}}
+        </view>
+      </picker>
+    </view>
+    <view class="filter-item">
+      <picker 
+        mode="selector" 
+        range="{{degreeOptions}}" 
+        value="{{degreeIndex}}" 
+        bindchange="onDegreeChange"
+      >
+        <view class="picker {{degreeIndex !== 0 ? 'active' : ''}}">
+          {{degreeOptions[degreeIndex]}}
+        </view>
+      </picker>
+    </view>
+  </view>
+  
+  <view class="major-list">
+    <view class="major-item" 
+          wx:for="{{filteredMajors}}" 
+          wx:key="_id" 
+          bindtap="onMajorTap" 
+          data-id="{{item._id}}">
+      <view class="major-header">
+        <text class="major-code">[{{item.code}}]</text>
+        <text class="major-name">{{item.name}}</text>
+      </view>
+      <view class="major-meta">
+        <text class="duration">{{item.duration}}</text>
+        <text class="degree-type">{{item.degreeType}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载更多 -->
+<view class="loading-more" wx:if="{{activeTab === 'majors' && hasMore}}">
+  <view class="loading-text" wx:if="{{isLoading}}">加载中...</view>
+  <view class="loading-text" wx:else bindtap="loadMore">加载更多</view>
+</view>
+
+<!-- 空状态 -->
+<view class="empty-state" wx:if="{{activeTab === 'majors' && majors.length === 0}}">
+  <image src="/images/empty.png" mode="aspectFit"></image>
+  <text>暂无专业信息</text>
+</view> 

@@ -1,0 +1,273 @@
+/* 院校基本信息 */
+.school-header {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.school-logo {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  margin-right: 24rpx;
+}
+
+.school-info {
+  flex: 1;
+}
+
+.school-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12rpx;
+}
+
+.school-level {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.level-tag {
+  font-size: 24rpx;
+  color: #1989fa;
+  background: #ecf5ff;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.collection-btn {
+  position: absolute;
+  right: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 20rpx;
+}
+
+.collection-icon {
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.school-basic-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.school-name-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.region {
+  font-size: 24rpx;
+  color: #666;
+  background-color: #f5f5f5;
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+}
+
+.major-info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.duration {
+  color: #333;
+  font-weight: 500;
+}
+
+.separator {
+  margin: 0 16rpx;
+  color: #ddd;
+}
+
+.major-name {
+  color: #333;
+  font-weight: 500;
+}
+
+.major-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.level-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+/* 信息区域 */
+.info-section {
+  padding: 30rpx;
+  background: #fff;
+}
+
+.section-block {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  padding-left: 20rpx;
+  border-left: 8rpx solid #1989fa;
+}
+
+/* 初试科目 */
+.subject-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.subject-item {
+  padding: 20rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+}
+
+.subject-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 参考书 */
+.book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.book-item {
+  padding: 20rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+}
+
+.book-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 表格样式 */
+.score-table {
+  background: #fff;
+  border-radius: 8rpx;
+  overflow: hidden;
+  border: 1rpx solid #eee;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 1rpx solid #eee;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.empty-row {
+  padding: 30rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+  background: #fff;
+}
+
+.table-cell {
+  flex: 1;
+  padding: 20rpx 12rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table-row:first-child .table-cell {
+  background: #f8f8f8;
+  font-weight: bold;
+  color: #666;
+}
+
+/* 初试科目 */
+.subject-table {
+  background: #fff;
+  border-radius: 8rpx;
+  overflow: hidden;
+  border: 1rpx solid #eee;
+}
+
+.subject-table .table-row {
+  display: flex;
+  border-bottom: 1rpx solid #eee;
+}
+
+.subject-table .table-row:last-child {
+  border-bottom: none;
+}
+
+.subject-table .table-cell {
+  flex: 1;
+  padding: 24rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.subject-table .table-row:first-child .table-cell {
+  background: #f8f8f8;
+  font-weight: bold;
+  color: #666;
+}
+
+/* 参考书 */
+.book-table {
+  background: #fff;
+  border-radius: 8rpx;
+  overflow: hidden;
+  border: 1rpx solid #eee;
+}
+
+.book-table .table-row {
+  display: flex;
+  border-bottom: 1rpx solid #eee;
+}
+
+.book-table .table-row:last-child {
+  border-bottom: none;
+}
+
+.book-table .table-cell {
+  flex: 1;
+  padding: 20rpx 12rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-table .table-row:first-child .table-cell {
+  background: #f8f8f8;
+  font-weight: bold;
+  color: #666;
+} 

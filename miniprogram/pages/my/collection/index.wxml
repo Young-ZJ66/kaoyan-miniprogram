@@ -1,0 +1,39 @@
+<view class="container">
+  <!-- 收藏列表 -->
+  <view class="collection-list">
+    <block wx:if="{{collections.length > 0}}">
+      <view 
+        class="collection-item" 
+        wx:for="{{collections}}" 
+        wx:key="_id"
+        bindtap="navigateToMajorDetail"
+        data-major-id="{{item.majorId}}"
+        data-school-id="{{item.schoolId}}"
+      >
+        <view class="school-info">
+          <image class="school-logo" src="{{item.schoolInfo.logo}}" mode="aspectFit" />
+          <view class="school-detail">
+            <view class="school-header">
+              <text class="school-name">{{item.schoolInfo.name}}</text>
+              <text class="region-tag">{{item.schoolInfo.region}}</text>
+            </view>
+            <view class="major-info">
+              <text>{{item.majorInfo.duration}}</text>
+              <text class="separator">|</text>
+              <text>{{item.majorInfo.degreeType}}</text>
+              <text class="separator">|</text>
+              <text>{{item.majorInfo.name}}</text>
+            </view>
+            <view class="level-tags">
+              <text class="level-tag" wx:for="{{item.schoolInfo.level}}" wx:key="*this">{{item}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+    <view class="empty-tip" wx:else>
+      <image class="empty-icon" src="/images/empty.png" mode="aspectFit" />
+      <text>暂无收藏专业</text>
+    </view>
+  </view>
+</view> 

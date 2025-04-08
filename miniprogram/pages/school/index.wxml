@@ -1,4 +1,53 @@
-<view class="container">
-  <text>院校功能正在开发中</text>
-  <text>请关注后续版本</text>
+<!-- 搜索框 -->
+<view class="search-box">
+  <input type="text" placeholder="搜索院校名称" bindinput="onSearchInput" value="{{searchKeyword}}" />
+</view>
+
+<!-- 筛选器 -->
+<view class="filter-box">
+  <view class="filter-item {{regionFilter === item ? 'active' : ''}}" 
+        wx:for="{{regions}}" 
+        wx:key="*this" 
+        bindtap="onRegionFilter" 
+        data-value="{{item}}">
+    {{item || '全部地区'}}
+  </view>
+</view>
+
+<view class="level-filter">
+  <view class="filter-item {{levelFilter === item ? 'active' : ''}}" 
+        wx:for="{{levels}}" 
+        wx:key="*this" 
+        bindtap="onLevelFilter" 
+        data-value="{{item}}">
+    {{item || '全部层次'}}
+  </view>
+</view>
+
+<!-- 院校列表 -->
+<view class="school-list">
+  <view class="school-item" wx:for="{{schools}}" wx:key="_id" bindtap="onSchoolTap" data-id="{{item._id}}">
+    <image class="school-logo" src="{{item.logo}}" mode="aspectFit"></image>
+    <view class="school-info">
+      <view class="school-name-row">
+        <text class="school-name">{{item.name}}</text>
+        <text class="region">{{item.region}}</text>
+      </view>
+      <view class="level-tags">
+        <text class="level-tag" wx:for="{{item.level}}" wx:key="*this" wx:for-item="levelItem">{{levelItem}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载更多 -->
+<view class="loading-more" wx:if="{{hasMore}}">
+  <view class="loading-text" wx:if="{{isLoading}}">加载中...</view>
+  <view class="loading-text" wx:else bindtap="loadMore">加载更多</view>
+</view>
+
+<!-- 空状态 -->
+<view class="empty-state" wx:if="{{schools.length === 0}}">
+  <image src="/images/empty.png" mode="aspectFit"></image>
+  <text>暂无相关院校</text>
 </view> 

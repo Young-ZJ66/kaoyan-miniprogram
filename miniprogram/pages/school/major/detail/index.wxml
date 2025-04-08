@@ -1,0 +1,145 @@
+<!-- 院校基本信息 -->
+<view class="school-header">
+  <image class="school-logo" src="{{schoolInfo.logo}}" mode="aspectFit"></image>
+  <view class="school-basic-info">
+    <view class="school-name-row">
+      <text class="school-name">{{schoolInfo.name}}</text>
+      <text class="region">{{schoolInfo.region}}</text>
+    </view>
+    <view class="major-info-row">
+      <text class="duration">{{majorInfo.duration}}</text>
+      <text class="separator">|</text>
+      <text class="major-name">{{majorInfo.name}}</text>
+    </view>
+    <view class="level-tags">
+      <text class="level-tag" wx:for="{{schoolInfo.level}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+  <view class="collection-btn" bindtap="{{isLogin ? 'toggleCollection' : 'showLoginTip'}}">
+    <image 
+      class="collection-icon" 
+      src="/images/{{isLogin && isCollected ? 'collection-active.png' : 'collection.png'}}" 
+      mode="aspectFit"
+    />
+  </view>
+</view>
+
+<!-- 专业信息表格 -->
+<view class="info-section">
+  <!-- 初试科目 -->
+  <view class="section-block">
+    <view class="section-title">初试科目</view>
+    <view class="subject-table">
+      <view class="table-row">
+        <view class="table-cell">科目类型</view>
+        <view class="table-cell">科目名称</view>
+      </view>
+      <view class="table-row">
+        <view class="table-cell">政治</view>
+        <view class="table-cell">{{majorInfo.subjects.subject1 || '-'}}</view>
+      </view>
+      <view class="table-row">
+        <view class="table-cell">外语</view>
+        <view class="table-cell">{{majorInfo.subjects.subject2 || '-'}}</view>
+      </view>
+      <view class="table-row">
+        <view class="table-cell">专业课1</view>
+        <view class="table-cell">{{majorInfo.subjects.subject3 || '-'}}</view>
+      </view>
+      <view class="table-row">
+        <view class="table-cell">专业课2</view>
+        <view class="table-cell">{{majorInfo.subjects.subject4 || '-'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 参考书 -->
+  <view class="section-block">
+    <view class="section-title">参考书</view>
+    <view class="book-table">
+      <view class="table-row">
+        <view class="table-cell">书名</view>
+        <view class="table-cell">作者</view>
+        <view class="table-cell">出版社</view>
+      </view>
+      <block wx:if="{{majorInfo.books && majorInfo.books.length > 0}}">
+        <view class="table-row" wx:for="{{majorInfo.books}}" wx:key="_id">
+          <view class="table-cell">{{item.name}}</view>
+          <view class="table-cell">{{item.author}}</view>
+          <view class="table-cell">{{item.publisher}}</view>
+        </view>
+      </block>
+      <view class="empty-row" wx:else>暂无相关信息</view>
+    </view>
+  </view>
+
+  <!-- 近三年国家线 -->
+  <view class="section-block">
+    <view class="section-title">国家线</view>
+    <view class="score-table">
+      <view class="table-row">
+        <view class="table-cell">年份</view>
+        <view class="table-cell">总分</view>
+        <view class="table-cell">政治</view>
+        <view class="table-cell">外语</view>
+        <view class="table-cell">专业课1</view>
+        <view class="table-cell">专业课2</view>
+      </view>
+      <block wx:if="{{majorInfo.scores && majorInfo.scores.length > 0}}">
+        <view class="table-row" wx:for="{{majorInfo.scores}}" wx:key="year">
+          <view class="table-cell">{{item.year}}</view>
+          <view class="table-cell">{{item.nationalLine.total || '-'}}</view>
+          <view class="table-cell">{{item.nationalLine.subject1 || '-'}}</view>
+          <view class="table-cell">{{item.nationalLine.subject2 || '-'}}</view>
+          <view class="table-cell">{{item.nationalLine.subject3 || '-'}}</view>
+          <view class="table-cell">{{item.nationalLine.subject4 || '-'}}</view>
+        </view>
+      </block>
+      <view class="empty-row" wx:else>暂无相关信息</view>
+    </view>
+  </view>
+
+  <!-- 近三年复试平均分 -->
+  <view class="section-block">
+    <view class="section-title">复试平均分</view>
+    <view class="score-table">
+      <view class="table-row">
+        <view class="table-cell">年份</view>
+        <view class="table-cell">总分</view>
+        <view class="table-cell">政治</view>
+        <view class="table-cell">外语</view>
+        <view class="table-cell">专业课1</view>
+        <view class="table-cell">专业课2</view>
+      </view>
+      <block wx:if="{{majorInfo.scores && majorInfo.scores.length > 0}}">
+        <view class="table-row" wx:for="{{majorInfo.scores}}" wx:key="year">
+          <view class="table-cell">{{item.year}}</view>
+          <view class="table-cell">{{item.averageScore.total || '-'}}</view>
+          <view class="table-cell">{{item.averageScore.subject1 || '-'}}</view>
+          <view class="table-cell">{{item.averageScore.subject2 || '-'}}</view>
+          <view class="table-cell">{{item.averageScore.subject3 || '-'}}</view>
+          <view class="table-cell">{{item.averageScore.subject4 || '-'}}</view>
+        </view>
+      </block>
+      <view class="empty-row" wx:else>暂无相关信息</view>
+    </view>
+  </view>
+
+  <!-- 近三年复录比 -->
+  <view class="section-block">
+    <view class="section-title">复录比</view>
+    <view class="score-table">
+      <view class="table-row">
+        <view class="table-cell">年份</view>
+        <view class="table-cell">复录比</view>
+      </view>
+      <block wx:if="{{majorInfo.scores && majorInfo.scores.length > 0}}">
+        <view class="table-row" wx:for="{{majorInfo.scores}}" wx:key="year">
+          <view class="table-cell">{{item.year}}</view>
+          <view class="table-cell">{{item.admissionRatio || '-'}}</view>
+        </view>
+      </block>
+      <view class="empty-row" wx:else>暂无相关信息</view>
+    </view>
+  </view>
+</view> 

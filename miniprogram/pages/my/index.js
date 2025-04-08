@@ -4,7 +4,9 @@ Page({
   data: {
     userInfo: null,
     isLoggedIn: false,
-    openid: ''
+    openid: '',
+    hasUserInfo: false,
+    canIUseGetUserProfile: false
   },
 
   onLoad() {
@@ -717,6 +719,35 @@ Page({
   onAbout: function() {
     wx.navigateTo({
       url: '/pages/my/about/index'
+    })
+  },
+
+  // 跳转到我的收藏页面
+  navigateToMyCollection() {
+    // 检查登录状态
+    const auth = wx.getStorageSync('auth')
+    const userInfo = wx.getStorageSync('userInfo')
+    const isLoggedIn = wx.getStorageSync('isLoggedIn')
+    
+    if (!auth || !auth.token || Date.now() > auth.expireTime || !userInfo || !isLoggedIn) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录后再查看收藏',
+        confirmText: '登录',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            // 用户点击确认，执行登录
+            this.handleLogin()
+          }
+        }
+      })
+      return
+    }
+
+    // 用户已登录，跳转到收藏页面
+    wx.navigateTo({
+      url: '/pages/my/collection/index'
     })
   },
 }) 

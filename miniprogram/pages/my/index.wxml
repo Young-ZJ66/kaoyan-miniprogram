@@ -45,6 +45,13 @@
       </view>
       <text class="iconfont icon-arrow"></text>
     </view>
+    <view class="function-item" bindtap="navigateToMyCollection">
+      <view class="function-left">
+        <text class="iconfont icon-collection"></text>
+        <text>收藏专业</text>
+      </view>
+      <text class="iconfont icon-arrow"></text>
+    </view>
     <view class="function-item" bindtap="onAbout">
       <view class="function-left">
         <text class="iconfont icon-about"></text>
