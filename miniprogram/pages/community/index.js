@@ -224,6 +224,15 @@ Page({
     });
   },
 
+  // 判断内容是否超过3行
+  isContentOverflow: function(content) {
+    if (!content) return false;
+    // 将内容按换行符分割成数组
+    const lines = content.split('\n').filter(line => line.trim() !== '');
+    // 如果行数大于3，或者最后一行不为空且总行数等于3，则认为需要展开
+    return lines.length > 3 || (lines.length === 3 && content.trim().endsWith('\n'));
+  },
+
   // 加载帖子列表
   loadPosts: function() {
     if (this.data.loading) return Promise.resolve();
@@ -261,7 +270,8 @@ Page({
             commentCount: post.comments || 0,
             isLiked: false, // 默认未点赞，实际状态将通过checkLikeStatus更新
             showFull: false, // 控制内容展开收起
-            isOwner: isOwner // 添加判断是否为发布者
+            isOwner: isOwner, // 添加判断是否为发布者
+            isOverflow: this.isContentOverflow(post.content) // 添加是否超过3行的标记
           }
         });
         

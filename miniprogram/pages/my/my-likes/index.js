@@ -22,7 +22,13 @@ Page({
 
     this.setData({ loading: true })
 
-    console.log('开始调用云函数获取我点赞的帖子，页码:', page)
+    if (!refresh) {
+      wx.showLoading({
+        title: '加载中...',
+        mask: true
+      });
+    }
+
     wx.cloud.callFunction({
       name: 'forum',
       data: {
@@ -33,7 +39,10 @@ Page({
         }
       }
     }).then(res => {
-      console.log('获取点赞帖子结果：', res)
+      if (!refresh) {
+        wx.hideLoading();
+      }
+      
       if (res.result.success) {
         const newPosts = res.result.data || []
         
@@ -84,12 +93,6 @@ Page({
           // 设置点赞状态
           post.isLiked = true
           
-          console.log(`处理后的帖子(${post._id}): `, {
-            createTime: post.createTime,
-            likeCount: post.likeCount,
-            commentCount: post.commentCount,
-            userInfo: post.userInfo
-          })
         })
 
         this.setData({
@@ -99,7 +102,6 @@ Page({
           loading: false
         })
       } else {
-        console.error('获取点赞帖子失败原因:', res.result.message, res.result.error)
         wx.showToast({
           title: res.result.message || '获取帖子失败',
           icon: 'none'
@@ -107,7 +109,9 @@ Page({
         this.setData({ loading: false })
       }
     }).catch(err => {
-      console.error('获取点赞帖子失败详细错误：', err)
+      if (!refresh) {
+        wx.hideLoading();
+      }
       wx.showToast({
         title: '获取帖子失败',
         icon: 'none'
@@ -198,7 +202,6 @@ Page({
       }
     }).catch(err => {
       wx.hideLoading()
-      console.error('点赞操作失败：', err)
       wx.showToast({
         title: '操作失败',
         icon: 'none'

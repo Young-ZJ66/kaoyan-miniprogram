@@ -18,9 +18,16 @@ Page({
   loadPlans: function() {
     this.setData({ loading: true });
     
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+    
     wx.cloud.callFunction({
       name: 'getPlans'
     }).then(res => {
+      wx.hideLoading();
+      
       if (res.result.success) {
         const plans = res.result.data || [];
         
@@ -59,6 +66,7 @@ Page({
         });
       }
     }).catch(err => {
+      wx.hideLoading();
       this.setData({ loading: false });
       wx.showToast({
         title: '获取计划失败',

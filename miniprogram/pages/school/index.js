@@ -22,6 +22,13 @@ Page({
     
     this.setData({ isLoading: true })
     
+    if (!isLoadMore) {
+      wx.showLoading({
+        title: '加载中...',
+        mask: true
+      })
+    }
+    
     try {
       const { page, pageSize, searchKeyword, regionFilter, levelFilter } = this.data
       
@@ -63,6 +70,10 @@ Page({
         icon: 'none'
       })
       this.setData({ isLoading: false })
+    } finally {
+      if (!isLoadMore) {
+        wx.hideLoading()
+      }
     }
   },
 

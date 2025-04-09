@@ -64,7 +64,7 @@
       您还没有点赞过帖子~
     </view>
   </view>
-  <view class="load-more" wx:if="{{hasMore}}" bindtap="loadMore">
-    {{loading ? '加载中...' : '加载更多'}}
+  <view class="load-more" wx:if="{{hasMore && !loading}}" bindtap="loadMore">
+    加载更多
   </view>
 </view> 

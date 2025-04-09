@@ -22,6 +22,13 @@ Page({
 
     this.setData({ loading: true })
 
+    if (!refresh) {
+      wx.showLoading({
+        title: '加载中...',
+        mask: true
+      });
+    }
+
     console.log('开始调用云函数获取我的帖子，页码:', page)
     wx.cloud.callFunction({
       name: 'forum',
@@ -33,6 +40,10 @@ Page({
         }
       }
     }).then(res => {
+      if (!refresh) {
+        wx.hideLoading();
+      }
+      
       console.log('获取我的帖子结果：', res)
       if (res.result.success) {
         const newPosts = res.result.data || []
@@ -110,6 +121,9 @@ Page({
         this.setData({ loading: false })
       }
     }).catch(err => {
+      if (!refresh) {
+        wx.hideLoading();
+      }
       console.error('获取帖子失败详细错误：', err)
       wx.showToast({
         title: '获取帖子失败',

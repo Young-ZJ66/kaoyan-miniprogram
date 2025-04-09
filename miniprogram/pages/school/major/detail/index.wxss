@@ -24,7 +24,8 @@
   font-size: 32rpx;
   font-weight: bold;
   color: #333;
-  margin-bottom: 12rpx;
+  margin-right: 16rpx;
+  line-height: 1.5;
 }
 
 .school-level {
@@ -73,6 +74,9 @@
   background-color: #f5f5f5;
   padding: 4rpx 12rpx;
   border-radius: 4rpx;
+  line-height: 1.5;
+  display: inline-block;
+  margin-top: 4rpx;
 }
 
 .major-info-row {

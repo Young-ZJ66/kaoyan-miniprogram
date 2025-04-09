@@ -41,9 +41,8 @@
 </view>
 
 <!-- 加载更多 -->
-<view class="loading-more" wx:if="{{hasMore}}">
-  <view class="loading-text" wx:if="{{isLoading}}">加载中...</view>
-  <view class="loading-text" wx:else bindtap="loadMore">加载更多</view>
+<view class="loading-more" wx:if="{{hasMore && !isLoading}}">
+  <view class="loading-text" bindtap="loadMore">加载更多</view>
 </view>
 
 <!-- 空状态 -->

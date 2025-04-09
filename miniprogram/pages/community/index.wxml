@@ -44,7 +44,7 @@
             <view class="content-wrapper">
               <text class="content {{item.showFull ? 'content-full' : ''}}" user-select="true">{{item.content}}</text>
               <view class="buttons-row">
-                <text wx:if="{{item.content.length > 70 && !item.showFull}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">展开全文</text>
+                <text wx:if="{{!item.showFull && item.isOverflow}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">……展开全文</text>
                 <text wx:if="{{item.showFull}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">收起</text>
               </view>
             </view>

@@ -196,6 +196,7 @@
   word-break: break-all;
   white-space: normal;
   max-height: 120rpx;
+  margin-bottom: 0;
 }
 
 .post-content .content-full {
@@ -205,11 +206,11 @@
 }
 
 .view-more {
-  margin-top: 8rpx;
+  margin-top: 0;
   font-size: 26rpx;
   color: #3399ff;
   display: inline-block;
-  padding: 4rpx 0;
+  padding: 0;
   margin-right: 20rpx;
 }
 
@@ -355,9 +356,8 @@
 }
 
 .buttons-row {
-  display: flex;
-  align-items: center;
-  margin-top: 12rpx;
+  margin-top: 0;
+  line-height: 1.2;
 }
 
 .view-detail {

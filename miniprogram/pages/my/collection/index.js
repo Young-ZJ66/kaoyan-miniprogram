@@ -13,6 +13,11 @@ Page({
 
   // 加载收藏列表
   async loadCollections() {
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
     try {
       const result = await wx.cloud.callFunction({
         name: 'major',
@@ -22,6 +27,7 @@ Page({
         }
       })
 
+      wx.hideLoading();
       const { code, data } = result.result
       if (code === 0) {
         this.setData({
@@ -34,6 +40,7 @@ Page({
         })
       }
     } catch (err) {
+      wx.hideLoading();
       console.error('加载收藏列表失败：', err)
       wx.showToast({
         title: '加载收藏列表失败',
