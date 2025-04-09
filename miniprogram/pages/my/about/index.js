@@ -1,6 +1,6 @@
 Page({
   data: {
-    version: '1.0.3',
+    version: '1.0.5',
     buildDate: '2025-03-25'
   },
 

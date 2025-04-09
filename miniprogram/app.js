@@ -18,7 +18,53 @@ App({
 
     this.globalData = {
       userInfo: null,
-      forumNeedsRefresh: false // 社区页面是否需要刷新的标记
+      forumNeedsRefresh: false, // 社区页面是否需要刷新的标记
+      isLoggedIn: false
     };
+    
+    this.checkLoginStatus();
   },
+  
+  checkLoginStatus: function() {
+    const auth = wx.getStorageSync('auth');
+    const userInfo = wx.getStorageSync('userInfo');
+    const isLoggedIn = wx.getStorageSync('isLoggedIn');
+    
+    if (auth && auth.token && Date.now() < auth.expireTime && userInfo && isLoggedIn) {
+      // 验证数据库中的用户信息是否存在
+      wx.cloud.database().collection('users').doc(userInfo._id).get({
+        success: (res) => {
+          if (res.data) {
+            this.globalData.userInfo = userInfo;
+            this.globalData.isLoggedIn = true;
+          } else {
+            this.clearLoginData();
+          }
+        },
+        fail: () => {
+          this.clearLoginData();
+        }
+      });
+    } else {
+      this.clearLoginData();
+    }
+  },
+  
+  clearLoginData: function() {
+    wx.removeStorageSync('auth');
+    wx.removeStorageSync('userInfo');
+    wx.removeStorageSync('isLoggedIn');
+    wx.removeStorageSync('loginTime');
+    
+    this.globalData.userInfo = null;
+    this.globalData.isLoggedIn = false;
+  },
+  
+  getUserInfo: function() {
+    return this.globalData.userInfo;
+  },
+  
+  getLoginStatus: function() {
+    return this.globalData.isLoggedIn;
+  }
 });

@@ -245,6 +245,24 @@ Page({
           filePath: savePath,  // 使用指定的保存路径
           success: (res) => {
             if (res.statusCode === 200) {
+              // 增加下载次数
+              wx.cloud.callFunction({
+                name: 'resources',
+                data: {
+                  type: 'incrementDownloads',
+                  data: { id: this.data.resourceDetail._id }
+                }
+              }).then(res => {
+                if (res.result.success) {
+                  // 更新本地显示的下载次数
+                  this.setData({
+                    'resourceDetail.downloads': this.data.resourceDetail.downloads + 1
+                  });
+                }
+              }).catch(err => {
+                console.error('增加下载次数失败：', err);
+              });
+
               // 打开文件
               wx.openDocument({
                 filePath: savePath,  // 使用保存的文件路径

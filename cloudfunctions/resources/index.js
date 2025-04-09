@@ -39,6 +39,8 @@ exports.main = async (event, context) => {
         return await updateResource(data)
       case 'download':
         return await updateDownloadCount(data)
+      case 'incrementDownloads':
+        return await updateDownloadCount(data)
       case 'recordDownload':
         return await recordDownload(data, wxContext.OPENID)
       case 'delete':
