@@ -63,6 +63,7 @@ async function getSchools(data) {
     // 获取列表
     const list = await db.collection('schools')
       .where(query)
+      .orderBy('_id', 'asc')  // 按 _id 升序排序
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .get()

@@ -17,6 +17,7 @@ async function getMajors(data) {
       .where({
         schoolId: schoolId
       })
+      .orderBy('code', 'asc')
       .skip(skip)
       .limit(pageSize)
       .get()
