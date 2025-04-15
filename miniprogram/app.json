@@ -25,7 +25,8 @@
     "pages/plan/edit/index",
     "pages/community/chat/index",
     "pages/community/post/index",
-    "pages/community/detail/index"
+    "pages/community/detail/index",
+    "pages/community/AIChat/index"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",

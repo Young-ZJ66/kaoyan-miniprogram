@@ -6,7 +6,8 @@ Page({
     isLoggedIn: false,
     openid: '',
     hasUserInfo: false,
-    canIUseGetUserProfile: false
+    canIUseGetUserProfile: false,
+    _loginInProgress: false
   },
 
   onLoad() {
@@ -288,6 +289,10 @@ Page({
   // 处理登录
   async handleLogin() {
     if (this.data.isLoggedIn) return;
+    
+    // 添加防抖处理，避免多次触发
+    if (this._loginInProgress) return;
+    this._loginInProgress = true;
 
     try {
       wx.showLoading({
@@ -330,6 +335,7 @@ Page({
             }
           }
         });
+        this._loginInProgress = false;
         return;
       }
 
@@ -406,6 +412,9 @@ Page({
         icon: 'none',
         duration: 2000
       });
+    } finally {
+      // 无论成功失败，都重置登录状态
+      this._loginInProgress = false;
     }
   },
 

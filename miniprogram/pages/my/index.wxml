@@ -5,7 +5,7 @@
     </view>
     <view class="user-text">
       <view class="nickname">{{userInfo.nickName || '未登录'}}</view>
-      <view class="action-text" bindtap="onEditProfile">{{userInfo.nickName ? '修改信息>' : '点击登录>'}}</view>
+      <view class="action-text" catchtap="{{isLoggedIn ? 'onEditProfile' : 'handleLogin'}}">{{userInfo.nickName ? '修改信息>' : '点击登录>'}}</view>
     </view>
   </view>
 

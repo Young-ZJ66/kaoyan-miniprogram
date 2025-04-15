@@ -2,13 +2,13 @@
 
 page {
   /* padding-top: 54rpx; */
-  background-color: #f5f5f5;
+  background-color: #fafafa;
   min-height: 100vh;
 }
 
 .container {
   padding: 20rpx;
-  background-color: #f5f5f5;
+  background-color: #fafafa;
   width: 100%;
   box-sizing: border-box;
 }

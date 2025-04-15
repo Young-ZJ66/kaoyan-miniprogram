@@ -190,6 +190,13 @@ Page({
           const postOpenid = post._openid || (post.userInfo && post.userInfo.openid);
           const isOwner = myOpenid && postOpenid === myOpenid;
           
+          // 检查内容是否需要展开按钮（超过3行或超过100字符）
+          const isOverflow = post.content && (
+            post.content.length > 100 || 
+            (post.content.match(/\n/g) || []).length >= 3 ||
+            post.content.split('\n').some(line => line.length > 30)  // 检查单行是否过长
+          );
+          
           return {
             ...post,
             createTime: this.formatTime(post.createTime),
@@ -197,6 +204,7 @@ Page({
             commentCount: post.comments || 0,
             isLiked: false,
             showFull: false,
+            isOverflow: isOverflow,
             isOwner: isOwner
           }
         });
@@ -259,19 +267,25 @@ Page({
         
         // 格式化帖子数据
         const formattedPosts = res.result.data.map(post => {
-          // 判断帖子是否为当前用户发布
           const postOpenid = post._openid || (post.userInfo && post.userInfo.openid);
           const isOwner = myOpenid && postOpenid === myOpenid;
+          
+          // 检查内容是否需要展开按钮（超过3行或超过100字符）
+          const isOverflow = post.content && (
+            post.content.length > 100 || 
+            (post.content.match(/\n/g) || []).length >= 3 ||
+            post.content.split('\n').some(line => line.length > 30)  // 检查单行是否过长
+          );
           
           return {
             ...post,
             createTime: this.formatTime(post.createTime),
             likeCount: post.likes || 0,
             commentCount: post.comments || 0,
-            isLiked: false, // 默认未点赞，实际状态将通过checkLikeStatus更新
-            showFull: false, // 控制内容展开收起
-            isOwner: isOwner, // 添加判断是否为发布者
-            isOverflow: this.isContentOverflow(post.content) // 添加是否超过3行的标记
+            isLiked: false,
+            showFull: false,
+            isOverflow: isOverflow,
+            isOwner: isOwner
           }
         });
         
@@ -462,6 +476,28 @@ Page({
     })
   },
 
+  goToAIChat: function() {
+    // 检查用户是否登录
+    const userInfo = wx.getStorageSync('userInfo')
+    if (!userInfo) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/my/index'
+            })
+          }
+        }
+      })
+      return
+    }
+    wx.navigateTo({
+      url: '/pages/community/AIChat/index'
+    })
+  },
+
   // 发布帖子
   goToPost: function() {
     // 检查用户是否登录
@@ -488,12 +524,15 @@ Page({
 
   // 进入帖子详情
   goToPostDetail: function(e) {
-    const id = e.currentTarget.dataset.id;
-    if (!id) return;
+    // 检查是否应该阻止事件冒泡
+    if (e.currentTarget.dataset.stopBubble) {
+      return
+    }
     
+    const id = e.currentTarget.dataset.id
     wx.navigateTo({
-      url: '/pages/community/detail/index?id=' + id
-    });
+      url: `/pages/community/detail/index?id=${id}`
+    })
   },
 
   // 跳转到发帖页面
@@ -639,32 +678,24 @@ Page({
         likeInProgress[id] = false;
       }, 500); // 添加500ms延迟，防止过快点击
     });
+    
+    // 设置阻止事件冒泡标志
+    e.currentTarget.dataset.stopBubble = true;
   },
 
-  // 切换帖子内容显示状态
+  // 切换内容展开/收起状态
   toggleContent: function(e) {
-    // 从事件中获取帖子ID
     const id = e.currentTarget.dataset.id;
-    
-    if (!id) return;
-    
-    // 查找要切换的帖子
     const posts = this.data.posts;
     const index = posts.findIndex(post => post._id === id);
     
-    if (index === -1) return;
-    
-    // 切换显示状态
-    posts[index].showFull = !posts[index].showFull;
-    
-    // 更新数据
-    this.setData({
-      posts
-    });
-    
-    // 如果在第一页，同时更新缓存
-    if (this.data.page === 1) {
-      this.setPostsCache(posts);
+    if (index !== -1) {
+      const post = posts[index];
+      const key = `posts[${index}].showFull`;
+      
+      this.setData({
+        [key]: !post.showFull
+      });
     }
   },
 
@@ -687,52 +718,57 @@ Page({
 
   // 删除帖子
   deletePost: function(e) {
-    const id = e.currentTarget.dataset.id
-    if (!id) return
+    const id = e.currentTarget.dataset.id;
     
     wx.showModal({
       title: '确认删除',
-      content: '删除后无法恢复，确定要删除该帖子吗？',
-      success: (res) => {
+      content: '确定要删除这条帖子吗？',
+      success: res => {
         if (res.confirm) {
           wx.showLoading({
-            title: '删除中...',
-          })
+            title: '删除中...'
+          });
           
           wx.cloud.callFunction({
             name: 'forum',
             data: {
               type: 'deletePost',
-              data: { id }
+              data: {
+                postId: id
+              }
             }
           }).then(res => {
             if (res.result.success) {
-              // 删除成功，从本地列表中移除该帖子
-              const posts = this.data.posts.filter(post => post._id !== id)
-              this.setData({ posts })
+              // 更新列表，移除被删除的帖子
+              const posts = this.data.posts.filter(post => post._id !== id);
+              this.setData({
+                posts: posts
+              });
               
               wx.showToast({
                 title: '删除成功',
                 icon: 'success'
-              })
+              });
             } else {
               wx.showToast({
-                title: res.result.message || '删除失败',
-                icon: 'none'
-              })
+                title: '删除失败',
+                icon: 'error'
+              });
             }
           }).catch(err => {
-            console.error('删除帖子失败:', err)
             wx.showToast({
               title: '删除失败',
-              icon: 'none'
-            })
+              icon: 'error'
+            });
           }).finally(() => {
-            wx.hideLoading()
-          })
+            wx.hideLoading();
+          });
         }
       }
-    })
+    });
+    
+    // 防止事件冒泡
+    e.stopPropagation();
   },
 
   // 处理分享

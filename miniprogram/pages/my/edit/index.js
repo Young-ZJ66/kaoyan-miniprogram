@@ -276,35 +276,75 @@ Page({
 
             const { openid } = this.data;
             
-            // 调用删除用户云函数
-            const result = await wx.cloud.callFunction({
-              name: 'deleteUser',
+            // 1. 获取并删除用户的所有计划
+            const plansRes = await wx.cloud.database().collection('plans').where({
+              _openid: openid
+            }).get();
+
+            if (plansRes.data && plansRes.data.length > 0) {
+              // 删除每个计划
+              for (const plan of plansRes.data) {
+                await wx.cloud.callFunction({
+                  name: 'deletePlan',
+                  data: {
+                    planId: plan._id
+                  }
+                });
+              }
+            }
+
+            // 2. 获取并删除用户的所有帖子
+            const postsRes = await wx.cloud.callFunction({
+              name: 'forum',
               data: {
-                openid
+                type: 'getMyPosts',
+                data: {
+                  openid
+                }
               }
             });
 
-            if (result.result && result.result.success) {
-              // 清除本地存储
-              wx.clearStorageSync();
-              
-              wx.hideLoading();
-              wx.showToast({
-                title: '注销成功',
-                icon: 'success',
-                duration: 2000,
-                success: () => {
-                  setTimeout(() => {
-                    // 跳转到登录页面
-                    wx.reLaunch({
-                      url: '/pages/my/index'
-                    });
-                  }, 2000);
-                }
-              });
-            } else {
-              throw new Error(result.result?.message || '注销失败');
+            if (postsRes.result && postsRes.result.success) {
+              const posts = postsRes.result.data || [];
+              for (const post of posts) {
+                await wx.cloud.callFunction({
+                  name: 'forum',
+                  data: {
+                    type: 'deletePost',
+                    data: {
+                      id: post._id
+                    }
+                  }
+                });
+              }
             }
+
+            // 3. 删除用户相关记录
+            await wx.cloud.callFunction({
+              name: 'deleteUser',
+              data: {
+                openid,
+                deleteRelated: true // 添加标志，表示需要删除相关记录
+              }
+            });
+
+            // 4. 清除本地存储
+            wx.clearStorageSync();
+            
+            wx.hideLoading();
+            wx.showToast({
+              title: '注销成功',
+              icon: 'success',
+              duration: 2000,
+              success: () => {
+                setTimeout(() => {
+                  // 跳转到登录页面
+                  wx.reLaunch({
+                    url: '/pages/my/index'
+                  });
+                }, 2000);
+              }
+            });
           } catch (err) {
             console.error('注销失败：', err);
             wx.hideLoading();

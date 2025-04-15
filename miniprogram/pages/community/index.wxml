@@ -1,15 +1,26 @@
 <view class="container">
   <!-- 聊天室模块 -->
-  <view class="chat-room-section" bindtap="goToChatRoom">
+  <view class="chat-room-section">
     <view class="section-header">
       <text class="section-title">实时交流</text>
     </view>
-    <view class="chat-room-content">
+    <view class="chat-room-content" bindtap="goToChatRoom">
       <view class="chat-room-icon">
         <image src="/images/chatroom.png" mode="aspectFill"></image>
       </view>
       <view class="chat-room-info">
         <text class="chat-room-name">考研交流群</text>
+      </view>
+      <view class="chat-room-arrow">
+        <text class="iconfont icon-arrow-right"></text>
+      </view>
+    </view>
+    <view class="chat-room-content" bindtap="goToAIChat">
+      <view class="chat-room-icon">
+        <image src="/images/chatroom.png" mode="aspectFill"></image>
+      </view>
+      <view class="chat-room-info">
+        <text class="chat-room-name">智能考研小助手</text>
       </view>
       <view class="chat-room-arrow">
         <text class="iconfont icon-arrow-right"></text>
@@ -43,8 +54,8 @@
             <text class="title" wx:if="{{item.title}}">{{item.title}}</text>
             <view class="content-wrapper">
               <text class="content {{item.showFull ? 'content-full' : ''}}" user-select="true">{{item.content}}</text>
-              <view class="buttons-row">
-                <text wx:if="{{!item.showFull && item.isOverflow}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">……展开全文</text>
+              <view class="buttons-row" wx:if="{{item.isOverflow}}">
+                <text wx:if="{{!item.showFull}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">展开全文</text>
                 <text wx:if="{{item.showFull}}" class="view-more" catchtap="toggleContent" data-id="{{item._id}}">收起</text>
               </view>
             </view>

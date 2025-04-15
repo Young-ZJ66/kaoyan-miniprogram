@@ -187,31 +187,41 @@
 .post-content .content {
   font-size: 28rpx;
   color: #666;
+  line-height: 1.5;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+/* 收起状态 */
+.post-content .content:not(.content-full) {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
-  line-height: 1.5;
   text-overflow: ellipsis;
-  word-break: break-all;
-  white-space: normal;
   max-height: 120rpx;
-  margin-bottom: 0;
 }
 
+/* 展开状态 */
 .post-content .content-full {
-  -webkit-line-clamp: unset;
-  display: block;
   max-height: none;
+  overflow: visible;
+}
+
+.buttons-row {
+  margin-top: 10rpx;
+  text-align: right;
 }
 
 .view-more {
-  margin-top: 0;
-  font-size: 26rpx;
-  color: #3399ff;
   display: inline-block;
-  padding: 0;
-  margin-right: 20rpx;
+  color: #07c160;
+  font-size: 26rpx;
+  padding: 10rpx;
+}
+
+.view-more:active {
+  opacity: 0.8;
 }
 
 .post-footer {
@@ -353,11 +363,6 @@
 .action-item text {
   font-size: 26rpx;
   color: #999;
-}
-
-.buttons-row {
-  margin-top: 0;
-  line-height: 1.2;
 }
 
 .view-detail {

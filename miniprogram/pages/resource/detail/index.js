@@ -263,9 +263,21 @@ Page({
                 console.error('增加下载次数失败：', err);
               });
 
+              // 记录下载历史
+              wx.cloud.callFunction({
+                name: 'resources',
+                data: {
+                  type: 'recordDownload',
+                  data: { id: this.data.resourceDetail._id }
+                }
+              }).catch(err => {
+                console.error('记录下载历史失败：', err);
+              });
+
               // 打开文件
               wx.openDocument({
                 filePath: savePath,  // 使用保存的文件路径
+                showMenu:true,
                 success: () => {
                   console.log('打开文件成功')
                 },

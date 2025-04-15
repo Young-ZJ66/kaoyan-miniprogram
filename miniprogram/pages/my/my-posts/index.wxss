@@ -63,33 +63,47 @@
   position: relative;
 }
 
-.content {
+.post-content .content {
   font-size: 28rpx;
-  color: #333;
+  color: #666;
   line-height: 1.5;
   word-break: break-all;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.content-full {
-  -webkit-line-clamp: unset;
+  white-space: pre-wrap;
   display: block;
 }
 
+/* 收起状态 */
+.post-content .content:not(.content-full) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 120rpx;
+  margin-bottom: 0;
+}
+
+/* 展开状态 */
+.post-content .content-full {
+  display: block;
+  max-height: none;
+  overflow: visible;
+}
+
 .buttons-row {
-  display: flex;
-  margin-top: 12rpx;
+  margin-top: 10rpx;
+  text-align: right;
 }
 
 .view-more {
-  font-size: 26rpx;
-  color: #576b95;
   display: inline-block;
-  margin-top: 10rpx;
+  color: #07c160;
+  font-size: 26rpx;
+  padding: 10rpx;
+}
+
+.view-more:active {
+  opacity: 0.8;
 }
 
 .post-images {

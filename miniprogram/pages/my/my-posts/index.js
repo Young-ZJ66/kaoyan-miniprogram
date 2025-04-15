@@ -95,11 +95,22 @@ Page({
           // 标记为用户自己的帖子
           post.isOwner = true
           
+          // 检查内容是否需要展开按钮（超过3行或超过100字符）
+          post.isOverflow = post.content && (
+            post.content.length > 100 || 
+            (post.content.match(/\n/g) || []).length >= 3 ||
+            post.content.split('\n').some(line => line.length > 30)  // 检查单行是否过长
+          )
+          
+          // 设置初始状态
+          post.showFull = false
+          
           console.log(`处理后的帖子(${post._id}): `, {
             createTime: post.createTime,
             likeCount: post.likeCount,
             commentCount: post.commentCount,
-            userInfo: post.userInfo
+            userInfo: post.userInfo,
+            isOverflow: post.isOverflow
           })
         })
 
@@ -188,8 +199,8 @@ Page({
     const post = this.data.posts.find(p => p._id === postId)
     if (!post) return
     
-    // 阻止冒泡，避免触发goToPostDetail
-    e.stopPropagation()
+    // 设置一个标志来防止事件冒泡
+    e.currentTarget.dataset.stopBubble = true
     
     wx.showLoading({
       title: '处理中...',
@@ -323,16 +334,20 @@ Page({
     })
   },
 
-  // 展开或收起帖子内容
+  // 切换内容展开/收起状态
   toggleContent: function(e) {
-    const postId = e.currentTarget.dataset.id
-    const posts = this.data.posts.map(post => {
-      if (post._id === postId) {
-        return { ...post, showFull: !post.showFull }
-      }
-      return post
-    })
-    this.setData({ posts })
+    const id = e.currentTarget.dataset.id;
+    const posts = this.data.posts;
+    const index = posts.findIndex(post => post._id === id);
+    
+    if (index !== -1) {
+      const post = posts[index];
+      const key = `posts[${index}].showFull`;
+      
+      this.setData({
+        [key]: !post.showFull
+      });
+    }
   },
 
   // 格式化时间显示
