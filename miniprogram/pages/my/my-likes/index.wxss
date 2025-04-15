@@ -1,6 +1,6 @@
 .container {
   padding: 20rpx;
-  background-color: #f6f6f6;
+  background-color: #fafafa;
   min-height: 100vh;
 }
 
@@ -10,7 +10,7 @@
 
 .post-item {
   background-color: #fff;
-  border-radius: 12rpx;
+  border-radius: 24rpx;
   padding: 24rpx;
   margin-bottom: 20rpx;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);

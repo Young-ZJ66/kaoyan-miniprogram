@@ -476,28 +476,6 @@ Page({
     })
   },
 
-  goToAIChat: function() {
-    // 检查用户是否登录
-    const userInfo = wx.getStorageSync('userInfo')
-    if (!userInfo) {
-      wx.showModal({
-        title: '提示',
-        content: '请先登录',
-        success: (res) => {
-          if (res.confirm) {
-            wx.switchTab({
-              url: '/pages/my/index'
-            })
-          }
-        }
-      })
-      return
-    }
-    wx.navigateTo({
-      url: '/pages/community/AIChat/index'
-    })
-  },
-
   // 发布帖子
   goToPost: function() {
     // 检查用户是否登录
