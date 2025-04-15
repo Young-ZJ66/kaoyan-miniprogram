@@ -92,7 +92,7 @@
 
 .buttons-row {
   margin-top: 10rpx;
-  text-align: right;
+  text-align: left;
 }
 
 .view-more {
@@ -151,7 +151,7 @@
   align-items: center;
   margin-top: 20rpx;
   padding-top: 16rpx;
-  border-top: 1rpx solid #f0f0f0;
+  border-top: none;
 }
 
 .post-footer-left {
