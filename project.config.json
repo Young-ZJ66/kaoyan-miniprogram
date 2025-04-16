@@ -7,7 +7,7 @@
     "enhance": true,
     "postcss": true,
     "preloadBackgroundData": false,
-    "minified": false,
+    "minified": true,
     "newFeature": true,
     "coverView": true,
     "nodeModules": false,
@@ -34,8 +34,8 @@
     "userConfirmedBundleSwitch": false,
     "packNpmManually": false,
     "packNpmRelationList": [],
-    "minifyWXSS": false,
-    "minifyWXML": false
+    "minifyWXSS": true,
+    "minifyWXML": true
   },
   "appid": "wx60d1735c54b6439d",
   "projectname": "quickstart-wx-cloud",

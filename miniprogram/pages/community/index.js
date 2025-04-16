@@ -476,6 +476,29 @@ Page({
     })
   },
 
+  goToChatAI: function() {
+    // 检查用户是否登录
+    const userInfo = wx.getStorageSync('userInfo')
+    if (!userInfo) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({
+              url: '/pages/my/index'
+            })
+          }
+        }
+      })
+      return
+    }
+
+    wx.navigateTo({
+      url: '/pages/community/chatAI/index'
+    })
+  },
+
   // 发布帖子
   goToPost: function() {
     // 检查用户是否登录
@@ -712,10 +735,11 @@ Page({
             data: {
               type: 'deletePost',
               data: {
-                postId: id
+                id: id  // 修改参数名，与云函数保持一致
               }
             }
           }).then(res => {
+            wx.hideLoading();
             if (res.result.success) {
               // 更新列表，移除被删除的帖子
               const posts = this.data.posts.filter(post => post._id !== id);
@@ -723,30 +747,34 @@ Page({
                 posts: posts
               });
               
+              // 更新缓存
+              if (this.data.page === 1) {
+                this.setPostsCache(posts);
+              }
+              
               wx.showToast({
                 title: '删除成功',
                 icon: 'success'
               });
             } else {
               wx.showToast({
-                title: '删除失败',
+                title: res.result.message || '删除失败',
                 icon: 'error'
               });
             }
           }).catch(err => {
+            wx.hideLoading();
             wx.showToast({
               title: '删除失败',
               icon: 'error'
             });
-          }).finally(() => {
-            wx.hideLoading();
           });
         }
       }
     });
     
     // 防止事件冒泡
-    e.stopPropagation();
+    e.currentTarget.dataset.stopBubble = true;
   },
 
   // 处理分享

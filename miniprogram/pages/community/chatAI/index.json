@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "agent-ui":"/components/agent-ui/index"
+  },
+  "navigationBarTitleText": "智能考研小助手"
+}
