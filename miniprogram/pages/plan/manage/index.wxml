@@ -11,7 +11,7 @@
           <view class="plan-name">{{item.planName || '未命名的计划'}}</view>
           <view class="plan-meta">
             <view class="plan-date">{{item.startDate}} 至 {{item.endDate}}</view>
-            <view class="create-time">创建时间：{{item.createTime}}</view>
+            <view class="create-time">创建时间：{{item.createdAt}}</view>
           </view>
         </view>
         <view class="plan-progress">

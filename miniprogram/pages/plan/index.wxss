@@ -48,6 +48,42 @@
   border-radius: 10rpx;
 }
 
+/* 倒计时样式 */
+.countdown-section {
+  width: 100%;
+  background-color: #fff;
+  padding: 30rpx;
+  border-radius: 24rpx;
+  margin-bottom: 20rpx;
+  box-sizing: border-box;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.countdown-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.countdown-title {
+  font-size: 32rpx;
+  color: #333;
+}
+
+.countdown-days {
+  font-size: 42rpx;
+  color: #ff4d4f;
+  font-weight: bold;
+}
+
+.countdown-unit {
+  font-size: 32rpx;
+  color: #333;
+}
+
 /* 日历样式 */
 .calendar-section {
   width: 100%;
@@ -61,26 +97,21 @@
 }
 
 .calendar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 30rpx;
-  position: relative;
-}
-
-.calendar-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
 }
 
 .calendar-actions {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
+}
+
+.calendar-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
 }
 
 .calendar-btn {
@@ -101,12 +132,13 @@
 .weekday {
   font-size: 28rpx;
   color: #999;
+  padding: 10rpx 0;
 }
 
 .days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 10rpx;
+  gap: 8rpx;
 }
 
 .day {
@@ -118,49 +150,73 @@
   color: #333;
   border-radius: 8rpx;
   position: relative;
+  background-color: #fff;
 }
 
+/* 非当前月份日期的样式 */
 .other-month {
-  visibility: hidden;
-  pointer-events: none;
+  opacity: 0;  /* 完全透明而不是visibility:hidden，这样可以保持布局 */
+  pointer-events: none;  /* 禁止交互 */
 }
 
 .today {
-  background-color: #f5f5f5;
-  color: #666;
+  background-color: #e6e6e6;
+  color: #333;
+  font-weight: bold;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
 }
 
-.in-plan {
-  background-color: #f5f5f5;
-}
-
-.completed {
-  background-color: #f6ffed;
+/* 任务状态样式 */
+.day.completed {
+  background-color: rgba(7, 193, 96, 0.1); /* 淡绿色背景 */
+  border: 1rpx solid #07c160;
   color: #07c160;
 }
 
-.unfinished {
-  background-color: #fff1f0;
+.day.overdue {
+  background-color: rgba(255, 77, 79, 0.1); /* 淡红色背景 */
+  border: 1rpx solid #ff4d4f;
   color: #ff4d4f;
 }
 
-.selected {
-  position: relative;
+.day.completed .task-dot {
+  background-color: #07c160; /* 绿色点 */
 }
 
-.selected::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.day.overdue .task-dot {
+  background-color: #ff4d4f; /* 红色点 */
+}
+
+.day.unfinished {
+  color: #ff4d4f;
+}
+
+.day.selected {
   border: 2rpx solid #07c160;
-  border-radius: 8rpx;
-  pointer-events: none;
+  color: #07c160;
+  font-weight: bold;
 }
 
-/* 任务列表样式 */
+/* 考试日期样式 */
+.day.exam-date {
+  background-color: rgba(24, 144, 255, 0.15);
+  color: #1890ff;
+  font-weight: bold;
+  border: 1rpx solid #1890ff;
+}
+
+/* 添加任务标记小红点样式 */
+.task-dot {
+  position: absolute;
+  bottom: 5rpx;
+  right: 5rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background-color: #e74c3c;
+}
+
+/* 任务列表区域样式 */
 .tasks-section {
   width: 100%;
   background-color: #fff;
@@ -173,7 +229,10 @@
 }
 
 .tasks-header {
-  margin-bottom: 20rpx;
+  padding: 20rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
+  margin-bottom: 10rpx;
 }
 
 .tasks-title {
@@ -183,44 +242,104 @@
 }
 
 .tasks-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
+  padding: 15rpx;
+  max-height: 600rpx;
+  overflow-y: auto;
 }
 
 .task-item {
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-plan-info {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.task-list {
+  padding-left: 10rpx;
+}
+
+.task-detail {
   display: flex;
   align-items: center;
   padding: 20rpx;
-  background-color: #f8f8f8;
-  border-radius: 12rpx;
+  margin: 10rpx 0;
+  background-color: #f9f9f9;
+  border-radius: 8rpx;
+  border-left: 4rpx solid #07c160;
 }
 
-.task-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+.task-checkbox {
+  width: 40rpx;
+  height: 40rpx;
+  border: 2rpx solid #ddd;
+  border-radius: 6rpx;
+  margin-right: 20rpx;
+  position: relative;
+  transition: all 0.2s ease;
+  background-color: #f9f9f9;
+  box-shadow: inset 0 1rpx 3rpx rgba(0,0,0,0.05);
+  cursor: pointer;
+}
+
+.task-checkbox:active {
+  opacity: 0.7;
+  transform: scale(0.9);
+}
+
+.task-checkbox.completed {
+  background-color: #07c160;
+  border-color: #07c160;
+  box-shadow: 0 2rpx 4rpx rgba(7, 193, 96, 0.2);
+}
+
+.task-checkbox.completed:after {
+  content: '';
+  position: absolute;
+  width: 22rpx;
+  height: 12rpx;
+  border-left: 4rpx solid #fff;
+  border-bottom: 4rpx solid #fff;
+  transform: rotate(-45deg);
+  top: 10rpx;
+  left: 8rpx;
+  animation: checkmark 0.2s ease-in-out;
+}
+
+@keyframes checkmark {
+  0% {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-45deg) scale(1);
+  }
 }
 
 .task-text {
-  flex: 1;
   font-size: 28rpx;
   color: #333;
+  flex: 1;
 }
 
-.completed-text {
-  text-decoration: line-through;
+.task-text.completed-text {
   color: #999;
+  text-decoration: line-through;
 }
 
-.empty-tasks {
+.no-tasks {
   padding: 40rpx 0;
   text-align: center;
   color: #999;
   font-size: 28rpx;
-  background-color: #f8f8f8;
-  border-radius: 12rpx;
 }
 
 /* 可移动按钮样式 */
@@ -352,4 +471,15 @@
   font-size: 28rpx;
   border-radius: 40rpx;
   border: none;
+}
+
+.task-bullet {
+  width: 8rpx;
+  height: 8rpx;
+  background-color: #666;
+  border-radius: 50%;
+  margin: 0 16rpx 0 16rpx;
+  position: relative;
+  align-self: center;
+  flex-shrink: 0;
 }

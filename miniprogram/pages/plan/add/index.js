@@ -11,13 +11,16 @@ Page({
   onLoad: function() {
     // 设置默认日期范围（今天到3天后）
     const today = new Date()
-    const sevenDaysLater = new Date()
-    sevenDaysLater.setDate(today.getDate() + 3)
+    const threeDaysLater = new Date()
+    threeDaysLater.setDate(today.getDate() + 2)
 
     this.setData({
       startDate: this.formatDate(today),
-      endDate: this.formatDate(sevenDaysLater)
+      endDate: this.formatDate(threeDaysLater)
     })
+
+    // 添加一个默认任务
+    this.addTask()
   },
 
   // 格式化日期
@@ -26,6 +29,12 @@ Page({
     const month = (date.getMonth() + 1).toString().padStart(2, '0')
     const day = date.getDate().toString().padStart(2, '0')
     return `${year}-${month}-${day}`
+  },
+
+  // 将日期转换为时间戳（当天0点）
+  dateToTimestamp: function(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00.000Z')
+    return date.getTime()
   },
 
   // 开始日期变化
@@ -138,12 +147,16 @@ Page({
       title: '保存中...',
     })
 
+    // 转换日期为时间戳
+    const startTimestamp = this.dateToTimestamp(this.data.startDate)
+    const endTimestamp = this.dateToTimestamp(this.data.endDate)
+
     // 调用云函数保存计划
     wx.cloud.callFunction({
       name: 'createPlan',
       data: {
-        startDate: this.data.startDate,
-        endDate: this.data.endDate,
+        startDate: startTimestamp,
+        endDate: endTimestamp,
         tasks: this.data.tasks,
         planName: this.data.planName.trim()
       }

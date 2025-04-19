@@ -48,9 +48,19 @@ Page({
           
           const progress = totalTasks > 0 ? Math.floor((completedTasks / totalTasks) * 100) : 0;
           
+          // 处理createdAt字段，格式化时间
+          const createdAt = plan.createdAt ? this.formatTime(plan.createdAt) : (plan.createTime ? this.formatTime(plan.createTime) : '未知');
+          
+          // 格式化开始日期和结束日期
+          const startDate = this.formatDateStr(plan.startDate);
+          const endDate = this.formatDateStr(plan.endDate);
+          
           return {
             ...plan,
-            progress
+            progress,
+            createdAt,
+            startDate,
+            endDate
           };
         });
         
@@ -84,6 +94,24 @@ Page({
     const hour = date.getHours().toString().padStart(2, '0')
     const minute = date.getMinutes().toString().padStart(2, '0')
     return `${year}-${month}-${day} ${hour}:${minute}`
+  },
+
+  // 格式化日期为YYYY-MM-DD字符串
+  formatDateStr: function(dateObj) {
+    if (!dateObj) return '';
+    
+    // 处理从云数据库返回的日期对象
+    const date = new Date(dateObj);
+    
+    // 检查日期是否有效
+    if (isNaN(date.getTime())) {
+      return dateObj; // 如果无法解析为日期对象，则返回原始值
+    }
+    
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   },
 
   // 跳转到编辑计划页面

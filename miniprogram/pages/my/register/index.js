@@ -220,6 +220,30 @@ Page({
       wx.setStorageSync('isLoggedIn', true);
       wx.setStorageSync('loginTime', Date.now());
 
+      // 记录注册日志
+      try {
+        const systemInfo = wx.getDeviceInfo();
+        const appBaseInfo = wx.getAppBaseInfo();
+        
+        wx.cloud.callFunction({
+          name: 'logOperation',
+          data: {
+            type: 'register',
+            openid: userInfo._openid,
+            deviceInfo: {
+              model: systemInfo.model,
+              system: systemInfo.system,
+              platform: systemInfo.platform,
+              version: appBaseInfo.version,
+              SDKVersion: appBaseInfo.SDKVersion
+            }
+          }
+        });
+      } catch (err) {
+        console.error('记录注册日志失败：', err);
+        // 记录日志失败不影响注册流程
+      }
+
       wx.hideLoading();
       wx.showToast({
         title: '注册成功',

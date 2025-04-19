@@ -22,6 +22,20 @@ Page({
     })
   },
 
+  // 格式化日期
+  formatDate: function(date) {
+    const year = date.getFullYear()
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const day = date.getDate().toString().padStart(2, '0')
+    return `${year}-${month}-${day}`
+  },
+
+  // 将日期转换为时间戳（当天0点）
+  dateToTimestamp: function(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00.000Z')
+    return date.getTime()
+  },
+
   // 开始日期变化
   onStartDateChange: function(e) {
     const startDate = e.detail.value
@@ -117,21 +131,38 @@ Page({
       return
     }
 
+    // 检查任务内容是否为空
+    for (let i = 0; i < this.data.tasks.length; i++) {
+      if (!this.data.tasks[i].content.trim()) {
+        wx.showToast({
+          title: `第${i+1}个任务内容不能为空`,
+          icon: 'none'
+        })
+        return
+      }
+    }
+
     wx.showLoading({
       title: '保存中...',
     })
+
+    // 转换日期为时间戳
+    const startTimestamp = this.dateToTimestamp(this.data.startDate)
+    const endTimestamp = this.dateToTimestamp(this.data.endDate)
 
     // 调用云函数更新计划
     wx.cloud.callFunction({
       name: 'updatePlan',
       data: {
         planId: this.data.planId,
-        startDate: this.data.startDate,
-        endDate: this.data.endDate,
+        startDate: startTimestamp,
+        endDate: endTimestamp,
         tasks: this.data.tasks,
         planName: this.data.planName.trim()
       }
     }).then(res => {
+      wx.hideLoading()
+      
       if (res.result.success) {
         wx.showToast({
           title: '保存成功',

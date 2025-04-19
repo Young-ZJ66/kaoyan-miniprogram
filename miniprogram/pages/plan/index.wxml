@@ -1,59 +1,81 @@
 <view class="container">
-  <!-- 总进度条 -->
-  <view class="progress-section">
-    <view class="progress-info">
-      <text class="progress-text">总进度</text>
-      <text class="progress-percentage">{{totalProgress}}%</text>
-    </view>
-    <view class="progress-bar">
-      <view class="progress-inner" style="width: {{totalProgress + '%'}}"></view>
+  <!-- 考研倒计时 -->
+  <view class="countdown-section" wx:if="{{countdownInfo}}">
+    <view class="countdown-content">
+      <text class="countdown-title">距离{{countdownInfo.shortYear}}考研还有</text>
+      <text class="countdown-days">{{countdownInfo.daysRemaining}}</text>
+      <text class="countdown-unit">天</text>
     </view>
   </view>
 
-  <!-- 日历部分 -->
+  <!-- 任务总进度 -->
+  <view class="progress-section" wx:if="{{isLoggedIn}}">
+    <view class="progress-info">
+      <text class="progress-text">总体进度</text>
+      <text class="progress-percentage">{{totalProgress}}%</text>
+    </view>
+    <view class="progress-bar">
+      <view class="progress-inner" style="width: {{totalProgress}}%"></view>
+    </view>
+  </view>
+
+  <!-- 日历组件 -->
   <view class="calendar-section">
     <view class="calendar-header">
-      <view class="calendar-title">{{currentYear}}年{{currentMonth}}月</view>
       <view class="calendar-actions">
         <view class="calendar-btn" bindtap="prevMonth">上个月</view>
+        <view class="calendar-title">{{currentYear}}年{{currentMonth}}月</view>
         <view class="calendar-btn" bindtap="nextMonth">下个月</view>
       </view>
     </view>
     <view class="calendar-body">
       <view class="weekdays">
-        <view wx:for="{{weekdays}}" wx:key="*this" class="weekday">{{item}}</view>
+        <view class="weekday">日</view>
+        <view class="weekday">一</view>
+        <view class="weekday">二</view>
+        <view class="weekday">三</view>
+        <view class="weekday">四</view>
+        <view class="weekday">五</view>
+        <view class="weekday">六</view>
       </view>
       <view class="days">
-        <view wx:for="{{days}}" wx:key="date" 
-              class="day {{item.isCurrentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.hasUnfinished && item.isPast ? 'unfinished' : ''}} {{item.isCompleted ? 'completed' : ''}} {{item.isSelected ? 'selected' : ''}}"
-              bindtap="selectDate"
-              data-date="{{item.date}}">
+        <view 
+          wx:for="{{days}}" 
+          wx:key="date" 
+          class="day {{item.isCurrentMonth ? '' : 'other-month'}} {{item.isToday ? 'today' : ''}} {{item.isSelected ? 'selected' : ''}} {{item.taskStatus === 'completed' ? 'completed' : ''}} {{item.taskStatus === 'overdue' ? 'overdue' : ''}} {{item.isCountdownDay || item.isNextDay ? 'exam-date' : ''}}"
+          bindtap="selectDate"
+          data-date="{{item.date}}">
           <text>{{item.day}}</text>
+          <!-- 添加任务标记，显示小红点 -->
+          <view class="task-dot" wx:if="{{item.hasTasks}}"></view>
         </view>
       </view>
     </view>
   </view>
 
-  <!-- 任务列表 -->
+  <!-- 任务列表区域 -->
   <view class="tasks-section" wx:if="{{selectedDate}}">
     <view class="tasks-header">
-      <text class="tasks-title">{{selectedDate}} 任务</text>
+      <text class="tasks-title">{{selectedDate}} 的任务</text>
     </view>
     <view class="tasks-list">
-      <block wx:if="{{selectedDateTasks.length > 0}}">
-        <view wx:for="{{selectedDateTasks}}" wx:key="id" class="task-item">
-          <view class="task-content">
-            <text class="task-text {{item.completed ? 'completed-text' : ''}}">{{item.content}}</text>
-            <checkbox wx:if="{{item.canCheck}}" 
-                      checked="{{item.completed}}"
-                      bindtap="toggleTask"
-                      data-task-id="{{item._id}}"
-                      color="#07c160"/>
-          </view>
-        </view>
+      <block wx:if="{{currentDateTasks.length > 0}}">
+        <block wx:for="{{currentDateTasks}}" wx:key="_id">
+          <block wx:for="{{item.tasks}}" wx:for-item="taskItem" wx:for-index="taskIndex" wx:key="taskIndex">
+            <view class="task-detail">
+              <view wx:if="{{showTaskCheckbox}}" class="task-checkbox {{taskItem.completed ? 'completed' : ''}}" 
+                    bindtap="toggleTaskStatus" 
+                    data-task-id="{{item._id}}" 
+                    data-task-index="{{taskIndex}}" 
+                    data-completed="{{taskItem.completed}}"></view>
+              <view wx:else class="task-bullet"></view>
+              <text class="task-text {{taskItem.completed && showTaskCheckbox ? 'completed-text' : ''}}">{{taskItem.content}}</text>
+            </view>
+          </block>
+        </block>
       </block>
-      <view wx:else class="empty-tasks">
-        <text>暂无计划任务</text>
+      <view class="no-tasks" wx:else>
+        <text>当前日期没有任务</text>
       </view>
     </view>
   </view>
