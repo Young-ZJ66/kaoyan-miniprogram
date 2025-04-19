@@ -77,7 +77,7 @@ Page({
     db.collection('posts').doc(this.data.postId).get().then(res => {
       if (res.data) {
         // 格式化时间
-        const createTime = this.formatTime(res.data.createTime);
+        const formattedTime = this.formatTime(res.data.createdAt);
         
         // 获取当前用户信息，判断是否为帖子发布者
         const userInfo = this.data.userInfo || {};
@@ -87,7 +87,7 @@ Page({
         
         const post = {
           ...res.data,
-          createTime: createTime,
+          formattedTime: formattedTime,
           isOwner: isOwner  // 添加标识，表示当前用户是否为发帖人
         };
         
@@ -133,14 +133,14 @@ Page({
       .where({
         postId: this.data.postId
       })
-      .orderBy('createTime', 'desc')
+      .orderBy('createdAt', 'desc')
       .get()
       .then(res => {
         if (res.data) {
           const comments = res.data.map(comment => {
             return {
               ...comment,
-              createTime: this.formatTime(comment.createTime)
+              formattedTime: this.formatTime(comment.createdAt)
             };
           });
           
@@ -370,57 +370,67 @@ Page({
   },
 
   // 格式化时间
-  formatTime: function (date) {
-    if (!date) return '';
-    
-    // 处理不同类型的日期输入
-    let dateObj;
-    if (date instanceof Date) {
-      dateObj = date;
-    } else if (typeof date === 'number') {
-      // 处理时间戳
-      dateObj = new Date(date);
-    } else if (typeof date === 'string') {
-      // 尝试解析ISO日期字符串
-      dateObj = new Date(date);
-    } else {
-      return '未知时间';
+  formatTime: function(timestamp) {
+    if (!timestamp) return '';
+
+    let date;
+    try {
+      // 处理不同类型的时间戳
+      if (typeof timestamp === 'object') {
+        if (timestamp instanceof Date) {
+          date = timestamp;
+        } else if (timestamp.$date) {
+          date = new Date(timestamp.$date);
+        } else if (timestamp.seconds) {
+          date = new Date(timestamp.seconds * 1000);
+        } else {
+          return '';
+        }
+      } else if (typeof timestamp === 'string') {
+        date = new Date(timestamp);
+      } else if (typeof timestamp === 'number') {
+        date = new Date(timestamp);
+      } else {
+        return '';
+      }
+
+      if (isNaN(date.getTime())) {
+        return '';
+      }
+
+      const now = new Date();
+      const diff = now.getTime() - date.getTime();
+      const minute = 1000 * 60;
+      const hour = minute * 60;
+      const day = hour * 24;
+      const month = day * 30;
+      const year = day * 365;
+
+      // 小于1分钟
+      if (diff < minute) {
+        return '刚刚';
+      }
+      // 小于1小时
+      if (diff < hour) {
+        return Math.floor(diff / minute) + '分钟前';
+      }
+      // 小于24小时
+      if (diff < day) {
+        return Math.floor(diff / hour) + '小时前';
+      }
+      // 小于30天
+      if (diff < month) {
+        return Math.floor(diff / day) + '天前';
+      }
+      // 小于365天
+      if (diff < year) {
+        return Math.floor(diff / month) + '个月前';
+      }
+      // 超过365天
+      return Math.floor(diff / year) + '年前';
+    } catch (error) {
+      return '';
     }
-    
-    // 检查日期是否有效
-    if (isNaN(dateObj.getTime())) {
-      return '未知时间';
-    }
-    
-    const now = new Date();
-    const diff = now.getTime() - dateObj.getTime();
-    
-    // 小于1分钟显示"刚刚"
-    if (diff < 60 * 1000) {
-      return '刚刚';
-    }
-    
-    // 小于1小时显示"x分钟前"
-    if (diff < 60 * 60 * 1000) {
-      return Math.floor(diff / (60 * 1000)) + '分钟前';
-    }
-    
-    // 小于24小时显示"x小时前"
-    if (diff < 24 * 60 * 60 * 1000) {
-      return Math.floor(diff / (60 * 60 * 1000)) + '小时前';
-    }
-    
-    // 小于30天显示"x天前"
-    if (diff < 30 * 24 * 60 * 60 * 1000) {
-      return Math.floor(diff / (24 * 60 * 60 * 1000)) + '天前';
-    }
-    
-    // 大于30天显示具体日期，格式：yyyy-MM-dd
-    const year = dateObj.getFullYear();
-    const month = dateObj.getMonth() + 1;
-    const day = dateObj.getDate();
-    
-    return `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
   },
 
   // 重置评论

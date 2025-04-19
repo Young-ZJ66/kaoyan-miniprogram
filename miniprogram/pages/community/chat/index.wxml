@@ -42,7 +42,7 @@
           <view class="nickname">{{item.nickName}}</view>
           <view class="bubble-wrapper">
             <view class="message-bubble">{{item.content}}</view>
-            <view class="message-time">{{item.createTime}}</view>
+            <view class="message-time">{{item.createdAt}}</view>
           </view>
         </view>
       </view>

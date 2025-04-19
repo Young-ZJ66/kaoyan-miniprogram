@@ -120,7 +120,7 @@ Page({
         // 处理时间格式
         const resourcesList = res.result.data.map(item => ({
           ...item,
-          createTime: this.formatTime(item.createTime)
+          createdAt: this.formatTime(item.createdAt)
         }));
 
         this.setData({

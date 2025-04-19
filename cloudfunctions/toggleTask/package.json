@@ -1,7 +1,7 @@
 {
   "name": "toggleTask",
   "version": "1.0.0",
-  "description": "切换任务状态的云函数",
+  "description": "切换任务完成状态",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "wx-server-sdk": "latest"
+    "wx-server-sdk": "~2.6.3"
   }
 } 

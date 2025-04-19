@@ -276,6 +276,30 @@ Page({
 
             const { openid } = this.data;
             
+            // 记录注销账号日志
+            try {
+              const systemInfo = wx.getDeviceInfo();
+              const appBaseInfo = wx.getAppBaseInfo();
+              
+              await wx.cloud.callFunction({
+                name: 'logOperation',
+                data: {
+                  type: 'deleteAccount',
+                  openid: openid,
+                  deviceInfo: {
+                    model: systemInfo.model,
+                    system: systemInfo.system,
+                    platform: systemInfo.platform,
+                    version: appBaseInfo.version,
+                    SDKVersion: appBaseInfo.SDKVersion
+                  }
+                }
+              });
+            } catch (err) {
+              console.error('记录注销账号日志失败：', err);
+              // 记录日志失败不影响注销流程
+            }
+            
             // 1. 获取并删除用户的所有计划
             const plansRes = await wx.cloud.database().collection('plans').where({
               _openid: openid

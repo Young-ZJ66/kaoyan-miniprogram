@@ -1,7 +1,7 @@
 {
-  "name": "login",
+  "name": "getCountdown",
   "version": "1.0.0",
-  "description": "用户登录云函数",
+  "description": "获取考研倒计时信息",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "wx-server-sdk": "latest"
+    "wx-server-sdk": "~2.6.3"
   }
 } 

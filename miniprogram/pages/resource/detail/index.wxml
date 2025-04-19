@@ -12,8 +12,8 @@
       <text class="resource-downloads">下载次数：{{resourceDetail.downloads}}</text>
     </view>
     
-    <view class="resource-date">上传时间：{{resourceDetail.createTime}}</view>
-    <view class="resource-date">更新时间：{{resourceDetail.updateTime}}</view>
+    <view class="resource-date">上传时间：{{resourceDetail.createdAt}}</view>
+    <view class="resource-date">更新时间：{{resourceDetail.updatedAt}}</view>
     
     <view class="resource-description">
       <text>{{resourceDetail.description || '暂无描述'}}</text>

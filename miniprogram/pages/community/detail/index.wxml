@@ -8,7 +8,7 @@
         <image class="avatar" src="{{post.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
         <view class="user-info">
           <text class="nickname">{{post.userInfo.nickName || '匿名用户'}}</text>
-          <text class="time">{{post.createTime}}</text>
+          <text class="time">{{post.formattedTime}}</text>
         </view>
         <!-- 删除按钮，仅当用户是发帖人时显示 -->
         <view class="delete-btn" wx:if="{{post.isOwner}}" catchtap="deletePost">
@@ -60,7 +60,7 @@
             <view class="comment-content">
               <view class="comment-header">
                 <text class="nickname">{{item.userInfo.nickName || '匿名用户'}}</text>
-                <text class="time">{{item.createTime}}</text>
+                <text class="time">{{item.formattedTime}}</text>
               </view>
               <text class="comment-text" user-select="true">{{item.content}}</text>
             </view>

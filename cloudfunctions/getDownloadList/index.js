@@ -14,8 +14,7 @@ exports.main = async (event, context) => {
   try {
     // 查询条件
     const query = {
-      _openid: OPENID,
-      type: 'download'
+      _openid: OPENID
     };
 
     // 如果指定了分类，添加分类筛选条件
@@ -27,7 +26,7 @@ exports.main = async (event, context) => {
 
     const result = await db.collection('downloads')
       .where(query)
-      .orderBy('downloadTime', 'desc')
+      .orderBy('createdAt', 'desc')
       .get();
 
     console.log('查询结果：', result);

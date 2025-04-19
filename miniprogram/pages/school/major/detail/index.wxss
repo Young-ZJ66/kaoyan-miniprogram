@@ -200,9 +200,9 @@
   text-align: center;
   font-size: 26rpx;
   color: #333;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .table-row:first-child .table-cell {
@@ -234,6 +234,9 @@
   text-align: center;
   font-size: 28rpx;
   color: #333;
+  white-space: normal;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .subject-table .table-row:first-child .table-cell {
@@ -265,13 +268,48 @@
   text-align: center;
   font-size: 26rpx;
   color: #333;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .book-table .table-row:first-child .table-cell {
   background: #f8f8f8;
   font-weight: bold;
   color: #666;
+}
+
+/* 参考书表格的特定样式 */
+.book-table .table-row {
+  align-items: stretch;
+  min-height: 80rpx;
+}
+
+.book-table .table-cell:nth-child(1) {
+  flex: 3; /* 书名列宽度占比更大 */
+}
+
+.book-table .table-cell:nth-child(2) {
+  flex: 2; /* 作者列宽度适中 */
+}
+
+.book-table .table-cell:nth-child(3) {
+  flex: 3; /* 出版社列宽度占比更大 */
+}
+
+/* 调整表格整体样式 */
+.table-row {
+  align-items: center;
+  min-height: 60rpx;
+}
+
+/* 调整表格间隔 */
+.section-block {
+  margin-bottom: 40rpx;
+}
+
+/* 分数线表格 */
+.score-table .table-cell {
+  padding: 16rpx 8rpx;
+  font-size: 24rpx;
 } 

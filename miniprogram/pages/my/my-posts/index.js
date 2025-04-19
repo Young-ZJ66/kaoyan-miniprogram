@@ -59,26 +59,11 @@ Page({
         // 格式化时间和处理帖子字段
         newPosts.forEach(post => {
           // 处理时间
-          if (post.createTime) {
-            // 如果是日期对象格式的时间戳
-            if (post.createTime._seconds) {
-              post.createTime = this.formatTime(post.createTime._seconds * 1000)
-            } 
-            // 如果是Date对象
-            else if (post.createTime instanceof Date) {
-              post.createTime = this.formatTime(post.createTime.getTime())
-            }
-            // 字符串日期或时间戳
-            else {
-              post.createTime = this.formatTime(post.createTime)
-            }
-          } else {
-            post.createTime = '未知时间'
-          }
+          post.formattedTime = this.formatTime(post.createdAt);
           
           // 处理评论和点赞数
-          post.commentCount = post.comments || post.commentCount || 0
-          post.likeCount = post.likes || post.likeCount || 0
+          post.commentCount = post.comments || post.commentCount || 0;
+          post.likeCount = post.likes || post.likeCount || 0;
           
           // 处理用户信息
           if (!post.userInfo) {
@@ -88,25 +73,25 @@ Page({
             }
           } else {
             // 确保用户信息字段完整
-            if (!post.userInfo.nickName) post.userInfo.nickName = '未知用户'
-            if (!post.userInfo.avatarUrl) post.userInfo.avatarUrl = '/images/avatar-default.png'
+            if (!post.userInfo.nickName) post.userInfo.nickName = '未知用户';
+            if (!post.userInfo.avatarUrl) post.userInfo.avatarUrl = '/images/avatar-default.png';
           }
           
           // 标记为用户自己的帖子
-          post.isOwner = true
+          post.isOwner = true;
           
           // 检查内容是否需要展开按钮（超过3行或超过100字符）
           post.isOverflow = post.content && (
             post.content.length > 100 || 
             (post.content.match(/\n/g) || []).length >= 3 ||
             post.content.split('\n').some(line => line.length > 30)  // 检查单行是否过长
-          )
+          );
           
           // 设置初始状态
-          post.showFull = false
+          post.showFull = false;
           
           console.log(`处理后的帖子(${post._id}): `, {
-            createTime: post.createTime,
+            formattedTime: post.formattedTime,
             likeCount: post.likeCount,
             commentCount: post.commentCount,
             userInfo: post.userInfo,
@@ -350,35 +335,69 @@ Page({
     }
   },
 
-  // 格式化时间显示
+  // 格式化时间
   formatTime: function(timestamp) {
-    if (!timestamp) return ''
-    
-    const now = new Date()
-    const date = new Date(timestamp)
-    const diff = now - date
-    
-    // 如果是今天，显示几小时前或几分钟前
-    if (diff < 24 * 60 * 60 * 1000 && date.getDate() === now.getDate()) {
-      if (diff < 60 * 60 * 1000) {
-        const minutes = Math.floor(diff / (60 * 1000))
-        return `${minutes === 0 ? 1 : minutes}分钟前`
+    if (!timestamp) return '';
+
+    let date;
+    try {
+      // 处理不同类型的时间戳
+      if (typeof timestamp === 'object') {
+        if (timestamp instanceof Date) {
+          date = timestamp;
+        } else if (timestamp.$date) {
+          date = new Date(timestamp.$date);
+        } else if (timestamp.seconds) {
+          date = new Date(timestamp.seconds * 1000);
+        } else if (timestamp._seconds) {
+          date = new Date(timestamp._seconds * 1000);
+        } else {
+          return '';
+        }
+      } else if (typeof timestamp === 'string') {
+        date = new Date(timestamp);
+      } else if (typeof timestamp === 'number') {
+        date = new Date(timestamp);
       } else {
-        const hours = Math.floor(diff / (60 * 60 * 1000))
-        return `${hours}小时前`
+        return '';
       }
-    } 
-    // 如果是昨天，显示昨天+时间
-    else if (diff < 48 * 60 * 60 * 1000 && now.getDate() - date.getDate() <= 1) {
-      return `昨天 ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
-    } 
-    // 如果是今年，显示月-日 时:分
-    else if (date.getFullYear() === now.getFullYear()) {
-      return `${date.getMonth() + 1}-${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
-    } 
-    // 其他情况显示完整日期
-    else {
-      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+
+      if (isNaN(date.getTime())) {
+        return '';
+      }
+
+      const now = new Date();
+      const diff = now.getTime() - date.getTime();
+      const minute = 1000 * 60;
+      const hour = minute * 60;
+      const day = hour * 24;
+      const month = day * 30;
+      const year = day * 365;
+
+      // 小于1分钟
+      if (diff < minute) {
+        return '刚刚';
+      }
+      // 小于1小时
+      if (diff < hour) {
+        return Math.floor(diff / minute) + '分钟前';
+      }
+      // 小于24小时
+      if (diff < day) {
+        return Math.floor(diff / hour) + '小时前';
+      }
+      // 小于30天
+      if (diff < month) {
+        return Math.floor(diff / day) + '天前';
+      }
+      // 小于365天
+      if (diff < year) {
+        return Math.floor(diff / month) + '个月前';
+      }
+      // 超过365天
+      return Math.floor(diff / year) + '年前';
+    } catch (error) {
+      return '';
     }
   },
 }) 

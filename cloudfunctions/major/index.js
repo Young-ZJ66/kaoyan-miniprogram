@@ -73,7 +73,7 @@ exports.main = async (event, context) => {
 
 // 获取专业详情
 async function getMajorDetail(data) {
-  const { majorId } = data
+  const { majorId, schoolId } = data
   
   try {
     // 获取专业信息
@@ -89,7 +89,8 @@ async function getMajorDetail(data) {
     // 获取专业分数线信息
     const scoreResult = await db.collection('scores')
       .where({
-        majorId: majorId
+        majorId: majorId,
+        schoolId: schoolId
       })
       .orderBy('year', 'desc')
       .limit(3)
@@ -98,7 +99,8 @@ async function getMajorDetail(data) {
     // 获取专业参考书目
     const bookResult = await db.collection('books')
       .where({
-        majorId: majorId
+        majorId: majorId,
+        schoolId: schoolId
       })
       .get()
     
@@ -174,7 +176,7 @@ async function toggleCollection(data, openid) {
           _openid: openid,
           majorId: majorId,
           schoolId: schoolId,
-          createTime: db.serverDate()
+          createdAt: db.serverDate()
         }
       })
       return {
@@ -201,7 +203,7 @@ async function getCollections(openid) {
       .where({
         _openid: openid
       })
-      .orderBy('createTime', 'desc')
+      .orderBy('createdAt', 'desc')
       .get()
 
     // 获取学校和专业信息
@@ -209,7 +211,9 @@ async function getCollections(openid) {
       collections.data.map(async (collection) => {
         // 获取学校信息
         const schoolResult = await db.collection('schools')
-          .doc(collection.schoolId)
+          .where({
+            _id: collection.schoolId
+          })
           .get()
 
         // 获取专业信息
@@ -219,7 +223,7 @@ async function getCollections(openid) {
 
         return {
           ...collection,
-          schoolInfo: schoolResult.data,
+          schoolInfo: schoolResult.data.length > 0 ? schoolResult.data[0] : null,
           majorInfo: majorResult.data
         }
       })

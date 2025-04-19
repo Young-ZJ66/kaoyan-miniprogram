@@ -62,7 +62,8 @@ Page({
         data: {
           type: 'getMajorDetail',
           data: {
-            majorId: this.data.majorId
+            majorId: this.data.majorId,
+            schoolId: this.data.schoolId
           }
         }
       })

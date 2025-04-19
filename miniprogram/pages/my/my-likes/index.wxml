@@ -6,7 +6,7 @@
           <image class="avatar" src="{{item.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
           <view class="user-info">
             <text class="nickname">{{item.userInfo.nickName || '匿名用户'}}</text>
-            <text class="time">{{item.createTime}}</text>
+            <text class="time">{{item.formattedTime}}</text>
           </view>
         </view>
         <view class="post-content">

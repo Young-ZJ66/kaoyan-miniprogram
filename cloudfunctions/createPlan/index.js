@@ -9,6 +9,7 @@ const db = cloud.database();
 exports.main = async (event, context) => {
   const { startDate, endDate, tasks, planName } = event;
   const wxContext = cloud.getWXContext();
+  const now = Date.now(); // 当前时间戳
 
   try {
     // 验证日期
@@ -40,10 +41,10 @@ exports.main = async (event, context) => {
       data: {
         _openid: wxContext.OPENID,
         planName: planName.trim(),
-        startDate,
-        endDate,
-        createTime: db.serverDate(),
-        updateTime: db.serverDate()
+        startDate: startDate, // 使用时间戳而不是Date对象
+        endDate: endDate, // 使用时间戳而不是Date对象
+        createdAt: now,
+        updatedAt: now
       }
     });
 
@@ -56,23 +57,25 @@ exports.main = async (event, context) => {
     for (let i = 0; i < days; i++) {
       const currentDate = new Date(start);
       currentDate.setDate(start.getDate() + i);
-      const dateStr = currentDate.toISOString().split('T')[0];
+      // 将日期重置为当天的0点，并获取时间戳
+      currentDate.setHours(0, 0, 0, 0);
+      const dateTimestamp = currentDate.getTime();
 
       // 为每天创建一条任务记录，包含所有任务
       taskList.push({
         planId: planResult._id,
-        date: dateStr,
+        date: dateTimestamp, // 使用时间戳
         tasks: tasks.map(task => ({
           content: task.content,
           completed: false
         })),
-        createTime: db.serverDate(),
-        updateTime: db.serverDate(),
-        _openid: wxContext.OPENID  // 添加用户ID
+        createdAt: now,
+        updatedAt: now,
+        _openid: wxContext.OPENID
       });
     }
 
-    // 批量添加任务 - 修改这里的逻辑
+    // 批量添加任务
     if (taskList.length > 0) {
       // 一次只能添加一条数据，所以需要循环添加
       for (const task of taskList) {

@@ -47,8 +47,9 @@ exports.main = async (event, context) => {
       phone: userInfo.phone || '',
       email: userInfo.email || '',
       role: 'user',
-      status: 1,
-      createTime: db.serverDate(),
+      status: true,  // true表示用户状态正常
+      createdAt: db.serverDate(),
+      updatedAt: db.serverDate(),
       lastLoginTime: db.serverDate()
     };
 

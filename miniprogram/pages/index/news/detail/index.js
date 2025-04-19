@@ -2,7 +2,18 @@ const app = getApp()
 
 Page({
   data: {
-    newsDetail: null
+    newsDetail: null,
+    // 添加分类标签的英文到中文的映射
+    typeMap: {
+      'policy': '政策',
+      'admissions': '择校',
+      'prep': '备考',
+      'process': '流程',
+      'data': '数据',
+      'tools': '工具',
+      'mindset': '心理',
+      'tracks': '专项'
+    }
   },
 
   // 格式化时间
@@ -65,7 +76,15 @@ Page({
           console.log('处理后的内容:', newsDetail.content);
         }
         // 处理时间格式
-        newsDetail.createTime = this.formatDate(newsDetail.createTime);
+        newsDetail.createTime = this.formatDate(newsDetail.createdAt);
+        
+        // 将英文分类映射为中文
+        if (newsDetail.type && this.data.typeMap[newsDetail.type]) {
+          newsDetail.typeText = this.data.typeMap[newsDetail.type];
+        } else {
+          newsDetail.typeText = newsDetail.type || '';
+        }
+        
         this.setData({
           newsDetail: newsDetail
         })

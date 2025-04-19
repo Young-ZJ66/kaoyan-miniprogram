@@ -20,7 +20,7 @@
         <image src="/images/AI.png" mode="aspectFill"></image>
       </view>
       <view class="chat-room-info">
-        <text class="chat-room-name">智能考研小助手</text>
+        <text class="chat-room-name">考研智能小助手</text>
       </view>
       <view class="chat-room-arrow">
         <text class="iconfont icon-arrow-right"></text>
@@ -47,7 +47,7 @@
             <image class="avatar" src="{{item.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
             <view class="user-info">
               <text class="nickname">{{item.userInfo.nickName || '匿名用户'}}</text>
-              <text class="time">{{item.createTime}}</text>
+              <text class="time">{{item.formattedTime}}</text>
             </view>
           </view>
           <view class="post-content">

@@ -53,7 +53,7 @@
           <text class="resource-size">{{item.size}}</text>
           <text class="resource-downloads">下载次数：{{item.downloads}}</text>
         </view>
-        <view class="resource-date">上传时间：{{item.createTime}}</view>
+        <view class="resource-date">上传时间：{{item.createdAt}}</view>
       </view>
 
       <!-- 分页控件 -->

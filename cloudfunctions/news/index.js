@@ -24,10 +24,19 @@ exports.main = async (event, context) => {
 
 // 获取新闻列表
 async function getNewsList(data) {
-  const { page = 1, pageSize = 5 } = data
+  const { page = 1, pageSize = 5, newsType = '' } = data
   try {
-    const result = await db.collection('news')
-      .orderBy('createTime', 'desc')
+    let query = db.collection('news');
+    
+    // 如果指定了新闻类型，添加筛选条件
+    if (newsType) {
+      query = query.where({
+        type: newsType
+      });
+    }
+    
+    const result = await query
+      .orderBy('createdAt', 'desc')
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .get()

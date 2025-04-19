@@ -90,7 +90,7 @@ Page({
       const now = new Date().getTime()
       const listener = db.collection('chat_messages')
         .where({
-          createTime: _.gt(now) // 只监听新消息
+          createdAt: _.gt(now) // 只监听新消息
         })
         .watch({
           onChange: (snapshot) => {
@@ -99,8 +99,8 @@ Page({
                 const isMyMessage = this.data.userInfo.openid === doc.openid
                 return {
                   ...doc,
-                  createTime: this.formatTime(doc.createTime),
-                  timestamp: doc.createTime,
+                  createdAt: this.formatTime(doc.createdAt),
+                  timestamp: doc.createdAt,
                   isMyMessage: isMyMessage
                 }
               })
@@ -325,11 +325,11 @@ Page({
         // 格式化时间
         const formattedList = res.result.data.map(item => {
           const isMyMessage = this.data.userInfo.openid === item.openid
-          const timestamp = item.createTime
+          const timestamp = item.createdAt
           
           return {
             ...item,
-            createTime: this.formatTime(timestamp),
+            createdAt: this.formatTime(timestamp),
             timestamp: timestamp,
             isMyMessage: isMyMessage
           }

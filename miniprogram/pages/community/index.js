@@ -199,7 +199,7 @@ Page({
           
           return {
             ...post,
-            createTime: this.formatTime(post.createTime),
+            formattedTime: this.formatTime(post.createdAt),
             likeCount: post.likes || 0,
             commentCount: post.comments || 0,
             isLiked: false,
@@ -241,6 +241,70 @@ Page({
     return lines.length > 3 || (lines.length === 3 && content.trim().endsWith('\n'));
   },
 
+  // 格式化时间
+  formatTime: function(timestamp) {
+    if (!timestamp) return '';
+
+    let date;
+    try {
+      // 处理不同类型的时间戳
+      if (typeof timestamp === 'object') {
+        if (timestamp instanceof Date) {
+          date = timestamp;
+        } else if (timestamp.$date) {
+          date = new Date(timestamp.$date);
+        } else if (timestamp.seconds) {
+          date = new Date(timestamp.seconds * 1000);
+        } else {
+          return '';
+        }
+      } else if (typeof timestamp === 'string') {
+        date = new Date(timestamp);
+      } else if (typeof timestamp === 'number') {
+        date = new Date(timestamp);
+      } else {
+        return '';
+      }
+
+      if (isNaN(date.getTime())) {
+        return '';
+      }
+
+      const now = new Date();
+      const diff = now.getTime() - date.getTime();
+      const minute = 1000 * 60;
+      const hour = minute * 60;
+      const day = hour * 24;
+      const month = day * 30;
+      const year = day * 365;
+
+      // 小于1分钟
+      if (diff < minute) {
+        return '刚刚';
+      }
+      // 小于1小时
+      if (diff < hour) {
+        return Math.floor(diff / minute) + '分钟前';
+      }
+      // 小于24小时
+      if (diff < day) {
+        return Math.floor(diff / hour) + '小时前';
+      }
+      // 小于30天
+      if (diff < month) {
+        return Math.floor(diff / day) + '天前';
+      }
+      // 小于365天
+      if (diff < year) {
+        return Math.floor(diff / month) + '个月前';
+      }
+      // 超过365天
+      return Math.floor(diff / year) + '年前';
+    } catch (error) {
+      return '';
+    }
+  },
+
   // 加载帖子列表
   loadPosts: function() {
     if (this.data.loading) return Promise.resolve();
@@ -279,7 +343,7 @@ Page({
           
           return {
             ...post,
-            createTime: this.formatTime(post.createTime),
+            formattedTime: this.formatTime(post.createdAt),
             likeCount: post.likes || 0,
             commentCount: post.comments || 0,
             isLiked: false,
@@ -294,15 +358,13 @@ Page({
         this.setData({
           posts: newList,
           hasMore: res.result.data.length === this.data.pageSize,
-          usedCache: false // 标记为非缓存数据
+          usedCache: false
         });
         
-        // 如果是第一页，更新缓存
         if (this.data.page === 1) {
           this.setPostsCache(newList);
         }
         
-        // 检查每篇帖子的点赞状态
         if (myOpenid) {
           this.checkLikeStatus(newList, myOpenid);
         }
@@ -361,59 +423,6 @@ Page({
     }).catch(err => {
       // 检查点赞状态失败
     })
-  },
-
-  // 格式化时间
-  formatTime: function(dateObj) {
-    if (!dateObj) return ''
-    
-    // 如果是日期字符串，转为日期对象
-    let date
-    if (typeof dateObj === 'string') {
-      date = new Date(dateObj)
-    } else if (dateObj instanceof Date) {
-      date = dateObj
-    } else if (dateObj && dateObj.$date) {
-      // 处理云函数返回的日期格式 { $date: timestamp }
-      date = new Date(dateObj.$date)
-    } else {
-      return ''
-    }
-    
-    // 检查日期是否有效
-    if (isNaN(date.getTime())) {
-      return ''
-    }
-    
-    const now = new Date()
-    const diff = now - date
-    
-    // 小于1分钟显示"刚刚"
-    if (diff < 60 * 1000) {
-      return '刚刚'
-    }
-    
-    // 小于1小时显示"x分钟前"
-    if (diff < 60 * 60 * 1000) {
-      return Math.floor(diff / (60 * 1000)) + '分钟前'
-    }
-    
-    // 小于24小时显示"x小时前"
-    if (diff < 24 * 60 * 60 * 1000) {
-      return Math.floor(diff / (60 * 60 * 1000)) + '小时前'
-    }
-    
-    // 小于30天显示"x天前"
-    if (diff < 30 * 24 * 60 * 60 * 1000) {
-      return Math.floor(diff / (24 * 60 * 60 * 1000)) + '天前'
-    }
-    
-    // 否则显示完整日期
-    const year = date.getFullYear()
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const day = date.getDate().toString().padStart(2, '0')
-    
-    return `${year}-${month}-${day}`
   },
 
   // 加载更多

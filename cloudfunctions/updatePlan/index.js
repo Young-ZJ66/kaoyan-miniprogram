@@ -9,6 +9,8 @@ const _ = db.command
 // 云函数入口函数
 exports.main = async (event, context) => {
   const { planId, planName, startDate, endDate, tasks } = event
+  const wxContext = cloud.getWXContext()
+  const now = Date.now() // 当前时间戳
 
   try {
     // 验证日期
@@ -43,9 +45,9 @@ exports.main = async (event, context) => {
       await transaction.collection('plans').doc(planId).update({
         data: {
           planName: planName.trim(),
-          startDate,
-          endDate,
-          updateTime: db.serverDate()
+          startDate: startDate, // 使用时间戳
+          endDate: endDate, // 使用时间戳
+          updatedAt: now
         }
       })
 
@@ -59,11 +61,12 @@ exports.main = async (event, context) => {
       // 创建一个映射来存储每天任务的完成状态
       const completedStatusMap = {}
       oldTasks.data.forEach(dayTasks => {
+        const dateKey = new Date(dayTasks.date).toISOString().split('T')[0]
         const taskStatusMap = {}
-        dayTasks.tasks.forEach((task, index) => {
+        dayTasks.tasks.forEach((task) => {
           taskStatusMap[task.content] = task.completed
         })
-        completedStatusMap[dayTasks.date] = taskStatusMap
+        completedStatusMap[dateKey] = taskStatusMap
       })
 
       // 删除原有的任务
@@ -80,27 +83,34 @@ exports.main = async (event, context) => {
       for (let i = 0; i < days; i++) {
         const currentDate = new Date(start)
         currentDate.setDate(start.getDate() + i)
-        const dateStr = currentDate.toISOString().split('T')[0]
+        // 将日期重置为当天的0点，并获取时间戳
+        currentDate.setHours(0, 0, 0, 0)
+        const dateTimestamp = currentDate.getTime()
+        const dateKey = currentDate.toISOString().split('T')[0]
 
         // 为每天创建一条任务记录，包含所有任务
         taskList.push({
           planId: planId,
-          date: dateStr,
+          date: dateTimestamp, // 使用时间戳
           tasks: tasks.map(task => ({
             content: task.content,
             // 如果这天这个任务之前存在且已完成，则保持完成状态
-            completed: completedStatusMap[dateStr]?.[task.content] || false
+            completed: completedStatusMap[dateKey]?.[task.content] || false
           })),
-          createTime: db.serverDate(),
-          updateTime: db.serverDate()
+          createdAt: now,
+          updatedAt: now,
+          _openid: wxContext.OPENID // 确保添加用户ID
         })
       }
 
       // 批量添加任务
       if (taskList.length > 0) {
-        await transaction.collection('tasks').add({
-          data: taskList
-        })
+        // 一次只能添加一条数据，所以需要循环添加
+        for (const task of taskList) {
+          await transaction.collection('tasks').add({
+            data: task
+          })
+        }
       }
 
       // 提交事务

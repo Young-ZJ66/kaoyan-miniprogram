@@ -26,7 +26,7 @@ exports.main = async (event, context) => {
 
     const result = await db.collection('resources')
       .where(query)
-      .orderBy('createTime', 'desc')
+      .orderBy('createdAt', 'desc')
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .get();
@@ -40,7 +40,7 @@ exports.main = async (event, context) => {
       type: item.type,
       size: item.size,
       downloads: item.downloads || 0,
-      createTime: item.createTime,
+      createdAt: item.createdAt,
       description: item.description,
       fileID: item.fileID,
       fileName: item.fileName,

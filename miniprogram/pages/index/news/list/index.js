@@ -6,7 +6,20 @@ Page({
     page: 1,
     pageSize: 10,
     hasMore: true,
-    loading: false
+    loading: false,
+    currentType: 'all',  // 添加当前选中分类
+    // 添加分类标签的英文到中文的映射
+    typeMap: {
+      'all': '全部',
+      'policy': '政策',
+      'admissions': '择校',
+      'prep': '备考',
+      'process': '流程',
+      'data': '数据',
+      'tools': '工具',
+      'mindset': '心理',
+      'tracks': '专项'
+    }
   },
 
   // 格式化时间
@@ -49,16 +62,25 @@ Page({
         type: 'getList',
         data: {
           page: this.data.page,
-          pageSize: this.data.pageSize
+          pageSize: this.data.pageSize,
+          newsType: this.data.currentType !== 'all' ? this.data.currentType : ''
         }
       }
     }).then(res => {
       if (res.result.success) {
-        // 处理时间格式
-        const processedData = res.result.data.map(item => ({
-          ...item,
-          createTime: this.formatDate(item.createTime)
-        }));
+        // 处理时间格式并将英文类型映射为中文
+        const processedData = res.result.data.map(item => {
+          // 获取对应的中文类型名称，如果不存在则保留原值
+          const typeInChinese = this.data.typeMap[item.type] || item.type;
+          
+          return {
+            ...item,
+            createTime: this.formatDate(item.createdAt),
+            // 保留原始type值，但添加一个显示用的中文类型名称
+            typeText: typeInChinese
+          };
+        });
+        
         const newList = this.data.page === 1 ? processedData : [...this.data.newsList, ...processedData]
         this.setData({
           newsList: newList,
@@ -80,6 +102,20 @@ Page({
       this.setData({ loading: false })
       wx.hideLoading()
     })
+  },
+
+  // 切换分类
+  switchType: function(e) {
+    const type = e.currentTarget.dataset.type;
+    if (type === this.data.currentType) return;
+    
+    this.setData({
+      currentType: type,
+      page: 1,
+      newsList: []
+    }, () => {
+      this.loadNewsList();
+    });
   },
 
   // 加载更多

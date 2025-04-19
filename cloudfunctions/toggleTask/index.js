@@ -1,75 +1,73 @@
-const cloud = require('wx-server-sdk');
+// 云函数入口文件
+const cloud = require('wx-server-sdk')
 
 cloud.init({
-  env: 'cloud1-9gbyqyqyb5f2cb69'
-});
+  env: cloud.DYNAMIC_CURRENT_ENV
+})
 
-const db = cloud.database();
+const db = cloud.database()
 
+// 云函数入口函数
 exports.main = async (event, context) => {
-  const { planId, date, taskIndex, completed } = event;
-  const wxContext = cloud.getWXContext();
-
+  const { OPENID } = cloud.getWXContext()
+  
   try {
-    // 获取计划信息
-    const plan = await db.collection('plans').doc(planId).get();
+    // 获取请求参数
+    const { taskId, taskIndex, completed } = event
     
-    if (!plan.data) {
+    if (!taskId || taskIndex === undefined) {
       return {
         success: false,
-        message: '计划不存在'
-      };
+        message: '缺少必要参数'
+      }
     }
-
-    // 验证权限
-    if (plan.data._openid !== wxContext.OPENID) {
+    
+    // 获取当前任务
+    const taskDoc = await db.collection('tasks').doc(taskId).get()
+    const task = taskDoc.data
+    
+    // 检查是否为任务所有者
+    if (task._openid !== OPENID) {
       return {
         success: false,
         message: '无权操作此任务'
-      };
+      }
     }
-
-    // 获取任务记录
-    const taskResult = await db.collection('tasks')
-      .where({
-        planId: planId,
-        date: date
-      })
-      .get();
-
-    if (!taskResult.data || taskResult.data.length === 0) {
+    
+    // 确保要更新的任务索引存在
+    if (!task.tasks || !task.tasks[taskIndex]) {
       return {
         success: false,
-        message: '任务不存在'
-      };
+        message: '任务项不存在'
+      }
     }
-
-    const task = taskResult.data[0];
-    const tasks = task.tasks || [];
-    const updatedTasks = tasks.map((t, index) => {
-      if (index === taskIndex) {
-        return { ...t, completed };
-      }
-      return t;
-    });
-
-    // 更新任务状态
-    await db.collection('tasks').doc(task._id).update({
+    
+    // 更新任务完成状态
+    const tasksCopy = [...task.tasks]
+    tasksCopy[taskIndex].completed = completed !== undefined ? completed : !tasksCopy[taskIndex].completed
+    
+    // 更新数据库
+    await db.collection('tasks').doc(taskId).update({
       data: {
-        tasks: updatedTasks,
-        updateTime: db.serverDate()
+        tasks: tasksCopy,
+        updatedAt: db.serverDate()
       }
-    });
-
+    })
+    
     return {
       success: true,
-      message: '更新成功'
-    };
-  } catch (err) {
-    console.error('更新任务状态失败：', err);
+      data: {
+        tasks: tasksCopy,
+        completedStatus: tasksCopy[taskIndex].completed
+      }
+    }
+    
+  } catch (error) {
+    console.error('切换任务状态失败:', error)
     return {
       success: false,
-      message: '更新失败：' + err.message
-    };
+      message: '切换任务状态失败',
+      error: error
+    }
   }
-}; 
+}

@@ -88,8 +88,8 @@ Page({
     if (cachedData) {
       const resourceDetail = {
         ...cachedData,
-        createTime: this.formatTime(cachedData.createTime),
-        updateTime: this.formatTime(cachedData.updateTime)
+        createdAt: this.formatTime(cachedData.createdAt),
+        updatedAt: this.formatTime(cachedData.updatedAt)
       };
       this.setData({
         resourceDetail: resourceDetail,
@@ -113,8 +113,8 @@ Page({
         // 处理时间格式
         const resourceDetail = {
           ...data,
-          createTime: this.formatTime(data.createTime),
-          updateTime: this.formatTime(data.updateTime)
+          createdAt: this.formatTime(data.createdAt),
+          updatedAt: this.formatTime(data.updatedAt)
         };
         
         // 检查必要的字段是否存在

@@ -1,12 +1,54 @@
 <!--news/list/index.wxml-->
 <view class="container">
+  <!-- 分类筛选栏 -->
+  <view class="type-filter">
+    <scroll-view scroll-x="true" class="type-scroll-view">
+      <view 
+        class="type-item {{currentType === 'all' ? 'active' : ''}}" 
+        bindtap="switchType" 
+        data-type="all">全部</view>
+      <view 
+        class="type-item {{currentType === 'policy' ? 'active' : ''}}" 
+        bindtap="switchType" 
+        data-type="policy">政策</view>
+      <view 
+        class="type-item {{currentType === 'admissions' ? 'active' : ''}}" 
+        bindtap="switchType" 
+        data-type="admissions">择校</view>
+      <view 
+        class="type-item {{currentType === 'prep' ? 'active' : ''}}" 
+        bindtap="switchType" 
+        data-type="prep">备考</view>
+      <view 
+        class="type-item {{currentType === 'process' ? 'active' : ''}}" 
+        bindtap="switchType" 
+        data-type="process">流程</view>
+      <view 
+        class="type-item {{currentType === 'data' ? 'active' : ''}}" 
+        bindtap="switchType" 
+        data-type="data">数据</view>
+      <view 
+        class="type-item {{currentType === 'tools' ? 'active' : ''}}" 
+        bindtap="switchType" 
+        data-type="tools">工具</view>
+      <view 
+        class="type-item {{currentType === 'mindset' ? 'active' : ''}}" 
+        bindtap="switchType" 
+        data-type="mindset">心理</view>
+      <view 
+        class="type-item {{currentType === 'tracks' ? 'active' : ''}}" 
+        bindtap="switchType" 
+        data-type="tracks">专项</view>
+    </scroll-view>
+  </view>
+
   <view class="news-list">
     <block wx:if="{{newsList.length > 0}}">
       <view class="news-item" wx:for="{{newsList}}" wx:key="_id" bindtap="goToNewsDetail" data-id="{{item._id}}">
         <view class="news-title">{{item.title}}</view>
         <view class="news-meta">
           <text class="news-date">{{item.createTime}}</text>
-          <text class="news-type">{{item.type}}</text>
+          <text class="news-type">{{item.typeText}}</text>
         </view>
       </view>
     </block>

@@ -39,7 +39,7 @@ async function getMessages({ page, pageSize }) {
   try {
     const skip = (page - 1) * pageSize
     const messages = await messageCollection
-      .orderBy('createTime', 'desc') // 按时间倒序获取最新的消息
+      .orderBy('createdAt', 'desc') // 按时间倒序获取最新的消息
       .skip(skip)
       .limit(pageSize)
       .get()
@@ -47,11 +47,11 @@ async function getMessages({ page, pageSize }) {
     // 处理消息数据，确保时间格式正确
     const formattedMessages = messages.data.map(msg => ({
       ...msg,
-      createTime: msg.createTime || msg.serverTime.getTime() // 优先使用客户端时间戳，如果没有则使用服务器时间
+      createdAt: msg.createdAt || msg.serverTime.getTime() // 优先使用客户端时间戳，如果没有则使用服务器时间
     }))
 
     // 按照时间正序（从旧到新）返回数据
-    formattedMessages.sort((a, b) => a.createTime - b.createTime)
+    formattedMessages.sort((a, b) => a.createdAt - b.createdAt)
 
     return {
       success: true,
@@ -77,7 +77,7 @@ async function sendMessage(openid, { content, userInfo }) {
       openid: openid,
       avatarUrl: userInfo.avatarUrl,
       nickName: userInfo.nickName,
-      createTime: timestamp, // 直接使用时间戳
+      createdAt: timestamp, // 直接使用时间戳
       serverTime: db.serverDate() // 同时保存服务器时间
     }
 
@@ -91,7 +91,7 @@ async function sendMessage(openid, { content, userInfo }) {
       data: {
         _id: result._id,
         ...messageData,
-        createTime: timestamp
+        createdAt: timestamp
       }
     }
   } catch (err) {

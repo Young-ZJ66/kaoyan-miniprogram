@@ -111,10 +111,45 @@ Page({
     }
     
     wx.showLoading({
-      title: '发布中...'
+      title: '检测内容...'
     })
     
     try {
+      // 首先检测内容是否包含敏感词
+      if (content) {
+        try {
+          const checkResult = await wx.cloud.callFunction({
+            name: 'checkContent',
+            data: {
+              content: content
+            }
+          })
+          
+          if (!checkResult.result.success) {
+            wx.hideLoading()
+            wx.showModal({
+              title: '提示',
+              content: '发布内容涉嫌违规，请修改后重试',
+              showCancel: false
+            })
+            return
+          }
+        } catch (checkError) {
+          console.error('内容检测失败:', checkError)
+          wx.hideLoading()
+          wx.showModal({
+            title: '提示',
+            content: '内容检测失败，请稍后重试',
+            showCancel: false
+          })
+          return
+        }
+      }
+      
+      wx.showLoading({
+        title: '发布中...'
+      })
+      
       // 上传图片到云存储
       let uploadedImages = []
       if (images.length > 0) {

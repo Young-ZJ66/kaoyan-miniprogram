@@ -55,6 +55,16 @@ exports.main = async (event, context) => {
     if (userRes.data.length > 0) {
       // 5. 用户已存在，更新登录时间
       const userInfo = userRes.data[0];
+      
+      // 检查用户状态（status为false表示被禁用）
+      if (userInfo.status === false) {
+        return {
+          success: false,
+          code: 'USER_BANNED',
+          message: '您的账号已被禁用，请联系管理员'
+        };
+      }
+      
       await db.collection('users').doc(userInfo._id).update({
         data: {
           lastLoginTime: db.serverDate()  // 使用 db.serverDate() 存储日期类型
@@ -76,7 +86,7 @@ exports.main = async (event, context) => {
             region: userInfo.region,
             phone: userInfo.phone,
             email: userInfo.email,
-            createTime: userInfo.createTime,
+            createTime: userInfo.createdAt,
             lastLoginTime: db.serverDate(),  // 返回最新的登录时间
             status: userInfo.status,
             role: userInfo.role

@@ -35,8 +35,18 @@ App({
       wx.cloud.database().collection('users').doc(userInfo._id).get({
         success: (res) => {
           if (res.data) {
-            this.globalData.userInfo = userInfo;
-            this.globalData.isLoggedIn = true;
+            // 检查用户状态是否为禁用状态（status为false表示被禁用）
+            if (res.data.status === false) {
+              this.clearLoginData();
+              wx.showModal({
+                title: '账号已禁用',
+                content: '您的账号已被管理员禁用',
+                showCancel: false
+              });
+            } else {
+              this.globalData.userInfo = userInfo;
+              this.globalData.isLoggedIn = true;
+            }
           } else {
             this.clearLoginData();
           }

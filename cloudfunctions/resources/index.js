@@ -89,7 +89,7 @@ async function getList(data) {
     const total = countResult.total
 
     // 按创建时间倒序排序并进行分页
-    query = query.orderBy('createTime', 'desc')
+    query = query.orderBy('createdAt', 'desc')
       .skip((page - 1) * pageSize)
       .limit(pageSize)
 
@@ -201,8 +201,8 @@ async function uploadResource(data, openid) {
       description,
       downloads: 0,
       _openid: openid,
-      createTime: db.serverDate(),
-      updateTime: db.serverDate(),  // 添加更新时间，与创建时间相同
+      createdAt: db.serverDate(),
+      updatedAt: db.serverDate(),  // 添加更新时间，与创建时间相同
       uploaderNickName
     }
     console.log('准备添加的资源数据：', resourceData)
@@ -291,8 +291,7 @@ async function recordDownload(data, openid) {
       title: resource.data.title,
       category: resource.data.category,
       _openid: openid,
-      downloadTime: db.serverDate(),
-      type: 'download'
+      createdAt: db.serverDate()
     }
     console.log('准备添加下载记录：', downloadRecord)
 
@@ -424,7 +423,7 @@ async function updateResource(data) {
       title,
       description,
       category,
-      updateTime: db.serverDate()
+      updatedAt: db.serverDate()
     };
 
     // 只有在上传了新文件时，才处理文件相关的更新

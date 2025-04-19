@@ -29,7 +29,7 @@
           </view>
           <view class="resource-info">
             <view class="resource-type-tag">{{categoryMap[item.category]}}</view>
-            <text class="resource-date">下载时间：{{item.downloadTime}}</text>
+            <text class="resource-date">下载时间：{{item.createdAt}}</text>
           </view>
         </view>
       </block>

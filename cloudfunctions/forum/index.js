@@ -68,7 +68,7 @@ async function getPosts(data) {
 
     // 分页查询帖子列表
     const posts = await db.collection('posts')
-      .orderBy('createTime', 'desc')  // 按发布时间倒序
+      .orderBy('createdAt', 'desc')  // 按创建时间倒序
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .get()
@@ -222,7 +222,7 @@ async function toggleLike(data, openid) {
           data: {
             postId: id,
             openid: openid,
-            createTime: db.serverDate()
+            createdAt: db.serverDate()
           }
         })
         console.log('添加点赞记录成功, ID:', likeResult._id)
@@ -307,7 +307,7 @@ async function addComment(data, openid) {
         avatarUrl: user.avatarUrl || '',
         openid
       },
-      createTime: db.serverDate()
+      createdAt: db.serverDate()
     }
     
     await db.collection('comments').add({
@@ -586,7 +586,7 @@ async function addPost(data, openid) {
         avatarUrl: user.avatarUrl || '',
         openid: openid
       },
-      createTime: db.serverDate(),
+      createdAt: db.serverDate(),
       likes: 0,
       comments: 0
     }
@@ -629,7 +629,7 @@ async function getMyPosts(data, openid) {
           'userInfo.openid': openid  // 查询当前用户发布的帖子（旧版数据结构）
         }
       ]))
-      .orderBy('createTime', 'desc')  // 按创建时间倒序
+      .orderBy('createdAt', 'desc')  // 按创建时间倒序
     
     // 获取总数
     const countResult = await query.count()
@@ -718,7 +718,7 @@ async function getLikedPosts(data, openid) {
       .where({
         openid: openid  // 查询当前用户的点赞记录
       })
-      .orderBy('createTime', 'desc')  // 按点赞时间倒序
+      .orderBy('createdAt', 'desc')  // 按点赞时间倒序
       .get()
     
     const likes = likesResult.data

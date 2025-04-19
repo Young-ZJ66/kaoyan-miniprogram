@@ -48,7 +48,7 @@ exports.main = async (event, context) => {
         region,
         phone,
         email,
-        updateTime: db.serverDate()
+        updatedAt: db.serverDate()
       }
     });
 

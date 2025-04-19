@@ -63,7 +63,7 @@ async function getSchools(data) {
     // 获取列表
     const list = await db.collection('schools')
       .where(query)
-      .orderBy('_id', 'asc')  // 按 _id 升序排序
+      .orderBy('school_id', 'asc')  // 按 school_id 升序排序
       .skip((page - 1) * pageSize)
       .limit(pageSize)
       .get()
@@ -91,9 +91,11 @@ async function getSchoolDetail(data) {
   
   try {
     // 获取院校信息
-    const schoolResult = await db.collection('schools').doc(schoolId).get()
+    const schoolResult = await db.collection('schools').where({
+      _id: schoolId
+    }).get()
     
-    if (!schoolResult.data) {
+    if (!schoolResult.data || schoolResult.data.length === 0) {
       return {
         code: -1,
         msg: '院校不存在'
@@ -102,7 +104,7 @@ async function getSchoolDetail(data) {
     
     return {
       code: 0,
-      data: schoolResult.data
+      data: schoolResult.data[0]
     }
   } catch (err) {
     console.error('获取院校详情失败：', err)
@@ -115,7 +117,7 @@ async function getSchoolDetail(data) {
 
 // 按专业搜索院校
 async function searchSchoolsByMajor(data) {
-  const { majorName, majorCode, degreeType, page = 1, pageSize = 10 } = data
+  const { majorName, majorId, degreeType, page = 1, pageSize = 10 } = data
   
   try {
     // 查询条件
@@ -128,8 +130,8 @@ async function searchSchoolsByMajor(data) {
       })
     }
     
-    if (majorCode && majorCode.trim() !== '') {
-      query.code = majorCode
+    if (majorId && majorId.trim() !== '') {
+      query._id = majorId
     }
     
     if (degreeType && degreeType !== '') {

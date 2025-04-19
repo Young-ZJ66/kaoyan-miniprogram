@@ -55,10 +55,10 @@ Page({
       }
     }).then(res => {
       if (res.result.success) {
-        // 处理时间格式
+        // 格式化数据和时间
         const downloadsList = res.result.data.map(item => ({
           ...item,
-          downloadTime: this.formatTime(item.downloadTime)
+          createdAt: this.formatTime(item.createdAt)
         }))
         this.setData({
           downloadsList: downloadsList
