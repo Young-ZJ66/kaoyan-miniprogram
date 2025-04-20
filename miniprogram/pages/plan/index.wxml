@@ -11,11 +11,11 @@
   <!-- 任务总进度 -->
   <view class="progress-section" wx:if="{{isLoggedIn}}">
     <view class="progress-info">
-      <text class="progress-text">总体进度</text>
+      <text class="progress-text">当前所有任务总进度</text>
       <text class="progress-percentage">{{totalProgress}}%</text>
     </view>
     <view class="progress-bar">
-      <view class="progress-inner" style="width: {{totalProgress}}%"></view>
+      <view class="progress-inner" style="width: {{totalProgress + '%'}}"></view>
     </view>
   </view>
 
