@@ -30,7 +30,7 @@ exports.main = async (event, context) => {
         await cloud.deleteFile({
           fileList: [currentUser.avatarUrl]
         });
-        console.log('删除旧头像成功');
+        ;
       } catch (err) {
         console.error('删除旧头像失败：', err);
       }

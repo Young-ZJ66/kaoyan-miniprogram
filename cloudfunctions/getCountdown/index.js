@@ -64,9 +64,9 @@ exports.main = async (event, context) => {
     const formattedNextDay = `${nextYear}-${nextMonth}-${nextDayDate}`
     
     // 打印调试信息
-    console.log('倒计时日期时间戳:', countdownTimestamp)
-    console.log('转换后的日期:', formattedDate)
-    console.log('下一天日期:', formattedNextDay)
+    
+    
+    
     
     return {
       success: true,

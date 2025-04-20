@@ -76,7 +76,6 @@ Page({
 
   // 加载资料详情
   loadResourceDetail: function(id) {
-    console.log('开始加载资源详情，ID：', id)
     
     // 显示加载提示
     wx.showLoading({
@@ -106,7 +105,6 @@ Page({
         data: { id }
       }
     }).then(res => {
-      console.log('获取资源详情结果：', res)
       if (res.result.success) {
         const data = res.result.data;
         
@@ -217,8 +215,6 @@ Page({
       return
     }
 
-    console.log('开始下载资源，fileID：', this.data.resourceDetail.fileID)
-
     wx.showLoading({
       title: '下载中...',
     })
@@ -230,14 +226,12 @@ Page({
         maxAge: 3600 // 链接有效期1小时
       }]
     }).then(res => {
-      console.log('获取下载链接结果：', res)
       if (res.fileList && res.fileList[0] && res.fileList[0].tempFileURL) {
         const tempFileURL = res.fileList[0].tempFileURL;
         
         // 构建保存路径，使用原始文件名
         const fileName = this.data.resourceDetail.fileName || '未命名文件';
         const savePath = `${wx.env.USER_DATA_PATH}/${fileName}`;
-        console.log('文件保存路径：', savePath);
 
         // 下载文件
         wx.downloadFile({
@@ -279,7 +273,7 @@ Page({
                 filePath: savePath,  // 使用保存的文件路径
                 showMenu:true,
                 success: () => {
-                  console.log('打开文件成功')
+                  
                 },
                 fail: (err) => {
                   console.error('打开文件失败：', err)

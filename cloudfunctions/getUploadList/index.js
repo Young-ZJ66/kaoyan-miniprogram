@@ -9,7 +9,7 @@ const _ = db.command;
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext();
   const { page = 1, pageSize = 20, category } = event;
-  console.log('获取上传列表，用户OPENID：', OPENID, '分类：', category);
+  ;
 
   try {
     // 查询条件
@@ -22,7 +22,7 @@ exports.main = async (event, context) => {
       query.category = category;
     }
 
-    console.log('查询条件：', query);
+    ;
 
     const result = await db.collection('resources')
       .where(query)
@@ -31,7 +31,7 @@ exports.main = async (event, context) => {
       .limit(pageSize)
       .get();
 
-    console.log('查询结果：', result);
+    ;
 
     // 格式化数据
     const formattedData = result.data.map(item => ({

@@ -96,7 +96,7 @@ Page({
   // 点击列表项
   onItemTap: function(e) {
     const resourceId = e.currentTarget.dataset.resourceId;
-    console.log('点击下载记录，资源ID：', resourceId);
+    ;
     
     if (!resourceId) {
       console.error('资源ID为空');

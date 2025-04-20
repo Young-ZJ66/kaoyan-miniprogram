@@ -52,7 +52,7 @@ Page({
   // 切换分类
   switchCategory: function(e) {
     const category = e.currentTarget.dataset.category
-    console.log('选择分类：', category)
+    
     this.setData({
       currentCategory: category
     })
@@ -77,7 +77,7 @@ Page({
       type: 'file',
       success: (res) => {
         const file = res.tempFiles[0]
-        console.log('选择的文件：', file)
+        
         // 获取文件大小并格式化
         const size = file.size
         const formattedSize = this.formatFileSize(size)

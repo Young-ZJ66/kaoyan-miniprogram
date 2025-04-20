@@ -30,7 +30,6 @@ exports.main = async (event, context) => {
         await cloud.deleteFile({
           fileList: [currentUser.avatarUrl]
         });
-        console.log('删除用户头像成功');
       } catch (err) {
         console.error('删除用户头像失败：', err);
       }
@@ -54,7 +53,6 @@ exports.main = async (event, context) => {
           _openid: openid
         }).remove();
 
-        console.log('删除用户相关记录成功');
       } catch (err) {
         console.error('删除用户相关记录失败：', err);
         // 继续执行，不中断删除用户的操作

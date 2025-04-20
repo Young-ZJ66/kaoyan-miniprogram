@@ -49,7 +49,7 @@ Page({
       title: '加载中...',
     })
 
-    console.log('开始加载资讯详情，ID:', id)
+    
 
     wx.cloud.callFunction({
       name: 'news',
@@ -58,7 +58,7 @@ Page({
         data: { id }
       }
     }).then(res => {
-      console.log('获取资讯详情响应:', res)
+      
       if (res.result.success) {
         // 处理换行符和时间格式
         const newsDetail = res.result.data;
@@ -73,7 +73,7 @@ Page({
             }]
           }));
           newsDetail.content = nodes;
-          console.log('处理后的内容:', newsDetail.content);
+          ;
         }
         // 处理时间格式
         newsDetail.createTime = this.formatDate(newsDetail.createdAt);

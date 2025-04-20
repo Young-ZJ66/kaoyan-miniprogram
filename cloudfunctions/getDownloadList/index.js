@@ -9,7 +9,7 @@ const _ = db.command;
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext();
   const { category } = event;
-  console.log('获取下载列表，用户OPENID：', OPENID, '分类：', category);
+  ;
 
   try {
     // 查询条件
@@ -22,14 +22,14 @@ exports.main = async (event, context) => {
       query.category = category;
     }
 
-    console.log('查询条件：', query);
+    ;
 
     const result = await db.collection('downloads')
       .where(query)
       .orderBy('createdAt', 'desc')
       .get();
 
-    console.log('查询结果：', result);
+    ;
 
     return {
       success: true,

@@ -29,7 +29,6 @@ Page({
       });
     }
 
-    console.log('开始调用云函数获取我的帖子，页码:', page)
     wx.cloud.callFunction({
       name: 'forum',
       data: {
@@ -44,7 +43,6 @@ Page({
         wx.hideLoading();
       }
       
-      console.log('获取我的帖子结果：', res)
       if (res.result.success) {
         const newPosts = res.result.data || []
         
@@ -90,13 +88,6 @@ Page({
           // 设置初始状态
           post.showFull = false;
           
-          console.log(`处理后的帖子(${post._id}): `, {
-            formattedTime: post.formattedTime,
-            likeCount: post.likeCount,
-            commentCount: post.commentCount,
-            userInfo: post.userInfo,
-            isOverflow: post.isOverflow
-          })
         })
 
         this.setData({
@@ -147,7 +138,6 @@ Page({
     
     const postIds = posts.map(post => post._id)
     
-    console.log('开始检查帖子点赞状态:', postIds)
     wx.cloud.callFunction({
       name: 'forum',
       data: {
@@ -155,7 +145,6 @@ Page({
         data: { postIds }
       }
     }).then(res => {
-      console.log('点赞状态检查结果:', res)
       if (res.result.success) {
         const likedPostIds = res.result.data || []
         

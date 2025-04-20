@@ -14,7 +14,7 @@ exports.main = async (event, context) => {
   try {
     const { type, data } = event
     const wxContext = cloud.getWXContext()
-    console.log('云函数入口，获取到的上下文：', wxContext)
+    
 
     // 在需要用户身份的操作中检查 OPENID
     if (['recordDownload', 'add', 'upload', 'update'].includes(type)) {
@@ -165,8 +165,8 @@ function formatFileSize(size) {
 async function uploadResource(data, openid) {
   const { title, category, size, fileID, description, nickName } = data
   try {
-    console.log('开始上传资源，数据：', data)
-    console.log('当前用户OPENID：', openid)
+    
+    
 
     if (!openid) {
       console.error('获取用户OPENID失败')
@@ -183,7 +183,7 @@ async function uploadResource(data, openid) {
       })
       .get()
     
-    console.log('查询到的用户信息：', userResult.data)
+    
     
     let uploaderNickName = '未知用户'
     if (userResult.data && userResult.data.length > 0) {
@@ -205,16 +205,16 @@ async function uploadResource(data, openid) {
       updatedAt: db.serverDate(),  // 添加更新时间，与创建时间相同
       uploaderNickName
     }
-    console.log('准备添加的资源数据：', resourceData)
+    
 
     const result = await db.collection('resources').add({
       data: resourceData
     })
-    console.log('添加资源记录结果：', result)
+    
 
     // 验证记录是否成功添加
     const verifyResult = await db.collection('resources').doc(result._id).get()
-    console.log('验证添加的记录：', verifyResult.data)
+    
 
     return {
       success: true,
@@ -234,7 +234,7 @@ async function uploadResource(data, openid) {
 async function updateDownloadCount(data) {
   try {
     const { id } = data
-    console.log('开始更新下载次数，资源ID：', id)
+    
 
     // 更新下载次数
     await db.collection('resources').doc(id).update({
@@ -242,7 +242,7 @@ async function updateDownloadCount(data) {
         downloads: _.inc(1)
       }
     })
-    console.log('更新下载次数成功')
+    
 
     return {
       success: true,
@@ -262,8 +262,8 @@ async function updateDownloadCount(data) {
 async function recordDownload(data, openid) {
   try {
     const { id } = data
-    console.log('开始记录下载历史，资源ID：', id)
-    console.log('当前用户OPENID：', openid)
+    
+    
 
     if (!openid) {
       console.error('获取用户OPENID失败')
@@ -275,7 +275,7 @@ async function recordDownload(data, openid) {
 
     // 获取资源信息
     const resource = await db.collection('resources').doc(id).get()
-    console.log('获取到的资源信息：', resource.data)
+    
 
     if (!resource.data) {
       console.error('未找到资源信息')
@@ -293,12 +293,12 @@ async function recordDownload(data, openid) {
       _openid: openid,
       createdAt: db.serverDate()
     }
-    console.log('准备添加下载记录：', downloadRecord)
+    
 
     const downloadResult = await db.collection('downloads').add({
       data: downloadRecord
     })
-    console.log('添加下载记录结果：', downloadResult)
+    
 
     return {
       success: true,
@@ -318,8 +318,8 @@ async function recordDownload(data, openid) {
 async function deleteResource(data, openid) {
   try {
     const { id } = data
-    console.log('删除资源，ID：', id)
-    console.log('当前用户OPENID：', openid)
+    
+    
 
     if (!openid) {
       console.error('获取用户OPENID失败')
@@ -351,7 +351,7 @@ async function deleteResource(data, openid) {
         await cloud.deleteFile({
           fileList: [resource.data.fileID]
         })
-        console.log('删除云存储文件成功')
+        
       } catch (err) {
         console.error('删除云存储文件失败：', err)
       }
@@ -359,7 +359,7 @@ async function deleteResource(data, openid) {
 
     // 删除资源记录
     const result = await db.collection('resources').doc(id).remove()
-    console.log('删除资源记录结果：', result)
+    
 
     return {
       success: true,
@@ -377,8 +377,8 @@ async function deleteResource(data, openid) {
 
 // 添加资源
 async function addResource(data, openid) {
-  console.log('添加资源，接收到的数据：', data)
-  console.log('文件大小信息：', { size: data.size, rawSize: data.rawSize })
+  
+  
   
   try {
     // 验证必要字段
@@ -404,7 +404,7 @@ async function addResource(data, openid) {
 async function updateResource(data) {
   try {
     const { id, title, category, description, fileID, fileName, size, rawSize } = data;
-    console.log('更新资源，数据：', data);
+    ;
 
     // 获取当前资源信息
     const currentResource = await db.collection('resources')
@@ -434,7 +434,7 @@ async function updateResource(data) {
           await cloud.deleteFile({
             fileList: [currentResource.data.fileID]
           });
-          console.log('删除旧文件成功');
+          ;
         } catch (err) {
           console.error('删除旧文件失败：', err);
         }

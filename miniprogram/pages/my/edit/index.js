@@ -72,8 +72,8 @@ Page({
       itemList: ['男', '女'],
       success: (res) => {
         const gender = res.tapIndex === 0 ? '1' : '2';  // 0为男('1')，1为女('2')
-        console.log('选择的性别索引：', res.tapIndex);
-        console.log('设置的性别值：', gender);
+        ;
+        ;
         this.setData({
           genderIndex: res.tapIndex,
           gender: gender
@@ -204,8 +204,8 @@ Page({
         }
       }
 
-      console.log('提交的openid：', openid);
-      console.log('提交的性别值：', gender);
+      ;
+      ;
       
       // 调用更新用户信息云函数
       const res = await wx.cloud.callFunction({
@@ -222,7 +222,7 @@ Page({
         }
       });
 
-      console.log('更新用户信息返回结果：', res);
+      ;
 
       if (res.result && res.result.success) {
         // 更新本地存储的用户信息

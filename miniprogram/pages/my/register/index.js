@@ -67,7 +67,7 @@ Page({
 
   // 选择地区
   onRegionChange(e) {
-    console.log('地区选择改变：', e.detail);
+    ;
     this.setData({
       region: e.detail.value
     });
@@ -180,7 +180,7 @@ Page({
 
       // 2. 获取微信登录凭证
       const loginRes = await wx.login();
-      console.log('微信登录结果：', loginRes);
+      ;
 
       if (!loginRes.code) {
         throw new Error('获取登录凭证失败');

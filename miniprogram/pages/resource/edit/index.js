@@ -46,7 +46,7 @@ Page({
         data: { id }
       }
     }).then(res => {
-      console.log('获取资源详情结果：', res)
+      
       if (res.result.success) {
         const resourceDetail = res.result.data
         this.setData({
@@ -91,7 +91,7 @@ Page({
       type: 'file',
       success: (res) => {
         const file = res.tempFiles[0]
-        console.log('选择的文件：', file)
+        
         // 获取文件大小并格式化
         const size = file.size
         const formattedSize = this.formatFileSize(size)

@@ -11,7 +11,6 @@ exports.main = async (event, context) => {
   try {
     const { type, data } = event
     const wxContext = cloud.getWXContext()
-    console.log('云函数入口，获取到的上下文：', wxContext)
 
     // 在需要用户身份的操作中检查 OPENID
     if (['addPost', 'deletePost', 'toggleLike', 'addComment', 'getMyPosts', 'getLikedPosts'].includes(type)) {
@@ -64,7 +63,6 @@ exports.main = async (event, context) => {
 async function getPosts(data) {
   try {
     const { page = 1, pageSize = 10 } = data
-    console.log('获取帖子列表, 页码:', page, '每页数量:', pageSize)
 
     // 分页查询帖子列表
     const posts = await db.collection('posts')
@@ -73,7 +71,6 @@ async function getPosts(data) {
       .limit(pageSize)
       .get()
     
-    console.log('查询到帖子数量:', posts.data.length)
     return {
       success: true,
       data: posts.data
@@ -98,7 +95,6 @@ async function getPostDetail(data, openid) {
       }
     }
 
-    console.log('获取帖子详情, ID:', id)
     const post = await db.collection('posts').doc(id).get()
     
     if (!post.data) {
@@ -123,7 +119,6 @@ async function getPostDetail(data, openid) {
 
 // 点赞帖子
 async function toggleLike(data, openid) {
-  console.log('点赞函数调用 - 上下文:', { openid })
   
   if (!openid) {
     console.error('未获取到用户openid')
@@ -142,8 +137,6 @@ async function toggleLike(data, openid) {
         message: '帖子ID不能为空'
       }
     }
-
-    console.log('点赞/取消点赞帖子, ID:', id, 'OPENID:', openid)
     
     // 检查帖子是否存在
     try {
@@ -155,7 +148,6 @@ async function toggleLike(data, openid) {
           message: '帖子不存在'
         }
       }
-      console.log('找到帖子:', postDoc.data._id)
     } catch (postError) {
       console.error('查询帖子失败:', postError)
       return {
@@ -173,7 +165,6 @@ async function toggleLike(data, openid) {
       }).get()
       
       likeRecord = likeResult.data && likeResult.data.length > 0 ? likeResult.data[0] : null
-      console.log('点赞记录查询结果:', likeRecord ? '已点赞' : '未点赞')
     } catch (likeError) {
       console.error('查询点赞记录失败:', likeError)
       return {
@@ -184,12 +175,10 @@ async function toggleLike(data, openid) {
     
     // 如果已经点赞过，则取消点赞
     if (likeRecord) {
-      console.log('用户已点赞，执行取消点赞操作, 记录ID:', likeRecord._id)
       
       try {
         // 删除点赞记录
         await db.collection('likes_users').doc(likeRecord._id).remove()
-        console.log('删除点赞记录成功')
         
         // 更新帖子的点赞数减1
         await db.collection('posts').doc(id).update({
@@ -197,7 +186,6 @@ async function toggleLike(data, openid) {
             likes: _.inc(-1)
           }
         })
-        console.log('更新帖子点赞数成功 (-1)')
         
         return {
           success: true,
@@ -214,7 +202,6 @@ async function toggleLike(data, openid) {
     } 
     // 如果没有点赞过，则添加点赞
     else {
-      console.log('用户未点赞，执行点赞操作')
       
       try {
         // 添加点赞记录
@@ -225,7 +212,6 @@ async function toggleLike(data, openid) {
             createdAt: db.serverDate()
           }
         })
-        console.log('添加点赞记录成功, ID:', likeResult._id)
         
         // 更新帖子的点赞数加1
         await db.collection('posts').doc(id).update({
@@ -233,7 +219,6 @@ async function toggleLike(data, openid) {
             likes: _.inc(1)
           }
         })
-        console.log('更新帖子点赞数成功 (+1)')
         
         return {
           success: true,
@@ -281,8 +266,6 @@ async function addComment(data, openid) {
         message: '评论内容不能为空'
       }
     }
-
-    console.log('评论帖子, ID:', postId, 'OPENID:', openid, '内容:', content)
     
     // 获取用户信息
     const userInfo = await db.collection('users').where({
@@ -337,8 +320,6 @@ async function addComment(data, openid) {
 async function checkLikeStatus(data, openid) {
   const { postIds } = data
   
-  console.log('检查点赞状态 - 参数:', { postIdsCount: postIds?.length, openid })
-  
   if (!openid || !postIds || !Array.isArray(postIds) || postIds.length === 0) {
     console.error('点赞状态检查 - 参数错误:', { openid, postIds })
     return {
@@ -348,7 +329,6 @@ async function checkLikeStatus(data, openid) {
   }
   
   try {
-    console.log('检查点赞状态, 帖子IDs:', postIds, 'OPENID:', openid)
     
     // 查询点赞记录
     const likeRecords = await db.collection('likes_users')
@@ -360,8 +340,6 @@ async function checkLikeStatus(data, openid) {
     
     // 提取已点赞的帖子ID
     const likedPostIds = likeRecords.data.map(record => record.postId)
-    
-    console.log('已点赞的帖子IDs:', likedPostIds)
     
     return {
       success: true,
@@ -378,7 +356,6 @@ async function checkLikeStatus(data, openid) {
 
 // 删除帖子
 async function deletePost(data, openid) {
-  console.log('删除帖子函数调用 - 上下文:', { openid })
   
   if (!openid) {
     console.error('未获取到用户openid')
@@ -397,8 +374,6 @@ async function deletePost(data, openid) {
         message: '帖子ID不能为空'
       }
     }
-
-    console.log('准备删除帖子, ID:', id, 'OPENID:', openid)
     
     // 检查帖子是否存在且是否为该用户发布的
     let post = null
@@ -418,8 +393,6 @@ async function deletePost(data, openid) {
       // 判断依据：检查 _openid 字段或 userInfo.openid 字段
       const postOpenid = post._openid || (post.userInfo && post.userInfo.openid)
       
-      console.log('帖子发布者openid:', postOpenid, '当前用户openid:', openid)
-      
       if (!postOpenid || postOpenid !== openid) {
         console.error('无权删除他人帖子, 帖子发布者:', postOpenid, '当前用户:', openid)
         return {
@@ -428,7 +401,6 @@ async function deletePost(data, openid) {
         }
       }
       
-      console.log('找到帖子并验证权限通过:', post._id)
     } catch (postError) {
       console.error('查询帖子失败:', postError)
       return {
@@ -445,22 +417,18 @@ async function deletePost(data, openid) {
       await transaction.collection('likes_users').where({
         postId: id
       }).remove()
-      console.log('已删除帖子相关的点赞记录')
       
       // 2. 删除帖子相关的评论
       await transaction.collection('comments').where({
         postId: id
       }).remove()
-      console.log('已删除帖子相关的评论')
       
       // 3. 删除帖子本身
       await transaction.collection('posts').doc(id).remove()
-      console.log('已删除帖子本身')
       
       // 4. 如果帖子有图片，删除云存储中的图片
       if (post.images && post.images.length > 0) {
         try {
-          console.log('准备删除帖子图片，图片列表:', post.images)
           
           // 云函数中删除文件需要处理文件路径
           const fileIDs = []
@@ -482,12 +450,9 @@ async function deletePost(data, openid) {
           }
           
           if (fileIDs.length > 0) {
-            console.log('将删除以下文件:', fileIDs)
             const deleteResult = await cloud.deleteFile({
               fileList: fileIDs
             })
-            
-            console.log('删除图片结果:', deleteResult)
             
             // 检查删除结果
             if (deleteResult.fileList) {
@@ -495,21 +460,16 @@ async function deletePost(data, openid) {
                 if (file.status !== 0) {
                   console.error('删除图片失败:', file.fileID, file.errMsg)
                 } else {
-                  console.log('成功删除图片:', file.fileID)
                 }
               })
             }
-          } else {
-            console.log('没有找到有效的文件ID，跳过删除图片步骤')
           }
         } catch (fileError) {
           console.error('删除图片过程中出错:', fileError)
           // 图片删除失败不影响整体事务
         }
-      } else {
-        console.log('帖子没有图片，跳过删除图片步骤')
-      }
-      
+      } 
+
       // 提交事务
       await transaction.commit()
       
@@ -537,7 +497,6 @@ async function deletePost(data, openid) {
 
 // 创建帖子
 async function addPost(data, openid) {
-  console.log('创建帖子函数调用，用户ID:', openid, '数据:', data)
   
   // 验证参数
   if (!openid) {
@@ -560,7 +519,6 @@ async function addPost(data, openid) {
 
   try {
     // 获取用户信息
-    console.log('查询用户信息, openid:', openid)
     const userInfo = await db.collection('users').where({
       _openid: openid
     }).get()
@@ -574,7 +532,6 @@ async function addPost(data, openid) {
     }
 
     const user = userInfo.data[0]
-    console.log('获取到用户信息:', user.nickName)
 
     // 创建帖子，添加_openid字段以便正确查询
     const postData = {
@@ -591,11 +548,9 @@ async function addPost(data, openid) {
       comments: 0
     }
     
-    console.log('准备创建帖子，数据:', postData)
     const result = await db.collection('posts').add({
       data: postData
     })
-    console.log('帖子创建成功, ID:', result._id)
 
     return {
       success: true,
@@ -615,7 +570,6 @@ async function getMyPosts(data, openid) {
   try {
     const { page = 1, pageSize = 10 } = data
     
-    console.log(`获取我的帖子，用户:${openid}, 页码:${page}, 每页数量:${pageSize}`)
     
     // 构建查询条件 - 支持两种数据结构
     // 1. 新版帖子直接用_openid字段
@@ -634,14 +588,12 @@ async function getMyPosts(data, openid) {
     // 获取总数
     const countResult = await query.count()
     const total = countResult.total
-    console.log(`用户${openid}的帖子总数: ${total}`)
     
     // 查询帖子
     const skip = (page - 1) * pageSize
     const postsResult = await query.skip(skip).limit(pageSize).get()
     const posts = postsResult.data
     
-    console.log(`查询到的帖子:`, posts)
     
     // 获取用户信息
     let userIds = [];
@@ -711,8 +663,6 @@ async function getLikedPosts(data, openid) {
   try {
     const { page = 1, pageSize = 10 } = data
     
-    console.log(`获取我点赞的帖子，用户:${openid}, 页码:${page}, 每页数量:${pageSize}`)
-    
     // 先获取用户点赞记录
     const likesResult = await db.collection('likes_users')
       .where({
@@ -722,7 +672,7 @@ async function getLikedPosts(data, openid) {
       .get()
     
     const likes = likesResult.data
-    console.log(`获取到点赞记录数量:`, likes.length)
+    
     
     // 获取点赞的帖子ID列表
     const postIds = likes.map(like => like.postId)
@@ -758,7 +708,7 @@ async function getLikedPosts(data, openid) {
       .get()
     
     const posts = postsResult.data
-    console.log(`查询到的帖子数量:`, posts.length)
+    
     
     // 根据点赞时间排序
     const postsMap = {}
@@ -782,7 +732,7 @@ async function getLikedPosts(data, openid) {
     });
     
     userIds = [...new Set(userIds)]; // 去重
-    console.log(`需要查询的用户IDs:`, userIds)
+    
     
     let usersMap = {};
     if (userIds.length > 0) {
@@ -792,7 +742,7 @@ async function getLikedPosts(data, openid) {
         })
         .get()
       
-      console.log(`查询到的用户数量:`, usersResult.data.length)
+      
       usersResult.data.forEach(user => {
         usersMap[user._openid] = user
       })

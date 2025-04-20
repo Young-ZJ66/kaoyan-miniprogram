@@ -306,8 +306,6 @@ Page({
       title: '提交中...',
     });
     
-    console.log('提交评论：', { postId, content: newComment.trim() });
-    
     // 提交评论
     wx.cloud.callFunction({
       name: 'forum',
