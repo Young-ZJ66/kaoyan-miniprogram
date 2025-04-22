@@ -27,6 +27,14 @@
   border-bottom: 1rpx solid #eee;
   overflow-x: auto;
   white-space: nowrap;
+  /* 隐藏滚动条 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* 针对WebKit浏览器隐藏滚动条 */
+.filter-box::-webkit-scrollbar, .level-filter::-webkit-scrollbar {
+  display: none;
 }
 
 .filter-item {

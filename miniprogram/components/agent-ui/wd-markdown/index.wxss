@@ -5,18 +5,19 @@
   word-wrap: break-word;
   word-break: normal;
   text-align: justify;
+  padding-right: 30rpx;
 }
 .wd-markdown ._p {
-  margin-bottom: 10rpx;
-  line-height: 1.8;
+  margin-bottom: 8rpx;
+  line-height: 1.6;
   word-break: break-all;
 }
 .wd-markdown ._ol {
-  margin-bottom: 30rpx;
+  margin-bottom: 20rpx;
   padding-left: 1.2em;
 }
 .wd-markdown ._ul {
-  margin-bottom: 30rpx;
+  margin-bottom: 20rpx;
   padding-left: 1.2em;
 }
 .wd-markdown ._hr {
@@ -26,51 +27,52 @@
 }
 .wd-markdown ._pre {
   max-width: 100%;
-  padding: 32rpx;
+  padding: 24rpx;
   overflow-x: auto;
   background-color: rgb(246, 248, 250);
-  border-radius: 12rpx;
+  border-radius: 10rpx;
   font-family: monospace;
-  font-size: 1em;
-  line-height: 1.14285em;
-  border-radius: 12rpx;
-  margin-bottom: 10rpx;
+  font-size: 0.9em;
+  line-height: 1.1em;
+  border-radius: 10rpx;
+  margin-bottom: 8rpx;
 }
 .wd-markdown ._h1 {
   border-bottom-style: double;
   border-bottom-width: 6rpx;
-  font-size: 42rpx;
-  padding-bottom: 10rpx;
-  margin-bottom: 20rpx;
+  font-size: 36rpx;
+  padding-bottom: 8rpx;
+  margin-bottom: 16rpx;
 }
 
 .wd-markdown ._h2 {
   border-bottom-style: solid;
   border-bottom-width: 1rpx;
-  font-size: 40rpx;
-  padding-bottom: 8rpx;
-  margin-bottom: 18rpx;
+  font-size: 34rpx;
+  padding-bottom: 6rpx;
+  margin-bottom: 14rpx;
 }
 
 .wd-markdown ._h3 {
-  font-size: 38rpx;
-  padding-bottom: 6rpx;
-  margin-bottom: 12rpx;
+  font-size: 32rpx;
+  padding-bottom: 4rpx;
+  margin-bottom: 10rpx;
 }
 
 .wd-markdown ._h4 {
-  font-size: 36rpx;
-  padding-bottom: 4rpx;
-  margin-bottom: 12rpx;
+  font-size: 30rpx;
+  padding-bottom: 2rpx;
+  margin-bottom: 10rpx;
 }
 
 .wd-markdown ._h5 {
-  font-size: 34rpx;
+  font-size: 28rpx;
   padding-bottom: 2rpx;
-  margin-bottom: 12rpx;
+  margin-bottom: 10rpx;
 }
 .wd-markdown ._h6 {
-  margin-bottom: 12rpx;
+  font-size: 26rpx;
+  margin-bottom: 10rpx;
 }
 .wd-markdown ._a {
   margin: 0 8rpx;
@@ -80,10 +82,10 @@
   color: #0000ee;
 }
 .wd-markdown ._blockquote {
-  margin: 0 0 10px;
-  padding: 15px 20px;
+  margin: 0 0 8px;
+  padding: 12px 16px;
   background-color: #f1f2f3;
-  border-left: 5px solid #ccc;
+  border-left: 4px solid #ccc;
   color: #666;
   font-style: italic;
 }
@@ -102,8 +104,8 @@
 .wd-markdown ._table ._td {
   box-sizing: border-box;
   position: relative;
-  min-width: 70px;
-  padding: 0px 5px;
+  min-width: 60px;
+  padding: 0px 4px;
   border: 1px solid #e1e6f0;
   vertical-align: top;
   background-clip: padding-box;
@@ -131,6 +133,7 @@
   */
 .hljs {
   color: #24292e;
+  font-size: 0.9em;
   /* background: #ffffff; */
 }
 .hljs-doctag,

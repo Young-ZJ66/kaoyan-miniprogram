@@ -28,7 +28,7 @@ Page({
       // 请使用 2.2.3 或以上的基础库以使用云能力
     } else {
       wx.cloud.init({
-        env: 'cloud1-9gbyqyqyb5f2cb69',
+        env: 'cloud-young-2gcblx0nb59a75fc',
         traceUser: true,
       })
     }

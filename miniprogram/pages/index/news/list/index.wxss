@@ -1,22 +1,38 @@
 .container {
-  padding: 20rpx;
+  padding: 0 20rpx 20rpx 20rpx; /* 左右下保持内边距，上方由筛选器的高度和padding-top替代 */
   background: #fafafa;
   min-height: 100vh;
+  padding-top: 95rpx; /* 根据筛选器实际高度调整 */
+  box-sizing: border-box;
 }
 
 /* 分类筛选样式 */
 .type-filter {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   background: #fff;
-  padding: 20rpx 0;
+  padding: 15rpx 0;
   margin-bottom: 20rpx;
-  border-radius: 24rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  z-index: 100; /* 确保筛选器在其他内容之上 */
+  box-sizing: border-box; /* 确保padding不会增加宽度 */
+  overflow: hidden; /* 确保不会出现滚动条 */
 }
 
 .type-scroll-view {
   white-space: nowrap;
   width: 100%;
+  padding: 0 10rpx; /* 添加一些内边距 */
+}
+
+/* 针对小程序的滚动条隐藏 */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  color: transparent;
+  display: none;
 }
 
 .type-item {

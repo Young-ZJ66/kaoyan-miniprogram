@@ -5,7 +5,7 @@
       <text class="news-date">发布时间：{{newsDetail.createTime}}</text>
     </view>
     <view class="news-content">
-      <rich-text nodes="{{newsDetail.content}}"></rich-text>
+      <wxParse nodes="{{newsDetail.content}}" language="html" bind:tapImg="handleImgTap" bind:tapLink="handleLinkTap" />
     </view>
     <image wx:if="{{newsDetail.coverImage}}" 
            class="news-image" 

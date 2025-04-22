@@ -1,6 +1,6 @@
 /* community/index.wxss */
 .container {
-  padding: 30rpx;
+  padding: 20rpx;
   background-color: #fafafa;
   min-height: 100vh;
   box-sizing: border-box;
@@ -31,7 +31,7 @@
   border-radius: 24rpx;
   padding: 30rpx;
   margin-bottom: 20rpx;
-  width: 690rpx;
+  width: 100%;
   box-sizing: border-box;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
   border: 1rpx solid rgba(0, 0, 0, 0.05);
@@ -92,7 +92,7 @@
   background-color: #fff;
   border-radius: 24rpx;
   padding: 30rpx;
-  width: 690rpx;
+  width: 100%;
   box-sizing: border-box;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
   border: 1rpx solid rgba(0, 0, 0, 0.05);

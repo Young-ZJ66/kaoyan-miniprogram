@@ -33,7 +33,7 @@ Page({
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
       wx.cloud.init({
-        env: 'cloud1-9gbyqyqyb5f2cb69',
+        env: 'cloud-young-2gcblx0nb59a75fc',
         traceUser: true,
       })
     }
@@ -63,17 +63,13 @@ Page({
         // 处理换行符和时间格式
         const newsDetail = res.result.data;
         if (newsDetail.content) {
-          // 直接处理字符串中的\n
-          const paragraphs = newsDetail.content.split('\\n');
-          const nodes = paragraphs.map(p => ({
-            name: 'div',
-            children: [{
-              type: 'text',
-              text: p
-            }]
-          }));
-          newsDetail.content = nodes;
-          ;
+          // 确保内容是字符串格式
+          if (typeof newsDetail.content !== 'string') {
+            newsDetail.content = String(newsDetail.content);
+          }
+          
+          // wxParse 组件会自动处理 HTML 内容，不需要做特殊处理
+          // 可以在这里对内容做一些预处理，比如清理一些无效标签等
         }
         // 处理时间格式
         newsDetail.createTime = this.formatDate(newsDetail.createdAt);
@@ -104,5 +100,35 @@ Page({
     }).finally(() => {
       wx.hideLoading()
     })
+  },
+  
+  // 处理图片点击预览
+  handleImgTap(e) {
+    const { src } = e.detail;
+    if (src) {
+      wx.previewImage({
+        current: src,
+        urls: [src]
+      });
+    }
+  },
+  
+  // 处理链接点击跳转
+  handleLinkTap(e) {
+    const { href } = e.detail;
+    if (href) {
+      // 判断是内部链接还是外部链接
+      if (href.includes('http://') || href.includes('https://')) {
+        // 外部链接，打开webview页面
+        wx.navigateTo({
+          url: `/components/wxParse/webviewPage/webviewPage?src=${encodeURIComponent(href)}`
+        });
+      } else {
+        // 内部链接，按照小程序路由跳转
+        wx.navigateTo({
+          url: href
+        });
+      }
+    }
   }
 }) 

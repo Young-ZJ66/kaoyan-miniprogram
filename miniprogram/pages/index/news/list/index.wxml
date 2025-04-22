@@ -2,7 +2,7 @@
 <view class="container">
   <!-- 分类筛选栏 -->
   <view class="type-filter">
-    <scroll-view scroll-x="true" class="type-scroll-view">
+    <scroll-view scroll-x="true" class="type-scroll-view" enhanced="true" show-scrollbar="false" enable-flex>
       <view 
         class="type-item {{currentType === 'all' ? 'active' : ''}}" 
         bindtap="switchType" 

@@ -9,7 +9,7 @@
 }
 
 .news-title {
-  font-size: 36rpx;
+  font-size: 48rpx;
   font-weight: bold;
   color: #333;
   line-height: 1.4;
@@ -26,10 +26,12 @@
 }
 
 .news-content {
-  font-size: 28rpx;
   color: #333;
-  line-height: 1.6;
+  line-height: 1.5;
   margin-bottom: 30rpx;
+  word-break: break-all;
+  word-wrap: break-word;
+  text-indent: 2em;
 }
 
 .news-image {
