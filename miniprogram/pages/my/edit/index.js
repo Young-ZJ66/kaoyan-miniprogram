@@ -380,5 +380,71 @@ Page({
         }
       }
     });
+  },
+
+  // 下拉刷新函数
+  onPullDownRefresh: function() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
+    // 获取当前用户信息
+    const userInfo = wx.getStorageSync('userInfo');
+    const auth = wx.getStorageSync('auth');
+    
+    if (userInfo && auth && auth.token) {
+      // 刷新用户信息
+      wx.cloud.callFunction({
+        name: 'getUserInfo',
+        data: {
+          openid: this.data.openid
+        }
+      }).then(res => {
+        if (res.result && res.result.success) {
+          const updatedUserInfo = res.result.data;
+          
+          // 更新本地存储
+          wx.setStorageSync('userInfo', updatedUserInfo);
+          
+          // 更新页面数据
+          this.setData({
+            userInfo: updatedUserInfo,
+            tempAvatarUrl: updatedUserInfo.avatarUrl || '',
+            tempNickName: updatedUserInfo.nickName || '',
+            gender: updatedUserInfo.gender || '1',
+            genderIndex: updatedUserInfo.gender === '1' ? 0 : 1,
+            birthday: updatedUserInfo.birthday || '',
+            region: updatedUserInfo.region ? updatedUserInfo.region.split(' ') : ['请选择', '', ''],
+            phone: updatedUserInfo.phone || '',
+            email: updatedUserInfo.email || ''
+          });
+        }
+      }).catch(err => {
+        // 只记录错误，不显示提示
+        console.error('刷新用户信息失败：', err);
+      }).finally(() => {
+        // 隐藏加载提示框
+        wx.hideLoading();
+        // 停止下拉刷新动画
+        wx.stopPullDownRefresh();
+      });
+    } else {
+      // 未登录状态
+      wx.hideLoading();
+      wx.stopPullDownRefresh();
+      
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000,
+        success: () => {
+          setTimeout(() => {
+            wx.navigateBack();
+          }, 1500);
+        }
+      });
+    }
   }
 }); 

@@ -192,16 +192,67 @@ Page({
 
   // 下拉刷新
   onPullDownRefresh() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
+    // 重置状态
     this.setData({
-      page: 1
-    }, () => {
-      Promise.all([
-        this.loadSchoolInfo(),
-        this.loadMajors()
-      ]).then(() => {
-        wx.stopPullDownRefresh()
+      majors: [],
+      filteredMajors: [],
+      page: 1,
+      hasMore: true,
+      isLoading: true,
+      searchKeyword: '',
+      durationIndex: 0,
+      degreeIndex: 0
+    });
+
+    // 并行加载院校信息和专业列表
+    Promise.all([
+      this.loadSchoolInfo().catch(err => {
+        console.error('刷新院校信息失败：', err);
+        return null;
+      }),
+      
+      // 重新加载专业列表
+      wx.cloud.callFunction({
+        name: 'major',
+        data: {
+          type: 'getMajors',
+          data: {
+            schoolId: this.data.schoolId,
+            page: 1,
+            pageSize: this.data.pageSize
+          }
+        }
+      }).then(result => {
+        const { code, data, msg } = result.result;
+        
+        if (code === 0 && data) {
+          this.setData({
+            majors: data.list,
+            filteredMajors: data.list,
+            page: 2,
+            hasMore: data.hasMore
+          });
+        }
+        return null;
+      }).catch(err => {
+        console.error('刷新专业列表失败：', err);
+        return null;
       })
-    })
+    ])
+    .finally(() => {
+      // 隐藏加载提示框
+      wx.hideLoading();
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+      // 重置加载状态
+      this.setData({ isLoading: false });
+    });
   },
 
   // 学制筛选变化

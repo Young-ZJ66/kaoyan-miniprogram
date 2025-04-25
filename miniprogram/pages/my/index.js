@@ -875,4 +875,59 @@ Page({
       url: '/pages/my/collection/index'
     })
   },
+
+  // 下拉刷新
+  onPullDownRefresh: function() {
+    // 检查登录状态
+    const auth = wx.getStorageSync('auth');
+    const userInfo = wx.getStorageSync('userInfo');
+    const isLoggedIn = wx.getStorageSync('isLoggedIn');
+    
+    if (auth && auth.token && Date.now() < auth.expireTime && userInfo && isLoggedIn) {
+      // 已登录状态，刷新用户信息
+      this.refreshUserInfo();
+    } else {
+      // 未登录状态，直接停止刷新动画
+      wx.stopPullDownRefresh();
+    }
+  },
+  
+  // 刷新用户信息
+  refreshUserInfo: function() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+    
+    wx.cloud.callFunction({
+      name: 'getUserInfo',
+      data: {
+        openid: this.data.userInfo._openid || this.data.openid
+      }
+    }).then(res => {
+      if (res.result && res.result.success) {
+        const updatedUserInfo = res.result.data;
+        
+        // 更新本地存储和页面数据
+        wx.setStorageSync('userInfo', updatedUserInfo);
+        
+        this.setData({
+          userInfo: updatedUserInfo,
+          isLoggedIn: true
+        });
+        
+        // 检查本地头像
+        this.checkLocalAvatar(updatedUserInfo);
+      }
+    }).catch(err => {
+      console.error('刷新用户信息失败：', err);
+    }).finally(() => {
+      // 隐藏加载提示框
+      wx.hideLoading();
+      
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+    });
+  },
 }) 

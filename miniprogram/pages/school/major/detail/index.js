@@ -172,5 +172,47 @@ Page({
         icon: 'none'
       })
     }
+  },
+
+  // 下拉刷新
+  onPullDownRefresh() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
+    // 并行加载所有数据
+    Promise.all([
+      // 加载院校信息
+      this.loadSchoolInfo().catch(err => {
+        console.error('刷新院校信息失败：', err);
+        return null;
+      }),
+      
+      // 加载专业信息
+      this.loadMajorInfo().catch(err => {
+        console.error('刷新专业信息失败：', err);
+        return null;
+      }),
+      
+      // 检查收藏状态
+      this.checkCollectionStatus().catch(err => {
+        console.error('检查收藏状态失败：', err);
+        return null;
+      }),
+      
+      // 检查登录状态
+      new Promise(resolve => {
+        this.checkLoginStatus();
+        resolve(null);
+      })
+    ])
+    .finally(() => {
+      // 隐藏加载提示框
+      wx.hideLoading();
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+    });
   }
 }) 

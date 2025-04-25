@@ -101,5 +101,44 @@ Page({
     wx.navigateTo({
       url: `/pages/resource/detail/index?id=${id}`
     })
+  },
+
+  // 下拉刷新
+  onPullDownRefresh: function() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
+    // 调用云函数加载资源
+    wx.cloud.callFunction({
+      name: 'getUploadList',
+      data: {
+        page: 1,
+        pageSize: 20,
+        category: this.data.currentCategory === 'all' ? null : this.data.currentCategory
+      }
+    }).then(res => {
+      if (res.result.success) {
+        // 处理时间格式
+        const resourcesList = res.result.data.map(item => ({
+          ...item,
+          createdAt: this.formatTime(item.createdAt)
+        }));
+        this.setData({
+          resourcesList: resourcesList
+        });
+      }
+      // 不显示失败提示
+    }).catch(err => {
+      // 只记录错误，不显示提示
+      console.error('刷新上传记录失败：', err);
+    }).finally(() => {
+      // 隐藏加载提示框
+      wx.hideLoading();
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+    });
   }
 }) 

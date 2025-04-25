@@ -170,19 +170,40 @@ Page({
         }
       })
     }).then(res => {
+      // 先隐藏上传中的loading提示
+      wx.hideLoading()
+      
       if (res.result.success) {
         wx.showToast({
           title: '上传成功',
           icon: 'success'
         })
+        
         // 延迟返回，让用户看到成功提示
         setTimeout(() => {
-          // 返回首页并刷新
+          // 查找并刷新首页
           const pages = getCurrentPages()
-          const prevPage = pages[pages.length - 2]
-          if (prevPage) {
-            prevPage.loadResources()
+          
+          // 遍历所有页面，查找首页
+          let indexPage = null
+          for (let i = 0; i < pages.length; i++) {
+            if (pages[i].route === 'pages/index/index') {
+              indexPage = pages[i]
+              break
+            }
           }
+          
+          // 如果找到首页，重置页数并刷新资料列表
+          if (indexPage) {
+            indexPage.setData({
+              page: 1,
+              resourcesList: []
+            }, () => {
+              indexPage.loadResources()
+            })
+          }
+          
+          // 返回上一页
           wx.navigateBack()
         }, 1500)
       } else {
@@ -192,13 +213,14 @@ Page({
         })
       }
     }).catch(err => {
+      // 确保发生错误时也隐藏loading提示
+      wx.hideLoading()
+      
       console.error('上传失败：', err)
       wx.showToast({
         title: '上传失败',
         icon: 'none'
       })
-    }).finally(() => {
-      wx.hideLoading()
     })
   }
 }) 

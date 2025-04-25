@@ -121,8 +121,84 @@ Page({
 
   // 下拉刷新
   onPullDownRefresh: function() {
-    this.loadLikedPosts(true)
-    wx.stopPullDownRefresh()
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
+    // 重置页码
+    this.setData({
+      page: 1,
+      hasMore: true
+    });
+
+    // 调用带有刷新标志的加载函数
+    wx.cloud.callFunction({
+      name: 'forum',
+      data: {
+        type: 'getLikedPosts',
+        data: {
+          page: 1,
+          pageSize: this.data.pageSize
+        }
+      }
+    }).then(res => {
+      if (res.result.success) {
+        const newPosts = res.result.data || [];
+        
+        // 格式化时间和处理帖子字段
+        newPosts.forEach(post => {
+          // 处理时间
+          post.formattedTime = this.formatTime(post.createdAt);
+          
+          // 处理评论和点赞数
+          post.commentCount = post.comments || post.commentCount || 0;
+          post.likeCount = post.likes || post.likeCount || 0;
+          
+          // 处理用户信息
+          if (!post.userInfo) {
+            post.userInfo = {
+              nickName: '未知用户',
+              avatarUrl: '/images/avatar-default.png'
+            };
+          } else {
+            // 确保用户信息字段完整
+            if (!post.userInfo.nickName) post.userInfo.nickName = '未知用户';
+            if (!post.userInfo.avatarUrl) post.userInfo.avatarUrl = '/images/avatar-default.png';
+          }
+          
+          // 设置点赞状态
+          post.isLiked = true;
+          
+          // 检查内容是否需要展开按钮
+          post.isOverflow = post.content && (
+            post.content.length > 100 || 
+            (post.content.match(/\n/g) || []).length >= 3 ||
+            post.content.split('\n').some(line => line.length > 30)
+          );
+          
+          // 设置初始状态
+          post.showFull = false;
+        });
+
+        this.setData({
+          posts: newPosts,
+          page: 2,
+          hasMore: newPosts.length >= this.data.pageSize,
+          loading: false
+        });
+      }
+      // 不显示失败提示
+    }).catch(err => {
+      // 只记录错误，不显示提示
+      console.error('刷新帖子失败：', err);
+    }).finally(() => {
+      // 隐藏加载提示框
+      wx.hideLoading();
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+    });
   },
 
   // 预览图片

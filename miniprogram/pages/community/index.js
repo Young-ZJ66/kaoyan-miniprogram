@@ -786,28 +786,6 @@ Page({
     e.currentTarget.dataset.stopBubble = true;
   },
 
-  // 处理分享
-  onShareAppMessage: function(res) {
-    if (res.from === 'button') {
-      // 来自页面内转发按钮
-      const id = res.target.dataset.id;
-      const post = this.data.posts.find(p => p._id === id);
-      
-      if (post) {
-        return {
-          title: post.content.substring(0, 30) + (post.content.length > 30 ? '...' : ''),
-          path: '/pages/community/detail/index?id=' + id,
-          imageUrl: post.images && post.images.length > 0 ? post.images[0] : ''
-        };
-      }
-    }
-    
-    // 默认分享
-    return {
-      title: '学习社区',
-      path: '/pages/community/index'
-    };
-  },
 
   // 监听页面从详情页返回事件（比如查看帖子详情后返回列表）
   onPageShow: function() {

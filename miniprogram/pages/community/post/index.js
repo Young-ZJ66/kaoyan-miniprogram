@@ -111,7 +111,7 @@ Page({
     }
     
     wx.showLoading({
-      title: '检测内容...'
+      title: '发布中...'
     })
     
     try {
@@ -146,17 +146,9 @@ Page({
         }
       }
       
-      wx.showLoading({
-        title: '发布中...'
-      })
-      
       // 上传图片到云存储
       let uploadedImages = []
       if (images.length > 0) {
-        wx.showLoading({
-          title: '上传图片中...'
-        })
-        
         const uploadPromises = images.map((filePath, index) => {
           return new Promise((resolve, reject) => {
             const cloudPath = `posts/${Date.now()}_${index}_${Math.random().toString(36).substring(2)}.${filePath.match(/\.([^.]+)$/)[1] || 'png'}`

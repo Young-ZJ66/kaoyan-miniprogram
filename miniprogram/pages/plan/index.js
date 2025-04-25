@@ -822,15 +822,17 @@ Page({
 
   // 下拉刷新处理
   onPullDownRefresh: function() {
-    // 显示刷新中提示
-    wx.showNavigationBarLoading()
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    })
     
     // 刷新所有数据
     Promise.all([
-      // 获取倒计时信息(不显示加载提示)
+      // 获取倒计时信息(不显示额外加载提示)
       this.getCountdownInfo(false),
       
-      // 如果用户已登录，获取任务列表(不显示加载提示)
+      // 如果用户已登录，获取任务列表(不显示额外加载提示)
       this.data.isLoggedIn ? this.getUserTasks(false) : Promise.resolve([])
     ]).then(() => {
       // 设置当前日期为选中日期
@@ -847,26 +849,21 @@ Page({
       // 加载当天任务
       this.loadDateTasks(formattedToday)
       
-      // 停止下拉刷新动画和导航栏加载动画
+      // 停止下拉刷新动画
       wx.stopPullDownRefresh()
-      wx.hideNavigationBarLoading()
       
-      // 显示刷新成功提示
-      wx.showToast({
-        title: '刷新成功',
-        icon: 'success',
-        duration: 1000
-      })
-    }).catch(() => {
-      // 发生错误时也停止下拉刷新动画和导航栏加载动画
+      // 隐藏加载提示框
+      wx.hideLoading()
+      
+    }).catch((error) => {
+      console.error('刷新数据失败：', error)
+      
+      // 发生错误时也停止下拉刷新动画
       wx.stopPullDownRefresh()
-      wx.hideNavigationBarLoading()
       
-      wx.showToast({
-        title: '刷新失败',
-        icon: 'none',
-        duration: 1000
-      })
+      // 隐藏加载提示框
+      wx.hideLoading()
+      
     })
   }
 }) 

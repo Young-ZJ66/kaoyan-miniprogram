@@ -266,5 +266,54 @@ Page({
         duration: 2000
       });
     }
+  },
+
+  // 下拉刷新
+  onPullDownRefresh: function() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '刷新中...',
+      mask: true
+    });
+
+    if (this.data.id) {
+      // 重新加载资源详情
+      wx.cloud.callFunction({
+        name: 'resources',
+        data: {
+          type: 'getDetail',
+          data: { id: this.data.id }
+        }
+      }).then(res => {
+        if (res.result.success) {
+          const resourceDetail = res.result.data;
+          
+          // 更新表单数据
+          this.setData({
+            resourceDetail,
+            title: resourceDetail.title,
+            description: resourceDetail.description || '',
+            currentCategory: resourceDetail.category,
+            fileID: resourceDetail.fileID,
+            fileName: resourceDetail.fileName,
+            fileSize: resourceDetail.rawSize || 0,
+            formattedFileSize: resourceDetail.size || '0B'
+          });
+        }
+        // 不显示失败提示，避免打扰用户体验
+      }).catch(err => {
+        // 只记录错误，不显示提示
+        console.error('刷新资源详情失败：', err);
+      }).finally(() => {
+        // 隐藏加载提示框
+        wx.hideLoading();
+        // 停止下拉刷新动画
+        wx.stopPullDownRefresh();
+      });
+    } else {
+      // 如果没有资源ID，直接停止刷新
+      wx.hideLoading();
+      wx.stopPullDownRefresh();
+    }
   }
 }) 

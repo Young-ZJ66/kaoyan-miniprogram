@@ -171,5 +171,42 @@ Page({
     }).finally(() => {
       wx.hideLoading();
     });
+  },
+
+  // 下拉刷新
+  onPullDownRefresh: function() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
+    // 重新加载下载记录
+    wx.cloud.callFunction({
+      name: 'getDownloadList',
+      data: {
+        category: this.data.currentCategory === 'all' ? null : this.data.currentCategory
+      }
+    }).then(res => {
+      if (res.result.success) {
+        // 格式化数据和时间
+        const downloadsList = res.result.data.map(item => ({
+          ...item,
+          createdAt: this.formatTime(item.createdAt)
+        }))
+        this.setData({
+          downloadsList: downloadsList
+        })
+      }
+      // 不显示失败提示
+    }).catch(err => {
+      // 只记录错误，不显示提示
+      console.error('刷新下载记录失败：', err)
+    }).finally(() => {
+      // 隐藏加载提示框
+      wx.hideLoading();
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+    });
   }
 }) 

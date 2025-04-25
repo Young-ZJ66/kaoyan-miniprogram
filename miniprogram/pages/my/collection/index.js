@@ -55,5 +55,37 @@ Page({
     wx.navigateTo({
       url: `/pages/school/major/detail/index?majorId=${majorId}&schoolId=${schoolId}`
     })
+  },
+
+  // 下拉刷新函数
+  onPullDownRefresh: function() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+
+    // 重新加载收藏列表
+    wx.cloud.callFunction({
+      name: 'major',
+      data: {
+        type: 'getCollections',
+        data: {}
+      }
+    }).then(result => {
+      const { code, data } = result.result
+      if (code === 0) {
+        this.setData({
+          collections: data.list
+        })
+      }
+    }).catch(err => {
+      console.error('刷新收藏列表失败：', err)
+    }).finally(() => {
+      // 隐藏加载提示框
+      wx.hideLoading();
+      // 停止下拉刷新动画
+      wx.stopPullDownRefresh();
+    });
   }
 }) 

@@ -130,5 +130,28 @@ Page({
         });
       }
     }
+  },
+  
+  // 下拉刷新
+  onPullDownRefresh: function() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+    
+    // 检查当前资讯ID是否存在
+    const currentNewsId = this.data.newsDetail?._id;
+    if (currentNewsId) {
+      // 重新加载当前资讯详情
+      this.loadNewsDetail(currentNewsId);
+      // 加载完成后停止下拉刷新动画
+      wx.stopPullDownRefresh();
+      // 隐藏加载提示框
+      wx.hideLoading();
+    } else {
+      wx.stopPullDownRefresh();
+      wx.hideLoading();
+    }
   }
 }) 

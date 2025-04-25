@@ -25,6 +25,82 @@ App({
     this.checkLoginStatus();
   },
   
+  // 小程序显示时触发
+  onShow: function() {
+    // 如果用户已登录，更新最后登录时间
+    if (this.globalData.isLoggedIn && this.globalData.userInfo) {
+      this.updateLastLoginTime(this.globalData.userInfo._openid);
+    }
+  },
+  
+  // 记录登录日志
+  logLogin: function(openid) {
+    if (!openid) return;
+    
+    try {
+      const systemInfo = wx.getDeviceInfo();
+      const appBaseInfo = wx.getAppBaseInfo();
+      
+      wx.cloud.callFunction({
+        name: 'logOperation',
+        data: {
+          type: 'login',
+          openid: openid,
+          deviceInfo: {
+            model: systemInfo.model,
+            system: systemInfo.system,
+            platform: systemInfo.platform,
+            version: appBaseInfo.version,
+            SDKVersion: appBaseInfo.SDKVersion
+          }
+        },
+        fail: (err) => {
+          console.error('记录登录日志失败：', err);
+        }
+      });
+    } catch (err) {
+      console.error('记录登录日志失败：', err);
+      // 记录日志失败不影响登录流程
+    }
+  },
+  
+  // 更新最后登录时间的方法
+  updateLastLoginTime: function(openid) {
+    if (!openid) return;
+    
+    const now = Date.now();
+    // 设置更新间隔为30分钟，避免频繁调用
+    const UPDATE_INTERVAL = 30 * 60 * 1000; // 30分钟
+    
+    // 获取存储在本地的上次登录时间
+    const lastLoginTime = wx.getStorageSync('loginTime') || 0;
+    
+    // 如果距离上次更新时间不足设定的间隔，则不更新
+    if (now - lastLoginTime < UPDATE_INTERVAL) {
+      console.log('距离上次更新登录时间未超过间隔，跳过本次更新');
+      return;
+    }
+    
+    const db = wx.cloud.database();
+    db.collection('users').where({
+      _openid: openid
+    }).update({
+      data: {
+        lastLoginTime: db.serverDate()
+      },
+      success: () => {
+        // 更新成功后，记录本次更新时间到本地存储
+        wx.setStorageSync('loginTime', now);
+        
+        // 记录登录日志
+        this.logLogin(openid);
+      },
+      fail: (err) => {
+        console.error('更新最后登录时间失败：', err);
+      }
+    });
+  },
+  
   checkLoginStatus: function() {
     const auth = wx.getStorageSync('auth');
     const userInfo = wx.getStorageSync('userInfo');
@@ -32,11 +108,13 @@ App({
     
     if (auth && auth.token && Date.now() < auth.expireTime && userInfo && isLoggedIn) {
       // 验证数据库中的用户信息是否存在
-      wx.cloud.database().collection('users').doc(userInfo._id).get({
+      wx.cloud.database().collection('users').where({
+        _openid: userInfo._openid
+      }).get({
         success: (res) => {
-          if (res.data) {
+          if (res.data && res.data.length > 0) {
             // 检查用户状态是否为禁用状态（status为false表示被禁用）
-            if (res.data.status === false) {
+            if (res.data[0].status === false) {
               this.clearLoginData();
               wx.showModal({
                 title: '账号已禁用',
@@ -46,6 +124,9 @@ App({
             } else {
               this.globalData.userInfo = userInfo;
               this.globalData.isLoggedIn = true;
+              
+              // 更新用户最后登录时间
+              this.updateLastLoginTime(userInfo._openid);
             }
           } else {
             this.clearLoginData();

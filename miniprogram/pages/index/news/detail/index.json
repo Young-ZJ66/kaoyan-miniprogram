@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "资讯详情",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f5f5f5",
+  "backgroundTextStyle": "dark",
   "usingComponents": {
     "wxParse": "/components/wxParse/wxParse"
   }

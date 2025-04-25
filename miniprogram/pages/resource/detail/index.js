@@ -334,13 +334,40 @@ Page({
               data: { id: this.data.resourceDetail._id }
             }
           }).then(res => {
+            // 隐藏加载提示
+            wx.hideLoading()
+            
             if (res.result.success) {
               wx.showToast({
                 title: '删除成功',
                 icon: 'success'
               })
-              // 返回上一页
+              
+              // 延迟返回，让用户看到成功提示
               setTimeout(() => {
+                // 查找并刷新首页
+                const pages = getCurrentPages()
+                
+                // 遍历所有页面，查找首页
+                let indexPage = null
+                for (let i = 0; i < pages.length; i++) {
+                  if (pages[i].route === 'pages/index/index') {
+                    indexPage = pages[i]
+                    break
+                  }
+                }
+                
+                // 如果找到首页，重置页数并刷新资料列表
+                if (indexPage) {
+                  indexPage.setData({
+                    page: 1,
+                    resourcesList: []
+                  }, () => {
+                    indexPage.loadResources()
+                  })
+                }
+                
+                // 返回上一页
                 wx.navigateBack()
               }, 1500)
             } else {
@@ -351,13 +378,14 @@ Page({
               })
             }
           }).catch(err => {
+            // 隐藏加载提示
+            wx.hideLoading()
+            
             console.error('删除资源失败：', err)
             wx.showToast({
               title: '删除失败',
               icon: 'none'
             })
-          }).finally(() => {
-            wx.hideLoading()
           })
         }
       }
@@ -374,5 +402,64 @@ Page({
     wx.navigateTo({
       url: `/pages/resource/edit/index?id=${this.data.resourceDetail._id}`
     })
+  },
+
+  // 下拉刷新
+  onPullDownRefresh: function() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '刷新中...',
+      mask: true
+    });
+
+    if (this.data.resourceDetail && this.data.resourceDetail._id) {
+      // 重新加载资源详情
+      wx.cloud.callFunction({
+        name: 'resources',
+        data: {
+          type: 'getDetail',
+          data: { id: this.data.resourceDetail._id }
+        }
+      }).then(res => {
+        if (res.result.success) {
+          const data = res.result.data;
+          
+          // 处理时间格式
+          const resourceDetail = {
+            ...data,
+            createdAt: this.formatTime(data.createdAt),
+            updatedAt: this.formatTime(data.updatedAt)
+          };
+          
+          // 更新缓存
+          wx.setStorageSync(`resource_${this.data.resourceDetail._id}`, data);
+          
+          // 检查是否为上传者
+          const isUploader = this.checkIsUploader(resourceDetail);
+          
+          this.setData({
+            resourceDetail: resourceDetail,
+            loading: false,
+            isUploader: isUploader
+          }, () => {
+            // 更新权限
+            this.checkUserPermission();
+          });
+        }
+        // 不显示失败提示，避免打扰用户体验
+      }).catch(err => {
+        // 只记录错误，不显示提示
+        console.error('刷新资源详情失败：', err);
+      }).finally(() => {
+        // 隐藏加载提示框
+        wx.hideLoading();
+        // 停止下拉刷新动画
+        wx.stopPullDownRefresh();
+      });
+    } else {
+      // 如果没有资源ID，直接停止刷新
+      wx.hideLoading();
+      wx.stopPullDownRefresh();
+    }
   }
 }) 

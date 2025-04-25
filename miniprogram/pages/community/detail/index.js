@@ -489,5 +489,40 @@ Page({
         }
       }
     });
+  },
+  
+  // 下拉刷新函数
+  onPullDownRefresh: function() {
+    // 显示加载中提示框
+    wx.showLoading({
+      title: '加载中...',
+      mask: true
+    });
+    
+    // 检查帖子ID是否存在
+    if (this.data.postId) {
+      // 并行加载帖子详情和评论
+      Promise.all([
+        new Promise((resolve) => {
+          this.loadPostDetail();
+          resolve();
+        }),
+        new Promise((resolve) => {
+          this.loadComments();
+          resolve();
+        })
+      ]).then(() => {
+        // 所有数据加载完成后，停止下拉刷新动画
+        wx.stopPullDownRefresh();
+        // 隐藏加载提示框
+        wx.hideLoading();
+      }).catch(() => {
+        wx.stopPullDownRefresh();
+        wx.hideLoading();
+      });
+    } else {
+      wx.stopPullDownRefresh();
+      wx.hideLoading();
+    }
   }
 }); 
