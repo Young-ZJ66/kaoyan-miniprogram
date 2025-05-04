@@ -159,16 +159,13 @@ Page({
       return
     }
     
-    const db = wx.cloud.database()
-    
-    // 使用从本地存储获取的openid查询任务
-    return db.collection('tasks')
-      .where({
-        _openid: userInfo._openid
-      })
-      .get()
-      .then(res => {
-        const tasks = res.data || []
+    // 调用云函数获取所有任务数据
+    return wx.cloud.callFunction({
+      name: 'getTasks'
+    })
+    .then(res => {
+      if (res.result && res.result.success) {
+        const tasks = res.result.data || []
         
         // 将任务按日期分组
         const dailyTasks = this.groupTasksByDate(tasks)
@@ -191,17 +188,21 @@ Page({
         }
         
         return tasks
+      } else {
+        throw new Error(res.result.message || '获取任务失败')
+      }
+    })
+    .catch(err => {
+      console.error('获取任务失败:', err)
+      wx.showToast({
+        title: '获取任务失败',
+        icon: 'none'
       })
-      .catch(err => {
-        wx.showToast({
-          title: '获取任务失败',
-          icon: 'none'
-        })
-        return []
-      })
-      .finally(() => {
-        if (showLoading) wx.hideLoading()
-      })
+      return []
+    })
+    .finally(() => {
+      if (showLoading) wx.hideLoading()
+    })
   },
   
   // 将任务按日期分组

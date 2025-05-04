@@ -44,7 +44,7 @@
       <block wx:if="{{posts.length > 0}}">
         <view class="post-item" wx:for="{{posts}}" wx:key="_id" bindtap="goToPostDetail" data-id="{{item._id}}">
           <view class="post-header">
-            <image class="avatar" src="{{item.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
+            <image class="avatar" src="{{item.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill" lazy-load="true"></image>
             <view class="user-info">
               <text class="nickname">{{item.userInfo.nickName || '匿名用户'}}</text>
               <text class="time">{{item.formattedTime}}</text>

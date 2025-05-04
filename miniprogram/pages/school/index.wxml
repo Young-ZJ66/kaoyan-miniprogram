@@ -27,7 +27,7 @@
 <!-- 院校列表 -->
 <view class="school-list">
   <view class="school-item" wx:for="{{schools}}" wx:key="_id" bindtap="onSchoolTap" data-id="{{item._id}}">
-    <image class="school-logo" src="{{item.logo}}" mode="aspectFit"></image>
+    <image class="school-logo" src="{{item.logo}}" mode="aspectFit" lazy-load="true"></image>
     <view class="school-info">
       <view class="school-name-row">
         <text class="school-name">{{item.name}}</text>

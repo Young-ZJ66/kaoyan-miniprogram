@@ -5,7 +5,7 @@
     <!-- 帖子详情 -->
     <view class="post-detail">
       <view class="post-header">
-        <image class="avatar" src="{{post.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
+        <image class="avatar" src="{{post.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill" lazy-load="true"></image>
         <view class="user-info">
           <text class="nickname">{{post.userInfo.nickName || '匿名用户'}}</text>
           <text class="time">{{post.formattedTime}}</text>
