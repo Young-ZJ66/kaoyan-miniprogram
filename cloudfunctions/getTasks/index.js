@@ -35,6 +35,7 @@ exports.main = async (event, context) => {
         .where({
           _openid: OPENID
         })
+        .orderBy('createdAt', 'asc') // 按照创建时间升序排列
         .skip(i * MAX_LIMIT)
         .limit(MAX_LIMIT)
         .get()

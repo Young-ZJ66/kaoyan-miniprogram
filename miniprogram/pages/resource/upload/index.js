@@ -109,7 +109,9 @@ Page({
         return
       }
 
-      const cloudPath = `resources/${Date.now()}-${Math.random().toString(36).substr(2)}-${this.data.fileName}`
+      // 处理文件名，避免特殊字符如"+"导致上传失败
+      const safeFileName = encodeURIComponent(this.data.fileName).replace(/\%/g, '')
+      const cloudPath = `resources/${Date.now()}-${Math.random().toString(36).substr(2)}-${safeFileName}`
       
       wx.cloud.uploadFile({
         cloudPath,
@@ -118,6 +120,7 @@ Page({
           resolve(res.fileID)
         },
         fail: err => {
+          console.error('文件上传失败：', err)
           reject(err)
         }
       })
