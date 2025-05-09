@@ -11,7 +11,7 @@
   <!-- 任务总进度 -->
   <view class="progress-section" wx:if="{{isLoggedIn}}">
     <view class="progress-info">
-      <text class="progress-text">当前所有任务总进度</text>
+      <text class="progress-text">所有任务总进度</text>
       <text class="progress-percentage">{{totalProgress}}%</text>
     </view>
     <view class="progress-bar">
@@ -46,7 +46,7 @@
           bindtap="selectDate"
           data-date="{{item.date}}">
           <text>{{item.day}}</text>
-          <!-- 添加任务标记，显示小红点 -->
+          <!-- 任务标记点 -->
           <view class="task-dot" wx:if="{{item.hasTasks}}"></view>
         </view>
       </view>
@@ -62,13 +62,14 @@
       <block wx:if="{{currentDateTasks.length > 0}}">
         <block wx:for="{{currentDateTasks}}" wx:key="_id">
           <block wx:for="{{item.tasks}}" wx:for-item="taskItem" wx:for-index="taskIndex" wx:key="taskIndex">
-            <view class="task-detail">
+            <view class="task-detail" style="border-left: 4rpx solid {{taskItem.color || '#07c160'}}; background-color: {{taskItem.backgroundColorRGB || 'rgba(7, 193, 96, 0.1)'}};">
               <view wx:if="{{showTaskCheckbox}}" class="task-checkbox {{taskItem.completed ? 'completed' : ''}}" 
                     bindtap="toggleTaskStatus" 
                     data-task-id="{{item._id}}" 
                     data-task-index="{{taskIndex}}" 
-                    data-completed="{{taskItem.completed}}"></view>
-              <view wx:else class="task-bullet"></view>
+                    data-completed="{{taskItem.completed}}"
+                    style="{{taskItem.completed ? 'background-color: ' + (taskItem.color || '#07c160') + '; border-color: ' + (taskItem.color || '#07c160') + ';' : ''}}"></view>
+              <view wx:else class="task-bullet" style="background-color: {{taskItem.color || '#07c160'}};"></view>
               <text class="task-text {{taskItem.completed && showTaskCheckbox ? 'completed-text' : ''}}">{{taskItem.content}}</text>
             </view>
           </block>
@@ -97,10 +98,10 @@
         <!-- 按钮列表 -->
         <view class="menu-list" wx:if="{{isMenuOpen}}">
           <view class="menu-item" bindtap="goToAddPlan">
-            <text>制定计划</text>
+            <text>创建打卡</text>
           </view>
           <view class="menu-item" bindtap="goToManagePlan">
-            <text>管理计划</text>
+            <text>管理打卡</text>
           </view>
         </view>
         <!-- 主按钮 -->

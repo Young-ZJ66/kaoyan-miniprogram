@@ -119,7 +119,8 @@ Page({
     const plan = e.currentTarget.dataset.plan
     // 将计划数据转换为编辑页面需要的格式
     const tasks = plan.tasks[0].tasks.map(task => ({
-      content: task.content
+      content: task.content,
+      color: task.color || 'rgba(7, 193, 96, 0.3)' // 保留颜色信息或设置默认值
     }))
     
     wx.navigateTo({

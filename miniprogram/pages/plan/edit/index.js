@@ -13,12 +13,58 @@ Page({
     // 解析传递过来的参数
     const { planId, planName, startDate, endDate, tasks } = options
     
+    // 解析任务数据
+    const tasksData = JSON.parse(decodeURIComponent(tasks))
+    
+    // 确保每个任务都有颜色属性，并转换颜色格式
+    const tasksWithColors = tasksData.map(task => {
+      if (!task.color) {
+        return {
+          ...task,
+          color: 'rgba(7, 193, 96, 0.3)' // 默认绿色
+        }
+      }
+      
+      // 如果是十六进制颜色，转换为rgba格式
+      if (task.color.startsWith('#')) {
+        // 将十六进制转为rgba
+        let color = task.color;
+        switch(color) {
+          case '#07c160': // 绿色
+            color = 'rgba(7, 193, 96, 0.3)';
+            break;
+          case '#1890ff': // 蓝色
+            color = 'rgba(24, 144, 255, 0.3)';
+            break;
+          case '#722ed1': // 紫色
+            color = 'rgba(114, 46, 209, 0.3)';
+            break;
+          case '#ff9900': // 橙色
+            color = 'rgba(255, 153, 0, 0.3)';
+            break;
+          case '#ff4d4f': // 红色
+            color = 'rgba(255, 77, 79, 0.3)';
+            break;
+          case '#f56cb8': // 粉色
+            color = 'rgba(245, 108, 184, 0.3)';
+            break;
+        }
+        
+        return {
+          ...task,
+          color: color
+        };
+      }
+      
+      return task;
+    });
+    
     this.setData({
       planId,
       planName: decodeURIComponent(planName),
       startDate,
       endDate,
-      tasks: JSON.parse(decodeURIComponent(tasks))
+      tasks: tasksWithColors
     })
   },
 
@@ -73,8 +119,44 @@ Page({
   addTask: function() {
     const tasks = this.data.tasks
     tasks.push({
-      content: ''
+      content: '',
+      color: 'rgba(7, 193, 96, 0.3)'  // 默认颜色为半透明绿色
     })
+    this.setData({ tasks })
+  },
+
+  // 选择任务颜色
+  selectTaskColor: function(e) {
+    const { index, color } = e.currentTarget.dataset
+    const tasks = this.data.tasks
+    
+    // 根据选择的颜色，设置对应的半透明颜色
+    let transparentColor
+    
+    switch(color) {
+      case '#07c160': // 绿色
+        transparentColor = 'rgba(7, 193, 96, 0.3)'
+        break
+      case '#1890ff': // 蓝色
+        transparentColor = 'rgba(24, 144, 255, 0.3)'
+        break
+      case '#722ed1': // 紫色
+        transparentColor = 'rgba(114, 46, 209, 0.3)'
+        break
+      case '#ff9900': // 橙色
+        transparentColor = 'rgba(255, 153, 0, 0.3)'
+        break
+      case '#ff4d4f': // 红色
+        transparentColor = 'rgba(255, 77, 79, 0.3)'
+        break
+      case '#f56cb8': // 粉色
+        transparentColor = 'rgba(245, 108, 184, 0.3)'
+        break
+      default:
+        transparentColor = 'rgba(7, 193, 96, 0.3)' // 默认为绿色
+    }
+    
+    tasks[index].color = transparentColor
     this.setData({ tasks })
   },
 

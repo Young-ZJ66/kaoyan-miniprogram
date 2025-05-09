@@ -1,6 +1,6 @@
 {
   "navigationBarBackgroundColor": "#fff",
-  "navigationBarTitleText": "计划",
+  "navigationBarTitleText": "学习打卡",
   "enablePullDownRefresh": true,
   "backgroundColor": "#f5f5f5",
   "backgroundTextStyle": "dark"

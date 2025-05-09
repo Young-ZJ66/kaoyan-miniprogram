@@ -216,6 +216,21 @@
   background-color: #e74c3c;
 }
 
+/* 任务颜色指示器样式 */
+.task-colors {
+  position: absolute;
+  bottom: 5rpx;
+  right: 5rpx;
+  display: flex;
+  gap: 4rpx;
+}
+
+.color-indicator {
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+}
+
 /* 任务列表区域样式 */
 .tasks-section {
   width: 100%;
@@ -272,8 +287,9 @@
   padding: 20rpx;
   margin: 10rpx 0;
   background-color: #f9f9f9;
-  border-radius: 8rpx;
+  border-radius: 12rpx;
   border-left: 4rpx solid #07c160;
+  transition: all 0.3s ease;
 }
 
 .task-checkbox {
@@ -474,12 +490,10 @@
 }
 
 .task-bullet {
-  width: 8rpx;
-  height: 8rpx;
-  background-color: #666;
+  width: 16rpx;
+  height: 16rpx;
   border-radius: 50%;
-  margin: 0 16rpx 0 16rpx;
-  position: relative;
-  align-self: center;
+  background-color: #07c160;
+  margin-right: 20rpx;
   flex-shrink: 0;
 }

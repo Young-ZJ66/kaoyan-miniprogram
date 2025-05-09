@@ -219,7 +219,39 @@ Page({
           dailyTasks[dateStr] = []
         }
         
-        dailyTasks[dateStr].push(task)
+        // 确保保留任务的颜色属性
+        const taskWithColors = {...task}
+        if (taskWithColors.tasks) {
+          taskWithColors.tasks = taskWithColors.tasks.map(t => {
+            // 如果任务没有颜色属性，添加默认颜色
+            const color = t.color || 'rgba(7, 193, 96, 0.3)'
+            
+            // 处理背景色 - 将颜色转为低透明度版本
+            let backgroundColorRGB = 'rgba(7, 193, 96, 0.1)' // 默认背景色
+            if (color) {
+              // 处理rgba格式
+              if (color.startsWith('rgba')) {
+                // 替换最后一个参数为0.1透明度
+                backgroundColorRGB = color.replace(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*[\d\.]+\)/, 'rgba($1, $2, $3, 0.1)')
+              } 
+              // 处理十六进制格式
+              else if (color.startsWith('#')) {
+                const r = parseInt(color.slice(1, 3), 16)
+                const g = parseInt(color.slice(3, 5), 16)
+                const b = parseInt(color.slice(5, 7), 16)
+                backgroundColorRGB = `rgba(${r}, ${g}, ${b}, 0.1)`
+              }
+            }
+            
+            return {
+              ...t, 
+              color: color,
+              backgroundColorRGB: backgroundColorRGB
+            }
+          })
+        }
+        
+        dailyTasks[dateStr].push(taskWithColors)
       }
     })
     
@@ -735,6 +767,7 @@ Page({
         tasksCopy[taskIndex] = {
           ...tasksCopy[taskIndex],
           completed: newCompletedStatus
+          // 不需要更新backgroundColorRGB，因为它不依赖于完成状态
         };
         currentDateTasks[i] = {
           ...currentDateTasks[i],

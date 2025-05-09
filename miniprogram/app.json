@@ -52,7 +52,7 @@
       },
       {
         "pagePath": "pages/plan/index",
-        "text": "计划",
+        "text": "打卡",
         "iconPath": "images/tabbar/plan.png",
         "selectedIconPath": "images/tabbar/plan-active.png"
       },

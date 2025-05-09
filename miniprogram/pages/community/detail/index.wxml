@@ -1,4 +1,4 @@
-<view class="container">
+<view class="container" bindtouchstart="touchStartHandler" bindtouchend="touchEndHandler">
   <view class="loading" wx:if="{{loading}}">加载中...</view>
   
   <block wx:if="{{!loading && post}}">
@@ -57,12 +57,37 @@
         <block wx:if="{{comments.length > 0}}">
           <view class="comment-item" wx:for="{{comments}}" wx:key="_id">
             <image class="avatar" src="{{item.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
-            <view class="comment-content">
+            <view class="comment-content" bindtap="showReplyInput" data-comment-id="{{item._id}}" data-nickname="{{item.userInfo.nickName || '匿名用户'}}" data-reply-openid="{{item.userInfo.openid}}" data-prevent-cancel="true">
               <view class="comment-header">
                 <text class="nickname">{{item.userInfo.nickName || '匿名用户'}}</text>
                 <text class="time">{{item.formattedTime}}</text>
               </view>
               <text class="comment-text" user-select="true">{{item.content}}</text>
+              
+              <!-- 回复列表 -->
+              <view class="reply-list" wx:if="{{item.replies && item.replies.length > 0}}" catchtap="preventBubble">
+                <view class="reply-item" wx:for="{{item.replies}}" wx:for-item="reply" wx:for-index="replyIndex" wx:key="index" 
+                      catchtap="showReplyInput" 
+                      data-comment-id="{{item._id}}" 
+                      data-nickname="{{reply.userInfo.nickName || '匿名用户'}}" 
+                      data-reply-id="{{reply._id}}" 
+                      data-reply-index="{{replyIndex}}"
+                      data-reply-openid="{{reply.userInfo.openid}}"
+                      data-prevent-cancel="true">
+                  <image class="reply-avatar" src="{{reply.userInfo.avatarUrl || '/images/avatar-default.png'}}" mode="aspectFill"></image>
+                  <view class="reply-content">
+                    <view class="reply-header">
+                      <view class="reply-user">
+                        <text class="nickname">{{reply.userInfo.nickName || '匿名用户'}}</text>
+                        <text class="reply-to" wx:if="{{reply.replyTo}}">回复</text>
+                        <text class="nickname" wx:if="{{reply.replyTo}}">{{reply.replyTo.nickName || '匿名用户'}}</text>
+                      </view>
+                      <text class="time">{{reply.formattedTime}}</text>
+                    </view>
+                    <text class="reply-text" user-select="true">{{reply.content}}</text>
+                  </view>
+                </view>
+              </view>
             </view>
           </view>
         </block>
@@ -78,19 +103,23 @@
   </view>
   
   <!-- 评论输入框 -->
-  <view class="comment-input-area">
+  <view class="comment-input-area" data-prevent-cancel="true">
     <textarea 
-      class="comment-input" 
-      placeholder="写下你的评论..." 
+      class="comment-input {{replyMode ? 'reply-mode' : ''}}" 
+      placeholder="{{replyMode ? '回复 ' + replyToNickname + '...' : '写下你的评论...'}}" 
       value="{{newComment}}"
       bindinput="inputComment"
       auto-height
       show-confirm-bar="{{false}}"
       maxlength="200"
       cursor-spacing="20"
+      data-prevent-cancel="true"
     ></textarea>
-    <view class="submit-btn {{newComment.length > 0 && !isCommenting ? 'active' : ''}}" bindtap="{{newComment.length > 0 && !isCommenting ? 'submitComment' : ''}}">
+    <view class="submit-btn {{newComment.length > 0 && !isCommenting ? 'active' : ''}}" bindtap="{{newComment.length > 0 && !isCommenting ? 'submitComment' : ''}}" data-prevent-cancel="true">
       {{isCommenting ? '提交中...' : '发送'}}
     </view>
   </view>
+
+  <!-- 遮罩层，用于取消回复模式 -->
+  <view class="mask" wx:if="{{replyMode}}" bindtap="cancelReply"></view>
 </view> 

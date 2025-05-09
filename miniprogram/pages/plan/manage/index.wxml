@@ -8,7 +8,7 @@
             bindtap="goToEditPlan"
             data-plan="{{item}}">
         <view class="plan-info">
-          <view class="plan-name">{{item.planName || '未命名的计划'}}</view>
+          <view class="plan-name">{{item.planName || '未命名的打卡计划'}}</view>
           <view class="plan-meta">
             <view class="plan-date">{{item.startDate}} 至 {{item.endDate}}</view>
             <view class="create-time">创建时间：{{item.createdAt}}</view>
@@ -26,7 +26,7 @@
       </view>
     </block>
     <view wx:else class="empty-tip">
-      <text>暂无计划</text>
+      <text>暂无打卡计划</text>
     </view>
   </view>
 </view> 

@@ -95,7 +95,9 @@ exports.main = async (event, context) => {
           tasks: tasks.map(task => ({
             content: task.content,
             // 如果这天这个任务之前存在且已完成，则保持完成状态
-            completed: completedStatusMap[dateKey]?.[task.content] || false
+            completed: completedStatusMap[dateKey]?.[task.content] || false,
+            // 保存任务颜色信息
+            color: task.color || 'rgba(7, 193, 96, 0.3)'
           })),
           createdAt: now,
           updatedAt: now,

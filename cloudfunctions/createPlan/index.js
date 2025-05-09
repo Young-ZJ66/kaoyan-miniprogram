@@ -67,6 +67,7 @@ exports.main = async (event, context) => {
         date: dateTimestamp, // 使用时间戳
         tasks: tasks.map(task => ({
           content: task.content,
+          color: task.color, // 添加颜色信息
           completed: false
         })),
         createdAt: now,

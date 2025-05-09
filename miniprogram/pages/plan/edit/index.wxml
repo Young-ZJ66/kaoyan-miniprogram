@@ -2,9 +2,9 @@
   <view class="form-section">
     <!-- 计划名称输入区域 -->
     <view class="form-item">
-      <view class="form-label">计划名称</view>
+      <view class="form-label">打卡计划名称</view>
       <input class="plan-name-input" 
-             placeholder="请输入计划名称" 
+             placeholder="请输入打卡计划名称" 
              placeholder-class="placeholder"
              value="{{planName}}"
              bindinput="onPlanNameInput"
@@ -13,7 +13,7 @@
 
     <!-- 计划时间 -->
     <view class="form-item">
-      <view class="form-label">计划时间</view>
+      <view class="form-label">打卡组时间</view>
       <view class="date-section">
         <view class="date-item">
           <text class="label">开始日期</text>
@@ -32,16 +32,62 @@
 
     <!-- 每日任务 -->
     <view class="form-item">
-      <view class="form-label">每日任务</view>
+      <view class="form-label">打卡每日任务</view>
       <view class="tasks-list">
         <block wx:if="{{tasks.length > 0}}">
-          <view wx:for="{{tasks}}" wx:key="index" class="task-item">
-            <input class="task-input" 
-                 placeholder="请输入任务内容" 
-                 value="{{item.content}}"
-                 data-index="{{index}}"
-                 bindinput="onTaskInput"/>
-            <view class="deleteTask-btn" bindtap="deleteTask" data-index="{{index}}">删除</view>
+          <view wx:for="{{tasks}}" wx:key="index" class="task-item" style="background-color: {{item.color || '#07c160'}}; border-color: {{item.color || '#07c160'}};">
+            <view class="task-content">
+              <textarea class="task-input" 
+                      placeholder="请输入任务内容" 
+                      placeholder-class="task-placeholder"
+                      value="{{item.content}}"
+                      data-index="{{index}}"
+                      bindinput="onTaskInput"
+                      maxlength="100"
+                      auto-height
+                      show-confirm-bar="{{false}}"></textarea>
+              <view class="priority-selector">
+                <view class="color-options">
+                  <!-- 绿色 - 低优先级 -->
+                  <view class="color-option {{item.color === 'rgba(7, 193, 96, 0.3)' || item.color === '#07c160' ? 'selected' : ''}}" 
+                        style="background-color: #07c160;" 
+                        data-color="#07c160" 
+                        data-index="{{index}}" 
+                        bindtap="selectTaskColor"></view>
+                  <!-- 蓝色 - 信息 -->
+                  <view class="color-option {{item.color === 'rgba(24, 144, 255, 0.3)' || item.color === '#1890ff' ? 'selected' : ''}}" 
+                        style="background-color: #1890ff;" 
+                        data-color="#1890ff" 
+                        data-index="{{index}}" 
+                        bindtap="selectTaskColor"></view>
+                  <!-- 紫色 - 创意 -->
+                  <view class="color-option {{item.color === 'rgba(114, 46, 209, 0.3)' || item.color === '#722ed1' ? 'selected' : ''}}" 
+                        style="background-color: #722ed1;" 
+                        data-color="#722ed1" 
+                        data-index="{{index}}" 
+                        bindtap="selectTaskColor"></view>
+                  <!-- 橙色 - 中等优先级 -->
+                  <view class="color-option {{item.color === 'rgba(255, 153, 0, 0.3)' || item.color === '#ff9900' ? 'selected' : ''}}" 
+                        style="background-color: #ff9900;" 
+                        data-color="#ff9900" 
+                        data-index="{{index}}" 
+                        bindtap="selectTaskColor"></view>
+                  <!-- 红色 - 高优先级 -->
+                  <view class="color-option {{item.color === 'rgba(255, 77, 79, 0.3)' || item.color === '#ff4d4f' ? 'selected' : ''}}" 
+                        style="background-color: #ff4d4f;" 
+                        data-color="#ff4d4f" 
+                        data-index="{{index}}" 
+                        bindtap="selectTaskColor"></view>
+                  <!-- 粉色 - 个人 -->
+                  <view class="color-option {{item.color === 'rgba(245, 108, 184, 0.3)' || item.color === '#f56cb8' ? 'selected' : ''}}" 
+                        style="background-color: #f56cb8;" 
+                        data-color="#f56cb8" 
+                        data-index="{{index}}" 
+                        bindtap="selectTaskColor"></view>
+                </view>
+              </view>
+            </view>
+            <view class="task-delete-btn" bindtap="deleteTask" data-index="{{index}}">删除</view>
           </view>
         </block>
         <view class="add-task-btn" bindtap="addTask">
@@ -54,7 +100,7 @@
     <!-- 按钮组 -->
     <view class="button-group">
       <button class="submit-btn" bindtap="onSubmit">保存修改</button>
-      <button class="delete-btn" bindtap="deletePlan">删除计划</button>
+      <button class="plan-delete-btn" bindtap="deletePlan">删除打卡</button>
     </view>
   </view>
 </view> 

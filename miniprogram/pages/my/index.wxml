@@ -27,7 +27,7 @@
     <view class="function-item" bindtap="onManagePlan">
       <view class="function-left">
         <text class="iconfont icon-plan"></text>
-        <text>计划管理</text>
+        <text>打卡管理</text>
       </view>
       <text class="iconfont icon-arrow"></text>
     </view>

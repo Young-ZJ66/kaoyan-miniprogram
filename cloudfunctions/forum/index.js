@@ -242,7 +242,7 @@ async function toggleLike(data, openid) {
   }
 }
 
-// 评论帖子
+// 添加评论
 async function addComment(data, openid) {
   if (!openid) {
     return {
@@ -252,7 +252,7 @@ async function addComment(data, openid) {
   }
 
   try {
-    const { postId, content } = data
+    const { postId, content, isReply, parentCommentId, replyTo } = data
     if (!postId) {
       return {
         success: false,
@@ -281,7 +281,7 @@ async function addComment(data, openid) {
 
     const user = userInfo.data[0]
     
-    // 添加评论
+    // 评论数据
     const comment = {
       postId: postId,
       content,
@@ -293,9 +293,27 @@ async function addComment(data, openid) {
       createdAt: db.serverDate()
     }
     
-    await db.collection('comments').add({
+    // 如果是回复评论，添加回复信息
+    if (isReply && parentCommentId) {
+      comment.isReply = true
+      comment.parentCommentId = parentCommentId
+      
+      // 添加被回复者信息，可以是主评论的回复，也可以是回复的回复
+      if (replyTo) {
+        comment.replyTo = replyTo
+      }
+    }
+    
+    const result = await db.collection('comments').add({
       data: comment
     })
+    
+    if (!result._id) {
+      return {
+        success: false,
+        message: '评论添加失败'
+      }
+    }
 
     // 更新帖子的评论数
     await db.collection('posts').doc(postId).update({
@@ -305,7 +323,11 @@ async function addComment(data, openid) {
     })
 
     return {
-      success: true
+      success: true,
+      message: isReply ? '回复成功' : '评论成功',
+      data: {
+        commentId: result._id
+      }
     }
   } catch (error) {
     console.error('评论帖子失败:', error)

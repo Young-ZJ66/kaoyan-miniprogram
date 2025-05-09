@@ -74,8 +74,44 @@ Page({
   addTask: function() {
     const tasks = this.data.tasks
     tasks.push({
-      content: ''
+      content: '',
+      color: 'rgba(7, 193, 96, 0.3)'  // 默认颜色为半透明绿色
     })
+    this.setData({ tasks })
+  },
+
+  // 选择任务颜色
+  selectTaskColor: function(e) {
+    const { index, color } = e.currentTarget.dataset
+    const tasks = this.data.tasks
+    
+    // 根据选择的颜色，设置对应的半透明颜色
+    let transparentColor
+    
+    switch(color) {
+      case '#07c160': // 绿色
+        transparentColor = 'rgba(7, 193, 96, 0.3)'
+        break
+      case '#1890ff': // 蓝色
+        transparentColor = 'rgba(24, 144, 255, 0.3)'
+        break
+      case '#722ed1': // 紫色
+        transparentColor = 'rgba(114, 46, 209, 0.3)'
+        break
+      case '#ff9900': // 橙色
+        transparentColor = 'rgba(255, 153, 0, 0.3)'
+        break
+      case '#ff4d4f': // 红色
+        transparentColor = 'rgba(255, 77, 79, 0.3)'
+        break
+      case '#f56cb8': // 粉色
+        transparentColor = 'rgba(245, 108, 184, 0.3)'
+        break
+      default:
+        transparentColor = 'rgba(7, 193, 96, 0.3)' // 默认为绿色
+    }
+    
+    tasks[index].color = transparentColor
     this.setData({ tasks })
   },
 
